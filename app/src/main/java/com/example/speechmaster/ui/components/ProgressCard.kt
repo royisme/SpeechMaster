@@ -6,11 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.speechmaster.R
 import com.example.speechmaster.data.model.UserProgress
 
-@Composable
 
+@Composable
 fun ProgressCard(
     progress: UserProgress,
     modifier: Modifier = Modifier
@@ -19,7 +22,8 @@ fun ProgressCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors( containerColor = MaterialTheme.colorScheme.primaryContainer)
     ) {
         Column(
             modifier = Modifier
@@ -30,14 +34,11 @@ fun ProgressCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 16.dp),
             ) {
+
                 Text(
-                    text = "Your ",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    text = "Progress",
+                    text = stringResource(id = R.string.your_progress) ,
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -49,14 +50,14 @@ fun ProgressCard(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 StatItem(
-                    title = "Current Streak",
-                    value = "${progress.currentStreak} days",
+                    title = stringResource(id = R.string.current_streak),
+                    value = "${progress.currentStreak} ${stringResource(id = R.string.days)}",
                     icon = Icons.Default.EmojiEvents,
                     modifier = Modifier.weight(1f)
                 )
 
                 StatItem(
-                    title = "Sessions",
+                    title = stringResource(id = R.string.sessions) ,
                     value = "${progress.sessions}",
                     icon = Icons.Default.CheckCircle,
                     modifier = Modifier.weight(1f)
@@ -70,15 +71,15 @@ fun ProgressCard(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 StatItem(
-                    title = "Total Practice",
+                    title = stringResource(id = R.string.total_practice),
                     value = "${progress.totalPracticeMinutes}m ${progress.totalPracticeSeconds}s",
                     icon = Icons.Default.Timer,
                     modifier = Modifier.weight(1f)
                 )
 
                 StatItem(
-                    title = "Longest Streak",
-                    value = "${progress.longestStreakDays} days",
+                    title = stringResource(id = R.string.longest_streak),
+                    value = "${progress.longestStreakDays} ${stringResource(id = R.string.days)}",
                     icon = Icons.Default.CalendarMonth,
                     modifier = Modifier.weight(1f)
                 )
@@ -96,7 +97,7 @@ fun StatItem(
 ) {
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
         shape = MaterialTheme.shapes.medium
     ) {
         Column(

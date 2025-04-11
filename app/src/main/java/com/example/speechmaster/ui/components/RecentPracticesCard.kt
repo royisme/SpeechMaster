@@ -9,7 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.speechmaster.R
 import com.example.speechmaster.data.model.RecentPractice
 
 
@@ -23,7 +25,8 @@ fun RecentPracticesCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors( containerColor = MaterialTheme.colorScheme.secondaryContainer)
     ) {
         Column(
             modifier = Modifier
@@ -37,14 +40,10 @@ fun RecentPracticesCard(
                     .padding(bottom = 16.dp)
             ) {
                 Text(
-                    text = "Recent ",
+                    text =  stringResource(id = R.string.recent_practice),
                     style = MaterialTheme.typography.titleLarge
                 )
-                Text(
-                    text = "Practice",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
+
             }
 
             // 练习列表

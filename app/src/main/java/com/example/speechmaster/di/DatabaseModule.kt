@@ -3,7 +3,9 @@ package com.example.speechmaster.di
 import android.content.Context
 import androidx.room.Room
 import com.example.speechmaster.data.local.AppDatabase
+import com.example.speechmaster.data.repository.IPracticeRepository
 import com.example.speechmaster.data.repository.IUserRepository
+import com.example.speechmaster.data.repository.PracticeRepositoryImpl
 import com.example.speechmaster.data.repository.UserRepositoryImpl
 import com.example.speechmaster.domain.session.UserSessionManager
 
@@ -17,7 +19,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
@@ -25,7 +26,9 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "speechmaster-db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(false) // 简化开发阶段的迁移，生产环境应删除此项并实现迁移
+            .build()
     }
 
     @Provides
@@ -33,10 +36,16 @@ object DatabaseModule {
     fun provideUserRepository(database: AppDatabase): IUserRepository {
         return UserRepositoryImpl(database)
     }
+
+    @Provides
+    @Singleton
+    fun providePracticeRepository(database: AppDatabase): IPracticeRepository {
+        return PracticeRepositoryImpl(database)
+    }
+
     @Provides
     @Singleton
     fun provideUserSessionManager(userRepository: IUserRepository): UserSessionManager {
         return UserSessionManager(userRepository)
     }
-    // 在这里添加其他存储库提供方法...
 }

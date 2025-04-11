@@ -1,14 +1,6 @@
 package com.example.speechmaster.data.model
 
-// 用户进度数据
-data class UserProgress(
-    val id: Long = 1,
-    val currentStreak: Int = 0,
-    val sessions: Int = 0,
-    val totalPracticeMinutes: Int = 0,
-    val totalPracticeSeconds: Int = 0,
-    val longestStreakDays: Int = 0
-)
+
 
 // 练习会话数据
 data class PracticeSession(

@@ -23,12 +23,13 @@ fun PracticeSessionCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors( containerColor = MaterialTheme.colorScheme.secondaryContainer)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(14.dp)
         ) {
             // 卡片标题
             Row(
@@ -43,17 +44,13 @@ fun PracticeSessionCard(
                         text = session.title,
                         style = MaterialTheme.typography.titleLarge
                     )
-                    Text(
-                        text = stringResource(id = R.string.daily_practice),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+
                 }
 
                 // 难度标签
                 Surface(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    shape = RoundedCornerShape(16.dp)
+                    color = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(16.dp),
                 ) {
                     Text(
                         text = session.difficulty,
@@ -81,7 +78,7 @@ fun PracticeSessionCard(
             ) {
                 session.tags.forEach { tag ->
                     Surface(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        color = MaterialTheme.colorScheme.surfaceBright,
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Text(

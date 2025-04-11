@@ -6,7 +6,6 @@ import com.example.speechmaster.data.model.PracticeSession
 import com.example.speechmaster.data.model.RecentPractice
 import com.example.speechmaster.data.model.User
 import com.example.speechmaster.data.model.UserProgress
-import com.example.speechmaster.data.repository.IPracticeRepository
 import com.example.speechmaster.data.repository.MockPracticeRepository
 import com.example.speechmaster.domain.session.UserSessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel

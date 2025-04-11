@@ -12,6 +12,7 @@ class MockPracticeRepository @Inject constructor() : IPracticeRepository {
 
     // Mock 用户进度数据
     private val userProgress = UserProgress(
+        userId = "user1",
         currentStreak = 2,
         sessions = 8,
         totalPracticeMinutes = 26,

@@ -1,7 +1,7 @@
 package com.example.speechmaster.data.repository
 
 import com.example.speechmaster.data.local.AppDatabase
-import com.example.speechmaster.data.local.UserEntity
+import com.example.speechmaster.data.local.entity.UserEntity
 import kotlinx.coroutines.flow.map
 import com.example.speechmaster.data.model.User
 import kotlinx.coroutines.flow.Flow
