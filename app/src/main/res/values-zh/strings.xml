@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">口语大师</string>
+    <!-- Menu -->
+    <string name="menu">菜单</string>
+    <string name="home">首页</string>
+    <string name="course_list">课程列表</string>
+    <string name="practice_history">练习历史</string>
+    <string name="settings">设置</string>
+    <string name="about">关于应用</string>
+
+    <!-- Home Screen -->
+    <string name="daily_practice">每日练习</string>
+    <string name="your_progress">你的进度</string>
+    <string name="current_streak">当前连续</string>
+    <string name="days">天</string>
+    <string name="sessions">课时</string>
+    <string name="total_practice">总练习</string>
+    <string name="longest_streak">最长连续</string>
+    <string name="job_interview">求职面试</string>
+    <string name="start_practice">开始练习</string>
+    <string name="recent_practice">最近练习</string>
+    <string name="recent">最近</string>
+</resources>
