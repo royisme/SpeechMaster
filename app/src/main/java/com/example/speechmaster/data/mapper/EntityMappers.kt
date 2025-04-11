@@ -52,6 +52,7 @@ fun CourseEntity.toModel(): Course = Course(
     category = category,
     tags = tags?.let { json.decodeFromString<List<String>>(it) } ?: emptyList(),
     source = source,
+    creatorId = creatorId,
     createdAt = createdAt,
     updatedAt = updatedAt
 )
@@ -64,6 +65,7 @@ fun Course.toEntity(): CourseEntity = CourseEntity(
     category = category,
     tags = if (tags.isNotEmpty()) Json.encodeToString(stringListSerializer, tags) else null,
     source = source,
+    creatorId = creatorId,
     createdAt = createdAt,
     updatedAt = updatedAt
 )

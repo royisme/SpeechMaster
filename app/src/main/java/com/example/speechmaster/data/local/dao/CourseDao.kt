@@ -7,6 +7,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.speechmaster.data.local.DatabaseConstants.COURSES_TABLE_NAME
+import com.example.speechmaster.data.local.DatabaseConstants.COURSE_FILED_SOURCE_BUILT_IN
+import com.example.speechmaster.data.local.DatabaseConstants.COURSE_FILED_SOURCE_UGC
 import com.example.speechmaster.data.local.entity.CardEntity
 import com.example.speechmaster.data.local.entity.CourseEntity
 import kotlinx.coroutines.flow.Flow
@@ -22,33 +24,54 @@ interface CourseDao {
     /**
      * 获取所有内置课程
      */
-    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE source = 'BUILT_IN' ORDER BY created_at DESC")
+    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE " +
+            "source = '$COURSE_FILED_SOURCE_BUILT_IN'  ORDER BY created_at DESC")
     fun getBuiltInCourses(): Flow<List<CourseEntity>>
     
     /**
      * 获取所有用户创建的课程
      */
-    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE source = 'UGC' ORDER BY created_at DESC")
-    fun getUserCreatedCourses(): Flow<List<CourseEntity>>
-    
+    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE " +
+            "source = '$COURSE_FILED_SOURCE_UGC' AND creator_id = :userId ORDER BY created_at DESC")
+    fun getUserCreatedCourses(userId: String): Flow<List<CourseEntity>>
+
+    /**
+     * 获取所有可访问的课程（内置 + 用户创建的）
+     */
+    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE " +
+            "source = '$COURSE_FILED_SOURCE_BUILT_IN' " +
+            "OR creator_id = :userId  ORDER BY created_at DESC")
+    fun getAllAccessibleCourses(userId: String): Flow<List<CourseEntity>>
+
     /**
      * 根据难度级别获取课程
      */
-    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE difficulty = :difficulty ORDER BY created_at DESC")
-    fun getCoursesByDifficulty(difficulty: String): Flow<List<CourseEntity>>
-    
+    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE difficulty = :difficulty " +
+            "AND  (source = '$COURSE_FILED_SOURCE_BUILT_IN' OR creator_id = :userId) " +
+            "ORDER BY created_at DESC")
+    fun getCoursesByDifficulty(difficulty: String, userId: String): Flow<List<CourseEntity>>
+
     /**
      * 根据分类获取课程
      */
-    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE category = :category ORDER BY created_at DESC")
-    fun getCoursesByCategory(category: String): Flow<List<CourseEntity>>
+    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE category = :category" +
+            " AND (source = '$COURSE_FILED_SOURCE_BUILT_IN' OR creator_id = :userId) " +
+            "ORDER BY created_at DESC")
+    fun getAccessibleCoursesByCategory(category: String, userId: String): Flow<List<CourseEntity>>
     
     /**
      * 搜索课程（标题和描述）
      */
-    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE title LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%' ORDER BY created_at DESC")
-    fun searchCourses(query: String): Flow<List<CourseEntity>>
-    
+    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE " +
+            "(title LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%') " +
+            "AND (source = '$COURSE_FILED_SOURCE_BUILT_IN' OR creator_id = :userId) " +
+            "ORDER BY created_at DESC")
+    fun searchAccessibleCourses(query: String, userId: String): Flow<List<CourseEntity>>
+    /**
+     * 检查用户是否为课程创建者
+     */
+    @Query("SELECT COUNT(*) FROM $COURSES_TABLE_NAME WHERE id = :courseId AND creator_id = :userId")
+    suspend fun isUserTheCourseCreator(courseId: String, userId: String): Int
     /**
      * 根据ID获取单个课程
      */
@@ -72,19 +95,29 @@ interface CourseDao {
      */
     @Update
     suspend fun updateCourse(course: CourseEntity)
-    
+
+
     /**
      * 删除课程
      */
-    @Query("DELETE FROM $COURSES_TABLE_NAME WHERE id = :courseId")
-    suspend fun deleteCourse(courseId: String)
-    
+    @Query("DELETE FROM courses WHERE id = :courseId AND creator_id = :userId")
+    suspend fun deleteUserCourse(courseId: String, userId: String): Int
+
+
     /**
      * 获取课程及其卡片列表
      */
     @Transaction
-    @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE id = :courseId")
+    @Query("SELECT * FROM courses WHERE id = :courseId")
     fun getCourseWithCards(courseId: String): Flow<CourseWithCards?>
+
+    /**
+     * 获取用户可访问的所有课程及其卡片
+     */
+    @Transaction
+    @Query("SELECT * FROM courses WHERE source = '$COURSE_FILED_SOURCE_BUILT_IN'" +
+            " OR creator_id = :userId ORDER BY created_at DESC")
+    fun getAccessibleCoursesWithCards(userId: String): Flow<List<CourseWithCards>>
 }
 
 /**

@@ -24,7 +24,9 @@ data class Course(
     
     // 来源："BUILT_IN"表示应用内置，"UGC"表示用户创建
     val source: String,
-    
+    // 创建者ID（内置课程为null，用户创建的课程为用户ID）
+    val creatorId: String?,
+
     // 创建时间
     val createdAt: Long = System.currentTimeMillis(),
     

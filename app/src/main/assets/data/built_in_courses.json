@@ -1,0 +1,106 @@
+[
+  {
+    "id": "course_job_interview_01",
+    "title": "Job Interview",
+    "description": "Practice common job interview phrases and answers to help you succeed in your next interview.",
+    "difficulty": "intermediate",
+    "category": "Professional",
+    "tags": ["interview", "professional", "career"],
+    "source": "BUILT_IN",
+    "cards": [
+      {
+        "id": "card_job_interview_01_1",
+        "textContent": "I believe my experience and skills make me well-suited for this position. In my previous role, I successfully led a team that increased productivity by twenty percent. I'm particularly proud of how I helped implement new processes that improved collaboration across departments.",
+        "sequenceOrder": 1
+      },
+      {
+        "id": "card_job_interview_01_2",
+        "textContent": "One of my greatest strengths is my ability to adapt to changing situations. For example, when our company underwent a major restructuring last year, I quickly adjusted my approach and helped my team navigate the transition smoothly.",
+        "sequenceOrder": 2
+      },
+      {
+        "id": "card_job_interview_01_3",
+        "textContent": "I'm interested in this position because I've always admired your company's commitment to innovation. I believe my creative problem-solving skills would allow me to contribute significantly to your ongoing projects.",
+        "sequenceOrder": 3
+      }
+    ]
+  },
+  {
+    "id": "course_public_speaking_01",
+    "title": "Public Speaking",
+    "description": "Learn how to effectively communicate your ideas to a group with confidence and clarity.",
+    "difficulty": "beginner",
+    "category": "Communication",
+    "tags": ["public-speaking", "communication"],
+    "source": "BUILT_IN",
+    "cards": [
+      {
+        "id": "card_public_speaking_01_1",
+        "textContent": "Good morning everyone. Today I want to talk about the importance of effective communication in our daily lives. Communication is not just about speaking clearly, but also about listening actively and understanding different perspectives.",
+        "sequenceOrder": 1
+      },
+      {
+        "id": "card_public_speaking_01_2",
+        "textContent": "One technique that has helped me improve my public speaking is to practice regularly in front of a mirror. This allows me to observe my body language and facial expressions, which are crucial elements of effective communication.",
+        "sequenceOrder": 2
+      },
+      {
+        "id": "card_public_speaking_01_3",
+        "textContent": "When preparing for a presentation, I find it helpful to organize my thoughts using a simple structure: introduction, three main points, and conclusion. This framework helps me stay focused and ensures my audience can follow along easily.",
+        "sequenceOrder": 3
+      }
+    ]
+  },
+  {
+    "id": "course_daily_conversation_01",
+    "title": "Daily Conversations",
+    "description": "Practice everyday phrases and conversations that will help you in common social situations.",
+    "difficulty": "beginner",
+    "category": "Social",
+    "tags": ["daily", "conversation", "social"],
+    "source": "BUILT_IN",
+    "cards": [
+      {
+        "id": "card_daily_conversation_01_1",
+        "textContent": "Hi there! I don't think we've met before. My name is Alex. I just moved to this neighborhood last month. How long have you been living around here?",
+        "sequenceOrder": 1
+      },
+      {
+        "id": "card_daily_conversation_01_2",
+        "textContent": "Excuse me, could you tell me how to get to the nearest subway station? I'm a bit lost, and my phone battery just died. I'm trying to get downtown for a meeting.",
+        "sequenceOrder": 2
+      },
+      {
+        "id": "card_daily_conversation_01_3",
+        "textContent": "I really enjoyed that movie! The plot was so engaging, and the visual effects were incredible. What did you think about the ending? I was a bit surprised by the twist.",
+        "sequenceOrder": 3
+      }
+    ]
+  },
+  {
+    "id": "course_business_presentation_01",
+    "title": "Business Presentations",
+    "description": "Master the art of delivering impactful business presentations that engage your audience and convey your message clearly.",
+    "difficulty": "advanced",
+    "category": "Professional",
+    "tags": ["business", "presentation", "professional"],
+    "source": "BUILT_IN",
+    "cards": [
+      {
+        "id": "card_business_presentation_01_1",
+        "textContent": "Our quarterly results exceed expectations with a 15% increase in revenue compared to the same period last year. This growth is primarily attributed to the successful launch of our new product line and expanded market reach in the Asia-Pacific region.",
+        "sequenceOrder": 1
+      },
+      {
+        "id": "card_business_presentation_01_2",
+        "textContent": "The data clearly indicates three key trends in consumer behavior: first, a shift toward sustainable products; second, increased preference for personalized experiences; and third, greater willingness to pay premium prices for quality. Our strategy addresses each of these trends directly.",
+        "sequenceOrder": 2
+      },
+      {
+        "id": "card_business_presentation_01_3",
+        "textContent": "Looking ahead to Q3, we're implementing a comprehensive action plan focused on operational efficiency, talent development, and strategic partnerships. These initiatives will position us to capitalize on emerging opportunities while mitigating potential risks in an increasingly competitive landscape.",
+        "sequenceOrder": 3
+      }
+    ]
+  }
+]

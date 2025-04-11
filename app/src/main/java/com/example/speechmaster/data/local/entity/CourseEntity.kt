@@ -26,5 +26,8 @@ data class CourseEntity(
     val createdAt: Long = System.currentTimeMillis(),
     
     @ColumnInfo(name = "updated_at")
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
+
+    @ColumnInfo(name = "creator_id")
+    val creatorId: String? // 对内置内容为null，对UGC为用户ID
 )
