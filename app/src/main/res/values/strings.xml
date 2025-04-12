@@ -20,4 +20,14 @@
     <string name="start_practice">Start Practice</string>
     <string name="recent_practice">Recent Practice</string>
     <string name="recent">Recent</string>
+
+    <!-- feedback default message -->
+    <string name="feedback_excellent">Excellent! Keep up the good work.</string>
+    <string name="feedback_good">Good job! Some minor areas to improve.</string>
+    <string name="feedback_not_bad">Not bad. Focus on improving pronunciation.</string>
+    <string name="feedback_needs_improvement">Needs improvement. Keep practicing.</string>
+    <string name="feedback_more_practice">More practice needed. Don\'t give up!</string>
+
+
+
 </resources>

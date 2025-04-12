@@ -21,4 +21,11 @@
     <string name="start_practice">开始练习</string>
     <string name="recent_practice">最近练习</string>
     <string name="recent">最近</string>
+
+    <!-- feedback default message -->
+    <string name="feedback_excellent">太棒了！请继续保持。</string>
+    <string name="feedback_good">做得不错！有些小地方可以改进。</string>
+    <string name="feedback_not_bad">还不错。重点提高发音。</string>
+    <string name="feedback_needs_improvement">需要提高。继续练习。</string>
+    <string name="feedback_more_practice">需要更多练习。不要放弃！</string>
 </resources>

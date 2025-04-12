@@ -10,6 +10,7 @@ import com.example.speechmaster.data.model.UserPractice
 import com.example.speechmaster.data.model.UserProgress
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -17,7 +18,6 @@ import kotlinx.serialization.json.JsonPrimitive
 // Json解析器
 private val json = Json { ignoreUnknownKeys = true }
 private val stringListSerializer = ListSerializer(String.serializer())
-private val mapSerializer = JsonObject.serializer()
 
 // User 映射扩展函数
 fun UserEntity.toModel(): User = User(
@@ -119,7 +119,7 @@ fun PracticeFeedbackEntity.toModel(): PracticeFeedback = PracticeFeedback(
     overallScore = overallScore,
     fluencyScore = fluencyScore,
     pronunciationScore = pronunciationScore,
-    feedback = json.decodeFromString<Map<String, Any>>(feedback),
+    feedback = json.decodeFromString<Map<String, String>>(feedback),
     createdAt = createdAt
 )
 
@@ -129,7 +129,7 @@ fun PracticeFeedback.toEntity(): PracticeFeedbackEntity = PracticeFeedbackEntity
     overallScore = overallScore,
     fluencyScore = fluencyScore,
     pronunciationScore = pronunciationScore,
-    feedback = json.encodeToString(mapSerializer, feedback.toJsonObject()),
+    feedback = json.encodeToString(feedback),
     createdAt = createdAt
 )
 
