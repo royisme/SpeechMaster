@@ -91,44 +91,13 @@ interface ICourseRepository {
 
     /**
      * 获取课程及其卡片
+     * 协作方法：使用CardRepository获取卡片数据
      */
     fun getCourseWithCards(courseId: String): Flow<Pair<Course, List<Card>>?>
 
     /**
-     * 获取课程的所有卡片
+     * 检查用户是否为课程创建者
+     * 协作方法：提供给CardRepository使用
      */
-    fun getCardsByCourse(courseId: String): Flow<List<Card>>
-
-    /**
-     * 获取单个卡片
-     */
-    fun getCardById(cardId: String): Flow<Card?>
-
-    /**
-     * 添加卡片到课程
-     */
-    suspend fun addCardToCourse(
-        userId: String,
-        courseId: String,
-        textContent: String
-    ): Result<Card>
-
-    /**
-     * 更新卡片内容
-     */
-    suspend fun updateCard(
-        userId: String,
-        cardId: String,
-        textContent: String
-    ): Result<Card>
-
-    /**
-     * 删除卡片
-     */
-    suspend fun deleteCard(userId: String, cardId: String): Result<Boolean>
-
-    /**
-     * 更新卡片顺序
-     */
-    suspend fun updateCardOrder(userId: String, cardId: String, newOrder: Int): Result<Boolean>
+    suspend fun isUserCourseCreator(courseId: String, userId: String): Boolean
 }

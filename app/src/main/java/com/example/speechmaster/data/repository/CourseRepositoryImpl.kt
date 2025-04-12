@@ -14,13 +14,14 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
+
 @Singleton
 class CourseRepositoryImpl @Inject constructor(
-    private val database: AppDatabase
+    database: AppDatabase,
+    private val cardRepository: ICardRepository
 ) : ICourseRepository {
 
     private val courseDao = database.courseDao()
-    private val cardDao = database.cardDao()
 
     override fun getAllCourses(): Flow<List<Course>> {
         return courseDao.getAllCourses().map { courses ->
@@ -141,8 +142,7 @@ class CourseRepositoryImpl @Inject constructor(
     ): Result<Course> {
         return try {
             // 验证用户是否为课程创建者
-            val isCreator = courseDao.isUserTheCourseCreator(courseId, userId)
-            if (isCreator <= 0) {
+            if (!isUserCourseCreator(courseId, userId)) {
                 return Result.failure(Exception("不是课程创建者，无法编辑"))
             }
 
@@ -181,121 +181,20 @@ class CourseRepositoryImpl @Inject constructor(
     }
 
     override fun getCourseWithCards(courseId: String): Flow<Pair<Course, List<Card>>?> {
-        return courseDao.getCourseWithCards(courseId).map { courseWithCards ->
-            courseWithCards?.let {
-                Pair(
-                    it.course.toModel(),
-                    it.cards.map { card -> card.toModel() }
-                )
+        // 通过组合查询获取课程和卡片
+        val courseFlow = getCourseById(courseId)
+        val cardsFlow = cardRepository.getCardsByCourse(courseId)
+
+        // 使用Flow的组合功能合并结果
+        return courseFlow.map { course ->
+            course?.let { it ->
+                val cards = cardsFlow.map { it }.firstOrNull() ?: emptyList()
+                Pair(it, cards)
             }
         }
     }
 
-    override fun getCardsByCourse(courseId: String): Flow<List<Card>> {
-        return cardDao.getCardsByCourse(courseId).map { cards ->
-            cards.map { it.toModel() }
-        }
-    }
-
-    override fun getCardById(cardId: String): Flow<Card?> {
-        return cardDao.getCardById(cardId).map { entity ->
-            entity?.toModel()
-        }
-    }
-
-    override suspend fun addCardToCourse(
-        userId: String,
-        courseId: String,
-        textContent: String
-    ): Result<Card> {
-        return try {
-            // 验证用户是否为课程创建者
-            val isCreator = courseDao.isUserTheCourseCreator(courseId, userId)
-            if (isCreator <= 0) {
-                return Result.failure(Exception("不是课程创建者，无法添加卡片"))
-            }
-
-            // 获取下一个序号
-            val sequenceOrder = cardDao.getNextSequenceOrder(courseId)
-
-            val cardId = UUID.randomUUID().toString()
-            val card = Card(
-                id = cardId,
-                courseId = courseId,
-                textContent = textContent,
-                sequenceOrder = sequenceOrder
-            )
-
-            cardDao.insertCard(card.toEntity())
-            Result.success(card)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun updateCard(
-        userId: String,
-        cardId: String,
-        textContent: String
-    ): Result<Card> {
-        return try {
-            // 获取卡片
-            val card = cardDao.getCardById(cardId).firstOrNull()
-                ?: return Result.failure(Exception("卡片不存在"))
-
-            // 验证用户是否为课程创建者
-            val isCreator = courseDao.isUserTheCourseCreator(card.courseId, userId)
-            if (isCreator <= 0) {
-                return Result.failure(Exception("不是课程创建者，无法编辑卡片"))
-            }
-
-            // 更新卡片
-            val updatedCard = card.copy(textContent = textContent)
-            cardDao.updateCard(updatedCard)
-
-            Result.success(updatedCard.toModel())
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun deleteCard(userId: String, cardId: String): Result<Boolean> {
-        return try {
-            // 获取卡片
-            val card = cardDao.getCardById(cardId).firstOrNull()
-                ?: return Result.failure(Exception("卡片不存在"))
-
-            // 验证用户是否为课程创建者
-            val isCreator = courseDao.isUserTheCourseCreator(card.courseId, userId)
-            if (isCreator <= 0) {
-                return Result.failure(Exception("不是课程创建者，无法删除卡片"))
-            }
-
-            // 删除卡片
-            cardDao.deleteCard(cardId)
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun updateCardOrder(userId: String, cardId: String, newOrder: Int): Result<Boolean> {
-        return try {
-            // 获取卡片
-            val card = cardDao.getCardById(cardId).firstOrNull()
-                ?: return Result.failure(Exception("卡片不存在"))
-
-            // 验证用户是否为课程创建者
-            val isCreator = courseDao.isUserTheCourseCreator(card.courseId, userId)
-            if (isCreator <= 0) {
-                return Result.failure(Exception("不是课程创建者，无法调整卡片顺序"))
-            }
-
-            // 更新卡片顺序
-            cardDao.updateCardOrder(cardId, newOrder)
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    override suspend fun isUserCourseCreator(courseId: String, userId: String): Boolean {
+        return courseDao.isUserTheCourseCreator(courseId, userId) > 0
     }
 }
