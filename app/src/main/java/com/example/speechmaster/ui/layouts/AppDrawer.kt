@@ -14,7 +14,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.speechmaster.AppRouteList
 import com.example.speechmaster.R
-import com.example.speechmaster.ui.theme.onPrimaryContainerLight
 
 @Composable
 fun AppDrawer(
@@ -29,13 +28,14 @@ fun AppDrawer(
         modifier = Modifier
             .width(drawerWidth)
             .fillMaxHeight(),
-        color = onPrimaryContainerLight,  // 根据主题的表面颜色
+        color = MaterialTheme.colorScheme.secondaryContainer,  // 根据主题的表面颜色
         tonalElevation = 1.dp  // 添加轻微阴影效果区分层次
     ) {
         Column(modifier = Modifier.fillMaxHeight()) {
             Text(
-                text = stringResource(id = R.string.menu),
-                style = MaterialTheme.typography.headlineMedium,
+                text = stringResource(id = R.string.app_name),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.padding(16.dp)
             )
 

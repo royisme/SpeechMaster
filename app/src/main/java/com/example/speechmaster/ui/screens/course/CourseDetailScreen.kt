@@ -1,6 +1,8 @@
 package com.example.speechmaster.ui.screens.course
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -130,7 +132,11 @@ internal fun CourseDetailContent(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        // *** 【修改点 1】: 添加垂直间距，替代 Divider ***
+        verticalArrangement = Arrangement.spacedBy(12.dp), // 卡片间的垂直间距
+        // *** 【修改点 2】: 添加水平和垂直内边距 ***
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp) // 列表的左右边距和上下边距
     ) {
         // 课程头部
         item {
@@ -142,7 +148,8 @@ internal fun CourseDetailContent(
             Text(
                 text = stringResource(R.string.practice_cards),
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)
+                // *** 【修改点 3】: 移除 Modifier 上的水平 padding (因为 LazyColumn 已有) ***
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp) // 只保留上下边距
             )
         }
 
@@ -152,7 +159,6 @@ internal fun CourseDetailContent(
                 card = card,
                 onClick = { onCardClick(card.id) }
             )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
         }
 
         // 底部间距
