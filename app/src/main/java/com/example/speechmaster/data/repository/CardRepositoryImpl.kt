@@ -4,6 +4,7 @@ import com.example.speechmaster.data.local.AppDatabase
 import com.example.speechmaster.data.mapper.toEntity
 import com.example.speechmaster.data.mapper.toModel
 import com.example.speechmaster.data.model.Card
+import com.example.speechmaster.domain.repository.ICardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map

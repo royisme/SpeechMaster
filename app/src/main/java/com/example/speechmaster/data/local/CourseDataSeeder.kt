@@ -10,7 +10,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
+
 import kotlinx.serialization.json.Json
 import java.io.IOException
 import javax.inject.Provider
@@ -54,7 +56,9 @@ class CourseDataSeeder (
                     description = courseData.description,
                     difficulty = courseData.difficulty,
                     category = courseData.category,
-                    tags = if (courseData.tags.isNotEmpty()) courseData.tags.toString() else null,
+                    tags = if (courseData.tags.isNotEmpty())
+                        Json.encodeToString(ListSerializer(String.serializer()), courseData.tags)
+                    else null,
                     source = courseData.source,
                     creatorId = null, // 内置课程的创建者ID为null
                     createdAt = System.currentTimeMillis(),
