@@ -3,6 +3,7 @@ package com.example.speechmaster.data.repository
 import com.example.speechmaster.data.model.PracticeSession
 import com.example.speechmaster.data.model.RecentPractice
 import com.example.speechmaster.data.model.UserProgress
+import com.example.speechmaster.domain.repository.IPracticeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject

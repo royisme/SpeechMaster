@@ -7,6 +7,17 @@
     <string name="practice_history">Practice History</string>
     <string name="settings">Settings</string>
     <string name="about">About App</string>
+    <!-- General -->
+    <string name="search">Search</string>
+    <string name="close">Close</string>
+    <string name="retry">Retry</string>
+    <string name="navigate_back">Go Back</string>
+    <string name="completed">Completed</string>
+
+    <!--Error message -->
+    <string name="error_invalid_course_or_not_logged_in">Invalid course ID or user not logged in</string>
+    <string name="error_course_list_not_exist">Course does not exist</string>
+    <string name="error_loading_course_detail_failed">Failed to load course details</string>
 
     <!-- Home Screen -->
     <string name="daily_practice">Daily Practice</string>
@@ -17,7 +28,6 @@
     <string name="total_practice">Total Practice</string>
     <string name="longest_streak">Longest Streak</string>
     <string name="job_interview">Job Interview</string>
-    <string name="start_practice">Start Practice</string>
     <string name="recent_practice">Recent Practice</string>
     <string name="recent">Recent</string>
 
@@ -27,6 +37,34 @@
     <string name="feedback_not_bad">Not bad. Focus on improving pronunciation.</string>
     <string name="feedback_needs_improvement">Needs improvement. Keep practicing.</string>
     <string name="feedback_more_practice">More practice needed. Don\'t give up!</string>
+
+    <!-- Course Library -->
+    <string name="search_courses">Search courses…</string>
+    <string name="source">Source</string>
+    <string name="difficulty">Difficulty</string>
+    <string name="category">Category</string>
+    <string name="all">All</string>
+    <string name="built_in">Built-in</string>
+    <string name="user_created">User Created</string>
+    <string name="user">User</string>
+    <string name="beginner">Beginner</string>
+    <string name="intermediate">Intermediate</string>
+    <string name="advanced">Advanced</string>
+    <string name="business">Business</string>
+    <string name="daily">Daily</string>
+    <string name="academic">Academic</string>
+    <string name="no_matching_courses">No matching courses</string>
+    <string name="try_adjusting_filters">Try adjusting filters or create a new course</string>
+    <string name="create_course">Create Course</string>
+    <string name="loading_failed">Loading Failed</string>
+    <string name="start_practice">Start Practice</string>
+
+    <!-- Course Detail -->
+    <string name="course_detail">Course Details</string>
+    <string name="practice_cards">Practice Cards</string>
+    <string name="add_to_learning">Add to Learning List</string>
+    <string name="remove_from_learning">Remove from Learning List</string>
+    <string name="error_loading_course">Failed to load course</string>
 
 
 

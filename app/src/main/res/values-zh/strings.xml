@@ -20,12 +20,49 @@
     <string name="job_interview">求职面试</string>
     <string name="start_practice">开始练习</string>
     <string name="recent_practice">最近练习</string>
-    <string name="recent">最近</string>
 
+    <!-- General -->
+    <string name="recent">最近</string>
+    <string name="search">搜索</string>
+    <string name="close">关闭</string>
+    <string name="retry">重试</string>
+    <string name="navigate_back">返回</string>
+    <string name="completed">已完成</string>
     <!-- feedback default message -->
     <string name="feedback_excellent">太棒了！请继续保持。</string>
     <string name="feedback_good">做得不错！有些小地方可以改进。</string>
     <string name="feedback_not_bad">还不错。重点提高发音。</string>
     <string name="feedback_needs_improvement">需要提高。继续练习。</string>
     <string name="feedback_more_practice">需要更多练习。不要放弃！</string>
+    <!-- Course Library -->
+    <string name="search_courses">探索课程…</string>
+    <string name="source">课程来源</string>
+    <string name="difficulty">挑战难度</string>
+    <string name="category">课程类别</string>
+    <string name="all">全部课程</string>
+    <string name="built_in">官方精选</string>
+    <string name="user_created">用户分享</string>
+    <string name="user">贡献者</string>
+    <string name="beginner">入门级</string>
+    <string name="intermediate">进阶级</string>
+    <string name="advanced">专家级</string>
+    <string name="business">职场商务</string>
+    <string name="daily">生活口语</string>
+    <string name="academic">学术英语</string>
+    <string name="no_matching_courses">暂无匹配课程</string>
+    <string name="try_adjusting_filters">试试调整筛选条件，或者自己创建新课程吧！</string>
+    <string name="create_course">创建新课程</string>
+    <string name="loading_failed">加载课程失败</string>
+
+    <!--course detail -->
+    <string name="course_detail">课程详情</string>
+    <string name="practice_cards">练习卡片</string>
+    <string name="add_to_learning">添加到学习列表</string>
+    <string name="remove_from_learning">从学习列表移除</string>
+    <string name="error_loading_course">加载课程失败</string>
+
+    <!--Error message -->
+    <string name="error_invalid_course_or_not_logged_in">无效的课程ID或用户未登录</string>
+    <string name="error_course_list_not_exist">课程不存在</string>
+    <string name="error_loading_course_detail_failed">加载课程详情失败</string>
 </resources>

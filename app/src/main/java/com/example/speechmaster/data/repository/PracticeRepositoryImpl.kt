@@ -7,7 +7,7 @@ import com.example.speechmaster.data.model.PracticeSession
 import com.example.speechmaster.data.model.RecentPractice
 import com.example.speechmaster.data.model.UserPractice
 import com.example.speechmaster.data.model.UserProgress
-import com.example.speechmaster.data.model.PracticeFeedback
+import com.example.speechmaster.domain.repository.IPracticeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.UUID

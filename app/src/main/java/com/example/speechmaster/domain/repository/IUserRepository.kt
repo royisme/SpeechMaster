@@ -1,4 +1,4 @@
-package com.example.speechmaster.data.repository
+package com.example.speechmaster.domain.repository
 
 import com.example.speechmaster.data.model.User
 import kotlinx.coroutines.flow.Flow
