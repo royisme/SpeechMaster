@@ -50,7 +50,14 @@ fun CourseEntity.toModel(): Course = Course(
     description = description,
     difficulty = difficulty,
     category = category,
-    tags = tags?.let { json.decodeFromString<List<String>>(it) } ?: emptyList(),
+    tags = try {
+        // 尝试JSON解析
+        tags?.let { json.decodeFromString<List<String>>(it) }
+    } catch (e: Exception) {
+        // 兼容旧格式 [business, presentation, professional]
+        tags?.trim('[', ']')?.split(',')?.map { it.trim() }
+    } ?: emptyList()
+    ,
     source = source,
     creatorId = creatorId,
     createdAt = createdAt,
@@ -155,6 +162,8 @@ fun UserProgress.toEntity(): UserProgressEntity = UserProgressEntity(
     longestStreakDays = longestStreakDays,
     lastPracticeDate = lastPracticeDate
 )
+
+
 
 private fun Map<String, Any>.toJsonObject(): JsonObject {
     val jsonElements = this.mapValues { (_, value) ->
