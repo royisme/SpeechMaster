@@ -59,9 +59,11 @@ fun AppDrawer(
             NavigationDrawerItem(
                 icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
                 label = { Text(stringResource(id = R.string.course_list)) },
-                selected = false,
+                selected = navController.currentDestination?.route == AppRouteList.COURSES_ROUTE,
                 onClick = {
-                    // 暂未实现
+                    navController.navigate(AppRouteList.COURSES_ROUTE) {
+                        popUpTo(AppRouteList.HOME_ROUTE)
+                    }
                     closeDrawer()
                 },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -71,7 +73,7 @@ fun AppDrawer(
             NavigationDrawerItem(
                 icon = { Icon(Icons.Default.History, contentDescription = null) },
                 label = { Text(stringResource(id = R.string.practice_history)) },
-                selected = false,
+                selected = navController.currentDestination?.route == AppRouteList.HISTORY_ROUTE,
                 onClick = {
                     // 暂未实现
                     closeDrawer()
@@ -83,7 +85,7 @@ fun AppDrawer(
             NavigationDrawerItem(
                 icon = { Icon(Icons.Default.Settings, contentDescription = null) },
                 label = { Text(stringResource(id = R.string.settings)) },
-                selected = false,
+                selected = navController.currentDestination?.route == AppRouteList.SETTINGS_ROUTE,
                 onClick = {
                     // 暂未实现
                     closeDrawer()
@@ -95,7 +97,7 @@ fun AppDrawer(
             NavigationDrawerItem(
                 icon = { Icon(Icons.Default.Info, contentDescription = null) },
                 label = { Text(stringResource(id = R.string.about)) },
-                selected = false,
+                selected = navController.currentDestination?.route == AppRouteList.ABOUT_ROUTE,
                 onClick = {
                     // 暂未实现
                     closeDrawer()
