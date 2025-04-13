@@ -1,7 +1,7 @@
 package com.example.speechmaster.domain.session
 
 import com.example.speechmaster.data.model.User
-import com.example.speechmaster.data.repository.IUserRepository
+import com.example.speechmaster.domain.repository.IUserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
