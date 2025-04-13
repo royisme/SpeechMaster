@@ -7,6 +7,8 @@ import com.example.speechmaster.data.mapper.toModel
 import com.example.speechmaster.data.model.Card
 import com.example.speechmaster.data.model.Course
 import com.example.speechmaster.data.model.PracticeSession
+import com.example.speechmaster.domain.repository.ICardRepository
+import com.example.speechmaster.domain.repository.ICourseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
