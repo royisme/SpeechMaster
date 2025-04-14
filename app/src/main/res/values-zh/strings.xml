@@ -29,6 +29,14 @@
     <string name="retry">重试</string>
     <string name="navigate_back">返回</string>
     <string name="completed">已完成</string>
+
+    <string name="permission_required">需要权限</string>
+    <string name="grant_permission">授予权限</string>
+    <string name="deny">拒绝</string>
+    <string name="go_to_settings">前往设置</string>
+    <string name="cancel">取消</string>
+    <string name="permission_denied">录音权限未被授予</string>
+    <string name="permission_denied_message">请授予录音权限</string>
     <!-- feedback default message -->
     <string name="feedback_excellent">太棒了！请继续保持。</string>
     <string name="feedback_good">做得不错！有些小地方可以改进。</string>
@@ -68,8 +76,26 @@
     <string name="error_loading_course_detail_failed">加载课程详情失败</string>
     <string name="error_loading_practice_card_failed">加载练习卡片失败</string>
     <string name="error_loading_default">加载资源失败</string>
-    <string name="error_unknown">未知错误</string>"
-
+    <string name="error_unknown">未知错误</string>
+    <string name="error_record_permission_not_granted">录音权限未被授予</string>
+    <string name="error_invalid_audio_parameters">无效的音频参数</string>
+    <string name="error_audiorecord_initialization_failed">AudioRecord 初始化失败</string>
+    <string name="error_during_recording">录音过程中出现错误</string>
+    <string name="error_closing_output_stream">关闭输出流失败</string>
+    <string name="error_recording_file_not_found_or_empty">录音文件未找到或为空</string>
+    <string name="error_failed_to_stop_recording">停止录音失败</string>
+    <string name="error_stopping_audiorecord">停止 AudioRecord 失败</string>
+    <string name="error_failed_to_clean_resources">清理资源失败</string>
+    <!-- Practice Screen -->
     <string name="practice_start_recording">开始录音</string>
+    <string name="practice_stop_recording">停止录音</string>
+    <string name="practice_tap_to_start_recording">点击开始录音</string>
+    <string name="practice_recording_in_progress">录音中</string>
+    <string name="practice_play_recording">播放录音</string>
+    <string name="practice_pause_playback">暂停播放</string>
+    <string name="practice_record_again">重新录音</string>
+    <string name="practice_submit_for_analysis">提交分析</string>
+    <string name="record_permission_rationale">为了记录您的语音，我们需要访问您的麦克风权限。</string>
+    <string name="text_to_speech">AI朗读</string>
 
 </resources>

@@ -14,7 +14,13 @@
     <string name="navigate_back">Go Back</string>
     <string name="completed">Completed</string>
     <string name="practice">Practice</string>
-
+    <string name="permission_required">permission required</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="deny">Deny</string>
+    <string name="go_to_settings">Go to Settings</string>
+    <string name="cancel">Cancel</string>
+    <string name="permission_denied">record audio permission not granted</string>
+    <string name="permission_denied_message">please grant permission to record audio</string>
     <!--Error message -->
     <string name="error_invalid_course_or_not_logged_in">Invalid course ID or user not logged in</string>
     <string name="error_course_list_not_exist">Course does not exist</string>
@@ -22,6 +28,15 @@
     <string name="error_loading_practice_card_failed">Failed to load practice cards</string>
     <string name="error_loading_default">Failed to load resources</string>
     <string name="error_unknown">Unknown error</string>"
+    <string name="error_record_permission_not_granted">record audio permission not granted</string>
+    <string name="error_invalid_audio_parameters">Invalid audio parameters</string>
+    <string name="error_audiorecord_initialization_failed">AudioRecord initialization failed</string>
+    <string name="error_during_recording">Failed to stop recording</string>
+    <string name="error_closing_output_stream">Failed to close output stream</string>
+    <string name="error_recording_file_not_found_or_empty">Recording file not found or empty</string>
+    <string name="error_failed_to_stop_recording">Failed to stop recording</string>
+    <string name="error_stopping_audiorecord">Failed to stop AudioRecord</string>
+    <string name="error_failed_to_clean_resources">Failed to clean resources</string>
     <!-- Home Screen -->
     <string name="daily_practice">Daily Practice</string>
     <string name="your_progress">Your Progress</string>
@@ -71,5 +86,13 @@
 
     <!-- 练习界面 -->
     <string name="practice_start_recording">start recording</string>
-
+    <string name="practice_stop_recording">stop recording</string>
+    <string name="practice_tap_to_start_recording">tap to start recording</string>
+    <string name="practice_recording_in_progress">recording in progress</string>
+    <string name="practice_play_recording">play recording</string>
+    <string name="practice_pause_playback">pause playback</string>
+    <string name="practice_record_again">record again</string>
+    <string name="practice_submit_for_analysis">submit for analysis</string>
+    <string name="record_permission_rationale">record audio permission required</string>
+    <string name="text_to_speech">text to speech</string>
 </resources>
