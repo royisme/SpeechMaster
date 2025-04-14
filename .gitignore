@@ -54,3 +54,4 @@ memory-bank/
 proguard/
 proguard-project.txt
 .cursorrules
+.cursor/*
