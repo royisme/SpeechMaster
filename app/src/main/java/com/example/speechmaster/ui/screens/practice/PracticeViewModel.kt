@@ -128,23 +128,19 @@ class PracticeViewModel @Inject constructor(
     /**
      * 检查是否有录音权限
      *
+     * 此方法仅用于UI层决定是否显示权限请求
+     *
      * @return 是否有录音权限
      */
-//    fun hasRecordAudioPermission(): Boolean {
-//        return audioRecorderWrapper.hasRecordAudioPermission()
-//    }
     fun hasRecordAudioPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
-            android.Manifest.permission.RECORD_AUDIO
-        ) == PackageManager.PERMISSION_GRANTED
+        return audioRecorderWrapper.hasRecordAudioPermission()
     }
+
     /**
      * 开始录音
      *
      * 创建临时文件并启动录音过程
      */
-
     fun startRecording() {
         viewModelScope.launch {
             try {
@@ -153,9 +149,10 @@ class PracticeViewModel @Inject constructor(
                     return@launch
                 }
 
-// 显式检查权限 - 解决安全问题
+                // 检查录音权限
                 if (!hasRecordAudioPermission()) {
                     Log.e(tag, "录音权限未授予")
+                    // 这里可以触发UI显示权限请求
                     return@launch
                 }
 
@@ -165,32 +162,23 @@ class PracticeViewModel @Inject constructor(
                 // 重置计时器
                 _recordingDurationMillis.value = 0L
 
-                try {
-                    // 开始录音 - 使用try-catch块明确处理可能的SecurityException
-                    val result = audioRecorderWrapper.startRecording(tempAudioFile!!)
+                // 开始录音 - 使用AudioRecorderWrapper的错误处理
+                val result = audioRecorderWrapper.startRecording(tempAudioFile!!)
 
-                    if (result.isSuccess) {
-                        // 更新状态
-                        _recordingState.value = RecordingState.RECORDING
+                if (result.isSuccess) {
+                    // 更新状态
+                    _recordingState.value = RecordingState.RECORDING
 
-                        // 启动计时器
-                        startTimer()
+                    // 启动计时器
+                    startTimer()
 
-                        Log.d(tag, "开始录音成功")
-                    } else {
-                        // 处理错误
-                        val error = result.exceptionOrNull()?.message ?: "无法开始录音"
-                        Log.e(tag, "开始录音失败: $error")
+                    Log.d(tag, "开始录音成功")
+                } else {
+                    // 处理错误
+                    val error = result.exceptionOrNull()?.message ?: "无法开始录音"
+                    Log.e(tag, "开始录音失败: $error")
 
-                        // 清理资源
-                        resetRecording()
-                    }
-                } catch (e: SecurityException) {
-                    // 明确处理权限异常
-                    Log.e(tag, "录音权限被拒绝", e)
-                    resetRecording()
-                } catch (e: Exception) {
-                    Log.e(tag, "开始录音时发生异常", e)
+                    // 清理资源
                     resetRecording()
                 }
             } catch (e: Exception) {
@@ -214,44 +202,34 @@ class PracticeViewModel @Inject constructor(
                     return@launch
                 }
 
-                try {
-                    // 停止录音 - 使用try-catch块明确处理可能的SecurityException
-                    val result = audioRecorderWrapper.stopRecording()
+                // 停止录音 - 使用AudioRecorderWrapper的错误处理
+                val result = audioRecorderWrapper.stopRecording()
 
-                    // 停止计时器
-                    stopTimer()
+                // 停止计时器
+                stopTimer()
 
-                    if (result.isSuccess) {
-                        // 获取录音文件
-                        val file = result.getOrNull()
+                if (result.isSuccess) {
+                    // 获取录音文件
+                    val file = result.getOrNull()
 
-                        if (file != null && file.exists() && file.length() > 0) {
-                            // 更新状态
-                            _recordedAudioUri.value = Uri.fromFile(file)
-                            _recordingState.value = RecordingState.RECORDED
+                    if (file != null && file.exists() && file.length() > 0) {
+                        // 更新状态
+                        _recordedAudioUri.value = Uri.fromFile(file)
+                        _recordingState.value = RecordingState.RECORDED
 
-                            Log.d(tag, "停止录音成功: ${file.absolutePath}")
-                        } else {
-                            Log.e(tag, "录音文件无效")
-                            resetRecording()
-                        }
+                        Log.d(tag, "停止录音成功: ${file.absolutePath}")
                     } else {
-                        // 处理错误
-                        val error = result.exceptionOrNull()?.message ?: "无法停止录音"
-                        Log.e(tag, "停止录音失败: $error")
+                        Log.e(tag, "录音文件无效")
                         resetRecording()
                     }
-                } catch (e: SecurityException) {
-                    // 明确处理权限异常
-                    Log.e(tag, "录音权限被拒绝", e)
-                    resetRecording()
-                } catch (e: Exception) {
-                    Log.e(tag, "停止录音时发生异常", e)
+                } else {
+                    // 处理错误
+                    val error = result.exceptionOrNull()?.message ?: "无法停止录音"
+                    Log.e(tag, "停止录音失败: $error")
                     resetRecording()
                 }
             } catch (e: Exception) {
                 Log.e(tag, "停止录音异常", e)
-                // 清理资源
                 resetRecording()
             }
         }

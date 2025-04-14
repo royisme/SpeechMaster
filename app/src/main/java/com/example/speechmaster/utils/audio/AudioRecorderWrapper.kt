@@ -53,6 +53,8 @@ class AudioRecorderWrapper @Inject constructor(
     /**
      * 检查是否具有录音权限
      *
+     * 此方法仅用于UI层决定是否显示权限请求
+     *
      * @return 如果应用具有录音权限返回true，否则返回false
      */
     fun hasRecordAudioPermission(): Boolean {
@@ -66,18 +68,18 @@ class AudioRecorderWrapper @Inject constructor(
      * 开始录音
      *
      * 使用协程在IO线程中异步处理音频数据
+     * 此方法需要RECORD_AUDIO权限，调用前应确保已获取权限
      *
      * @param outputFile 要写入录音数据的文件
      * @return 表示操作结果的Result对象
      */
-    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     fun startRecording(outputFile: File): Result<Unit> {
+        // 显式检查权限，避免SecurityException
+        if (!hasRecordAudioPermission()) {
+            return Result.failure(Exception(context.getString(R.string.error_record_permission_not_granted)))
+        }
+        
         return try {
-            // 检查权限
-            if (!hasRecordAudioPermission()) {
-                return Result.failure(Exception(context.getString(R.string.error_record_permission_not_granted)))
-            }
-
             // 保存输出文件引用
             this.outputFile = outputFile
 
@@ -142,9 +144,14 @@ class AudioRecorderWrapper @Inject constructor(
             }
 
             Result.success(Unit)
+        } catch (e: SecurityException) {
+            // 明确处理权限异常
+            Log.e(TAG, "录音权限被拒绝", e)
+            cleanup()
+            Result.failure(Exception(context.getString(R.string.error_record_permission_not_granted)))
         } catch (e: Exception) {
             Log.e(TAG, "启动录音失败", e)
-           // 发生异常时清理资源
+            // 发生异常时清理资源
             cleanup()
             Result.failure(e)
         }
