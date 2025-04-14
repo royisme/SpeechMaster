@@ -75,8 +75,9 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive.layout)
     implementation(libs.androidx.compose.material3.adaptive.navigation)
-
     implementation(libs.androidx.compose.material3.adaptive.navigationSuite)
+
+    implementation(libs.accompanist.permissions)
 
     implementation(libs.androidx.lifecycle.viewModelCompose)
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -88,6 +89,7 @@ dependencies {
 
     testImplementation(libs.junit) // 添加这行
     testImplementation(libs.kotlinx.coroutines.test) // 添加这行
+
 
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.core)
