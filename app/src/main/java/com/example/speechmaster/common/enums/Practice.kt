@@ -1,4 +1,4 @@
-package com.example.speechmaster.domain.model
+package com.example.speechmaster.common.enums
 
 /**
  * 录音状态枚举

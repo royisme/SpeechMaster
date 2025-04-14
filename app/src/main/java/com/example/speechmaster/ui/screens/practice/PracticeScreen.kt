@@ -8,13 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,29 +23,31 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import android.Manifest
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.runtime.setValue
 import com.example.speechmaster.R
-import com.example.speechmaster.domain.model.RecordingState
+import com.example.speechmaster.common.enums.RecordingState
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
+import com.example.speechmaster.ui.components.practice.PracticeRecordComponent
 import com.example.speechmaster.ui.components.practice.ReadingPracticeComponent
-import com.example.speechmaster.ui.components.practice.formatDuration
 import com.example.speechmaster.ui.theme.AppTheme
+import com.example.speechmaster.utils.permissions.PermissionRequest
 
 /**
 
 练习界面
 应用的核心练习界面，用户可以在此查看练习文本、录制朗读、播放回放并提交分析。
-这是TASK-UI04的主要组件，但在SUBTASK-UI04.1中，仅实现基础框架和文本展示，
-录音和播放功能将在后续子任务中实现。
 @param navController 导航控制器
 @param viewModel 练习ViewModel
 @param modifier Modifier修饰符
@@ -64,6 +63,27 @@ fun PracticeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val recordingState by viewModel.recordingState.collectAsState()
     val recordingDuration by viewModel.recordingDurationMillis.collectAsState()
+    val isPlayingAudio by viewModel.isPlayingAudio.collectAsState()
+    val isAnalyzing by viewModel.isAnalyzing.collectAsState()
+
+// 权限状态
+    var shouldShowPermissionRequest by remember { mutableStateOf(false) }
+
+    // 权限请求UI
+    if (shouldShowPermissionRequest) {
+        PermissionRequest(
+            permission = Manifest.permission.RECORD_AUDIO,
+            rationale = stringResource(R.string.record_permission_rationale),
+            permissionNotAvailableContent = {
+                // 当权限被拒绝且选择"不再询问"时显示的内容
+                // 此处不阻塞UI，用户仍然可以看到练习内容，但录音功能不可用
+            },
+            content = {
+                // 当权限被授予时的内容（这里不需要内容，因为权限UI和主UI是分开的）
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -83,6 +103,15 @@ fun PracticeScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.navigate_back)
+                        )
+                    }
+                },
+                actions = {
+                    // TTS按钮将在SUBTASK-UI04.3中实现，这里先放置一个占位
+                    IconButton(onClick = { /* TODO: 实现TTS功能 */ }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            contentDescription = stringResource(R.string.text_to_speech)
                         )
                     }
                 }
@@ -109,9 +138,29 @@ fun PracticeScreen(
                     PracticeContent(
                         textContent = state.textContent,
                         recordingState = recordingState,
-                        recordingDuration = recordingDuration,
-                        onRecordClick = { viewModel.startRecording() },
-                        onStopClick = { viewModel.stopRecording() }
+                        recordingDurationMillis = recordingDuration,
+                        isPlayingAudio = isPlayingAudio,
+                        isAnalyzing = isAnalyzing,
+                        onRecordClick = {
+                            // 检查权限
+                            if (viewModel.hasRecordAudioPermission()) {
+                                viewModel.startRecording()
+                            } else {
+                                shouldShowPermissionRequest = true
+                            }
+                        },
+                        onStopClick = {
+                            viewModel.stopRecording()
+                        },
+                        onPlayClick = {
+                            viewModel.togglePlayback()
+                        },
+                        onResetClick = {
+                            viewModel.resetRecording()
+                        },
+                        onSubmitClick = {
+                            viewModel.submitForAnalysis()
+                        }
                     )
                 }
             }
@@ -131,12 +180,17 @@ fun PracticeScreen(
  */
 @Composable
 fun PracticeContent(
+    modifier: Modifier = Modifier,
     textContent: String,
     recordingState: RecordingState,
-    recordingDuration: Long,
+    recordingDurationMillis: Long,
+    isPlayingAudio: Boolean,
+    isAnalyzing: Boolean,
     onRecordClick: () -> Unit,
     onStopClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onPlayClick: () -> Unit,
+    onResetClick: () -> Unit,
+    onSubmitClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -159,51 +213,83 @@ fun PracticeContent(
             // 底部控制区 - 简洁设计
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 时间显示
-            Text(
-                text = formatDuration(recordingDuration),
-                style = MaterialTheme.typography.headlineLarge,
-                textAlign = TextAlign.Center
+
+            // 录音控制组件 - 使用新实现的PracticeRecordComponent
+            PracticeRecordComponent(
+                recordingState = recordingState,
+                durationMillis = recordingDurationMillis,
+                isPlayingAudio = isPlayingAudio,
+                isAnalyzing = isAnalyzing,
+                onRecordClick = onRecordClick,
+                onStopClick = onStopClick,
+                onPlayClick = onPlayClick,
+                onResetClick = onResetClick,
+                onSubmitClick = onSubmitClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 录音按钮 - 圆形大按钮
-            Button(
-                onClick = onRecordClick,
-                shape = CircleShape,
-                modifier = Modifier.size(72.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Mic,
-                    contentDescription = stringResource(R.string.practice_start_recording),
-                    modifier = Modifier.size(36.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
-/**
 
-预览函数
+/**
+ * 预览函数
  */
 @Preview
 @Composable
 fun PracticeScreenPreview() {
     AppTheme {
-// 由于依赖实际ViewModel和导航，预览中仅展示PracticeContent
+        // 由于依赖实际ViewModel和导航，预览中仅展示PracticeContent
         PracticeContent(
             textContent = "I believe my experience and skills make me well-suited for this position. In my previous role, I successfully led a team that increased productivity by twenty percent. I'm particularly interested in your company because of its innovative approach to problem-solving and strong commitment to sustainability.",
             recordingState = RecordingState.IDLE,
-            recordingDuration = 0L,
+            recordingDurationMillis = 0L,
+            isPlayingAudio = false,
+            isAnalyzing = false,
             onRecordClick = {},
-            onStopClick = {}
+            onStopClick = {},
+            onPlayClick = {},
+            onResetClick = {},
+            onSubmitClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PracticeScreenRecordingPreview() {
+    AppTheme {
+        PracticeContent(
+            textContent = "I believe my experience and skills make me well-suited for this position. In my previous role, I successfully led a team that increased productivity by twenty percent. I'm particularly interested in your company because of its innovative approach to problem-solving and strong commitment to sustainability.",
+            recordingState = RecordingState.RECORDING,
+            recordingDurationMillis = 45000L,
+            isPlayingAudio = false,
+            isAnalyzing = false,
+            onRecordClick = {},
+            onStopClick = {},
+            onPlayClick = {},
+            onResetClick = {},
+            onSubmitClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PracticeScreenRecordedPreview() {
+    AppTheme {
+        PracticeContent(
+            textContent = "I believe my experience and skills make me well-suited for this position. In my previous role, I successfully led a team that increased productivity by twenty percent. I'm particularly interested in your company because of its innovative approach to problem-solving and strong commitment to sustainability.",
+            recordingState = RecordingState.RECORDED,
+            recordingDurationMillis = 65000L,
+            isPlayingAudio = false,
+            isAnalyzing = false,
+            onRecordClick = {},
+            onStopClick = {},
+            onPlayClick = {},
+            onResetClick = {},
+            onSubmitClick = {}
         )
     }
 }
