@@ -109,4 +109,5 @@
     <string name="analysis_result_try_again">try again</string>
     <string name="analysis_result_try_again_later">try again later</string>
     <string name="listen_to_reference">AI narration</string>
+    <string name="stop_speech_text">Stop</string>
 </resources>

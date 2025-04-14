@@ -110,4 +110,6 @@
     <string name="analysis_result_try_again">请再试一次</string>
     <string name="analysis_result_try_again_later">稍后再试</string>
     <string name="listen_to_reference">AI示范</string>
+    <string name="stop_speech_text">停止</string>
+
 </resources>

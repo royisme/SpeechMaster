@@ -1,5 +1,6 @@
 package com.example.speechmaster.ui.components.practice
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -75,6 +76,7 @@ fun ReadingTTS(
             if (isPlaying) {
                 textToSpeechWrapper.stop()
             } else {
+                Log.d("ReadingTTS", "TTS text: $textContent")
                 textToSpeechWrapper.speak(textContent)
             }
         },
@@ -104,7 +106,7 @@ fun ReadingTTS(
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
         Text(
             text = if (isPlaying) 
-                stringResource(R.string.practice_stop_recording)
+                stringResource(R.string.stop_speech_text)
             else 
                 stringResource(R.string.listen_to_reference),
             color = LocalContentColor.current.copy(alpha = 0.9f)
