@@ -149,13 +149,6 @@ class PracticeViewModel @Inject constructor(
                     return@launch
                 }
 
-                // 检查录音权限
-                if (!hasRecordAudioPermission()) {
-                    Log.e(tag, "录音权限未授予")
-                    // 这里可以触发UI显示权限请求
-                    return@launch
-                }
-
                 // 创建临时文件
                 tempAudioFile = createTempAudioFile()
 

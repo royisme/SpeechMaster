@@ -76,6 +76,7 @@ class AudioRecorderWrapper @Inject constructor(
     fun startRecording(outputFile: File): Result<Unit> {
         // 显式检查权限，避免SecurityException
         if (!hasRecordAudioPermission()) {
+            Log.e(TAG, "录音权限未授予")
             return Result.failure(Exception(context.getString(R.string.error_record_permission_not_granted)))
         }
         
