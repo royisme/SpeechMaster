@@ -20,6 +20,8 @@ import com.example.speechmaster.AppRouteList.COURSES_ROUTE
 import com.example.speechmaster.AppRouteList.CREATE_COURSE_ROUTE
 import com.example.speechmaster.AppRouteList.HOME_ROUTE
 import com.example.speechmaster.AppRouteList.PRACTICE_ROUTE
+import com.example.speechmaster.ui.screens.practice.PracticeScreen
+
 // 定义应用中的路由
 
 @Composable
@@ -52,7 +54,7 @@ fun AppNav(
         ) {
             // PracticeScreen将在TASK-UI04中实现
             // 目前可以使用临时占位组件
-            // PracticeScreen(navController = navController)
+             PracticeScreen(navController = navController)
         }
 
         // 其他路由...
@@ -61,12 +63,14 @@ fun AppNav(
 
 
 fun NavController.navigateToCourseDetail(courseId: String) {
-    this.navigate("${COURSE_DETAIL_ROUTE}/$courseId")
+    this.navigate("$COURSE_DETAIL_ROUTE/$courseId")
 }
 fun NavController.navigateToCreateCourse() {
     this.navigate(CREATE_COURSE_ROUTE)
 }
-
+fun NavController.navigateToPractice(courseId: String, cardId: String) {
+    this.navigate("$PRACTICE_ROUTE/courseId/$cardId")
+}
 fun NavGraphBuilder.addCourseRoute(navController: NavHostController) {
     composable(
         route = "$COURSE_DETAIL_ROUTE/{courseId}",

@@ -3,6 +3,7 @@ package com.example.speechmaster.ui.screens.course
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.speechmaster.R
 import com.example.speechmaster.common.enums.CourseSource
 import com.example.speechmaster.common.enums.Difficulty
 import com.example.speechmaster.data.model.Course
@@ -72,7 +73,8 @@ class CourseViewModel @Inject constructor(
         } ?: flowOf(emptyList())
     }.catch { e ->
         emit(emptyList())
-        _uiState.value = CourseListUiState.Error(e.message ?: "Unknown error")
+        Log.e("CourseViewModel", "Error loading courses", e)
+        _uiState.value = CourseListUiState.Error(R.string.error_unknown)
     }
 
     // 初始化

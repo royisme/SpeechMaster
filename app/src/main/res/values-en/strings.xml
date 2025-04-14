@@ -14,11 +14,16 @@
     <string name="retry">Retry</string>
     <string name="navigate_back">Go Back</string>
     <string name="completed">Completed</string>
+    <string name="practice">Practice</string>
 
     <!--Error message -->
     <string name="error_invalid_course_or_not_logged_in">Invalid course ID or user not logged in</string>
     <string name="error_course_list_not_exist">Course does not exist</string>
     <string name="error_loading_course_detail_failed">Failed to load course details</string>
+    <string name="error_loading_practice_card_failed">Failed to load practice cards</string>
+    <string name="error_loading_default">Failed to load resources</string>
+    <string name="error_unknown">Unknown error</string>"
+
     <!-- Home Screen -->
     <string name="daily_practice">Daily Practice</string>
     <string name="your_progress">Your Progress</string>
@@ -64,4 +69,5 @@
     <string name="remove_from_learning">Remove from Learning List</string>
     <string name="error_loading_course">Failed to load course</string>
 
+    <string name="practice_start_recording">start recording</string>
 </resources>

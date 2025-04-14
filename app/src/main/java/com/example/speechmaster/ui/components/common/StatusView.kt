@@ -1,4 +1,4 @@
-package com.example.speechmaster.ui.components.course
+package com.example.speechmaster.ui.components.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,55 +22,96 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.speechmaster.R
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.speechmaster.ui.theme.AppTheme
 
+
+/**
+
+加载中视图
+ */
 @Composable
-fun EmptyCoursesView(
-    onCreateCourse: () -> Unit,
+fun LoadingView(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+/**
+
+错误视图
+ */
+@Composable
+fun ErrorView(
+    message: String,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.padding(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            imageVector = Icons.Default.AutoStories,
+            imageVector = Icons.Default.Error,
             contentDescription = null,
-            modifier = Modifier.size(80.dp),
-            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+            modifier = Modifier.size(48.dp),
+            tint = MaterialTheme.colorScheme.error
         )
-
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = stringResource(R.string.no_matching_courses),
-            style = MaterialTheme.typography.titleLarge
+            text = stringResource(R.string.error_loading_course),
+            style = MaterialTheme.typography.titleMedium
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = stringResource(R.string.try_adjusting_filters),
+            text = message,
             style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = onCreateCourse,
+            onClick = onRetry,
             shape = MaterialTheme.shapes.small
         ) {
-            Icon(Icons.Default.Add, contentDescription = null)
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
+
             Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.create_course))
+
+            Text(text = stringResource(R.string.retry))
         }
+    }
+}
+@Preview
+@Composable
+fun LoadingViewPreview() {
+    AppTheme {
+        LoadingView()
+    }
+}
+
+@Preview
+@Composable
+fun ErrorViewPreview() {
+    AppTheme {
+        ErrorView(
+            message = "无法加载课程数据，请检查网络连接后重试。",
+            onRetry = {}
+        )
     }
 }

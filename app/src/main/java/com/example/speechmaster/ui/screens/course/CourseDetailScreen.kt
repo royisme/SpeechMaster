@@ -14,7 +14,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,9 +34,10 @@ import com.example.speechmaster.R
 import com.example.speechmaster.domain.model.CourseCardItem
 import com.example.speechmaster.ui.components.course.CardListItem
 import com.example.speechmaster.ui.components.course.CourseHeader
-import com.example.speechmaster.ui.components.course.ErrorView
-import com.example.speechmaster.ui.components.course.LoadingView
+
 import com.example.speechmaster.domain.model.CourseDetail
+import com.example.speechmaster.ui.components.common.ErrorView
+import com.example.speechmaster.ui.components.common.LoadingView
 import com.example.speechmaster.ui.theme.AppTheme
 
 /**

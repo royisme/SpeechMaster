@@ -20,6 +20,7 @@
     <string name="job_interview">求职面试</string>
     <string name="start_practice">开始练习</string>
     <string name="recent_practice">最近练习</string>
+    <string name="practice">练习</string>
 
     <!-- General -->
     <string name="recent">最近</string>
@@ -65,4 +66,10 @@
     <string name="error_invalid_course_or_not_logged_in">无效的课程ID或用户未登录</string>
     <string name="error_course_list_not_exist">课程不存在</string>
     <string name="error_loading_course_detail_failed">加载课程详情失败</string>
+    <string name="error_loading_practice_card_failed">加载练习卡片失败</string>
+    <string name="error_loading_default">加载资源失败</string>
+    <string name="error_unknown">未知错误</string>"
+
+    <string name="practice_start_recording">开始录音</string>
+
 </resources>

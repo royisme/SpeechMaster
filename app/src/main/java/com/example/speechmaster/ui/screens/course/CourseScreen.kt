@@ -6,14 +6,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.course.CourseList
 import com.example.speechmaster.ui.components.course.CourseSearchBar
 import com.example.speechmaster.ui.components.course.EmptyCoursesView
-import com.example.speechmaster.ui.components.course.ErrorView
 import com.example.speechmaster.ui.components.course.FilterBar
 import com.example.speechmaster.ui.layouts.navigateToCourseDetail
 
@@ -64,7 +65,7 @@ fun CourseScreen(
             }
             is CourseListUiState.Error -> {
                 ErrorView(
-                    message = state.message,
+                    message = stringResource(id = state.messageResId),
                     onRetry = { /* 重试逻辑 */ },
                     modifier = Modifier.fillMaxSize()
                 )

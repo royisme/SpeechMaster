@@ -8,7 +8,13 @@ import com.example.speechmaster.domain.model.CourseItem
 // UI状态
 sealed class CourseListUiState {
     data object Loading : CourseListUiState()
-    data class Error(val message: String) : CourseListUiState()
+    /**
+     * 错误状态
+     */
+    data class Error(
+        @StringRes val messageResId: Int, // 使用 @StringRes 注解标明这是一个字符串资源ID
+        val formatArgs: List<Any>? = null // 可选参数，用于 %s, %d 等
+    ) : CourseListUiState()
     data class Success(val courses: List<CourseItem>) : CourseListUiState()
     data object Empty : CourseListUiState()
 }
