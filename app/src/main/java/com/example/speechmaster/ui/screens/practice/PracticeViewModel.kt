@@ -13,6 +13,7 @@ import com.example.speechmaster.common.enums.RecordingState
 import com.example.speechmaster.domain.repository.ICardRepository
 import com.example.speechmaster.domain.repository.ICourseRepository
 import com.example.speechmaster.utils.audio.AudioRecorderWrapper
+import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
@@ -41,6 +42,7 @@ class PracticeViewModel @Inject constructor(
     private val courseRepository: ICourseRepository,
     private val cardRepository: ICardRepository,
     private val audioRecorderWrapper: AudioRecorderWrapper,
+    val textToSpeechWrapper: TextToSpeechWrapper,
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -378,6 +380,9 @@ class PracticeViewModel @Inject constructor(
 
         // 释放录音资源
         audioRecorderWrapper.release()
+
+        // 释放TTS资源
+        textToSpeechWrapper.release()
 
         Log.d(tag, "ViewModel资源已清理")
     }

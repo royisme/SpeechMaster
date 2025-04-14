@@ -20,6 +20,8 @@
     <string name="deny">Deny</string>
     <string name="go_to_settings">Go to Settings</string>
     <string name="cancel">Cancel</string>
+    <string name="submit">submit</string>
+
     <string name="permission_denied">record audio permission not granted</string>
     <string name="permission_denied_message">please grant permission to record audio</string>
     <!--Error message -->
@@ -93,5 +95,16 @@
     <string name="practice_submit_for_analysis">submit for analysis</string>
     <string name="record_permission_rationale">record audio permission required</string>
     <string name="text_to_speech">text to speech</string>
-
+    <string name="analysis_in_progress">analysis in progress</string>
+    <string name="analysis_complete">analysis complete</string>
+    <string name="analysis_failed">analysis failed</string>
+    <string name="analysis_result">analysis result</string>
+    <string name="analysis_result_excellent">excellent</string>
+    <string name="analysis_result_good">good</string>
+    <string name="analysis_result_not_bad">not bad</string>
+    <string name="analysis_result_needs_improvement">needs improvement</string>
+    <string name="analysis_result_more_practice">more practice needed</string>
+    <string name="analysis_result_try_again">try again</string>
+    <string name="analysis_result_try_again_later">try again later</string>
+    <string name="listen_to_reference">AI narration</string>
 </resources>

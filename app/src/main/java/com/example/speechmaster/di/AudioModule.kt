@@ -2,6 +2,8 @@ package com.example.speechmaster.di
 
 import android.content.Context
 import com.example.speechmaster.utils.audio.AudioRecorderWrapper
+import com.example.speechmaster.utils.audio.TextToSpeechWrapper
+import com.example.speechmaster.utils.audio.TextToSpeechWrapperImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,8 +34,21 @@ object AudioModule {
         return AudioRecorderWrapper(context)
     }
 
+    /**
+     * 提供TextToSpeechWrapper单例
+     *
+     * @param context 应用上下文
+     * @return TextToSpeechWrapper实例
+     */
+    @Provides
+    @Singleton
+    fun provideTextToSpeechWrapper(
+        @ApplicationContext context: Context
+    ): TextToSpeechWrapper {
+        return TextToSpeechWrapperImpl(context)
+    }
+
     // 未来可能添加的其他音频相关依赖项：
     // - AudioPlayerWrapper
-    // - TextToSpeechWrapper
     // - AudioAnalyzer
 }

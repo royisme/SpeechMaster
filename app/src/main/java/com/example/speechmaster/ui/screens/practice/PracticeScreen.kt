@@ -33,7 +33,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import android.Manifest
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.setValue
 import com.example.speechmaster.R
 import com.example.speechmaster.common.enums.RecordingState
@@ -41,7 +47,10 @@ import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
 import com.example.speechmaster.ui.components.practice.PracticeRecordComponent
 import com.example.speechmaster.ui.components.practice.ReadingPracticeComponent
+import com.example.speechmaster.ui.components.practice.ReadingTTS
+import com.example.speechmaster.ui.components.practice.PreviewTextToSpeechWrapper
 import com.example.speechmaster.ui.theme.AppTheme
+import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 import com.example.speechmaster.utils.permissions.PermissionRequest
 
 /**
@@ -91,7 +100,9 @@ fun PracticeScreen(
                     // 动态标题: "课程标题 - 卡片 N"
                     when (val state = uiState) {
                         is PracticeUiState.Success -> {
-                            Text("${state.courseTitle} - 卡片 ${state.cardSequence}")
+                            Text("${state.courseTitle} - 卡片 ${state.cardSequence}",
+                                style = MaterialTheme.typography.titleMedium
+                            )
                         }
                         else -> {
                             Text(stringResource(R.string.practice))
@@ -103,15 +114,6 @@ fun PracticeScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.navigate_back)
-                        )
-                    }
-                },
-                actions = {
-                    // TTS按钮将在SUBTASK-UI04.3中实现，这里先放置一个占位
-                    IconButton(onClick = { /* TODO: 实现TTS功能 */ }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                            contentDescription = stringResource(R.string.text_to_speech)
                         )
                     }
                 }
@@ -141,6 +143,7 @@ fun PracticeScreen(
                         recordingDurationMillis = recordingDuration,
                         isPlayingAudio = isPlayingAudio,
                         isAnalyzing = isAnalyzing,
+                        textToSpeechWrapper = viewModel.textToSpeechWrapper,
                         onRecordClick = {
                             // 检查权限
                             if (viewModel.hasRecordAudioPermission()) {
@@ -186,6 +189,7 @@ fun PracticeContent(
     recordingDurationMillis: Long,
     isPlayingAudio: Boolean,
     isAnalyzing: Boolean,
+    textToSpeechWrapper: TextToSpeechWrapper,
     onRecordClick: () -> Unit,
     onStopClick: () -> Unit,
     onPlayClick: () -> Unit,
@@ -208,11 +212,19 @@ fun PracticeContent(
                 textContent = textContent,
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                onListenClick = {}
             )
             // 底部控制区 - 简洁设计
+            // Listen to Reference Button
+            ReadingTTS(
+                textContent = textContent,
+                textToSpeechWrapper = textToSpeechWrapper,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(46.dp)
+            )
             Spacer(modifier = Modifier.height(8.dp))
-
 
             // 录音控制组件 - 使用新实现的PracticeRecordComponent
             PracticeRecordComponent(
@@ -239,14 +251,16 @@ fun PracticeContent(
 @Preview
 @Composable
 fun PracticeScreenPreview() {
+    val sampleText = "I believe my experience and skills make me well-suited for this position. In my previous role, I successfully led a team that increased productivity by twenty percent. I'm particularly interested in your company because of its innovative approach to problem-solving and strong commitment to sustainability."
     AppTheme {
         // 由于依赖实际ViewModel和导航，预览中仅展示PracticeContent
         PracticeContent(
-            textContent = "I believe my experience and skills make me well-suited for this position. In my previous role, I successfully led a team that increased productivity by twenty percent. I'm particularly interested in your company because of its innovative approach to problem-solving and strong commitment to sustainability.",
+            textContent = sampleText,
             recordingState = RecordingState.IDLE,
             recordingDurationMillis = 0L,
             isPlayingAudio = false,
             isAnalyzing = false,
+            textToSpeechWrapper = PreviewTextToSpeechWrapper(),
             onRecordClick = {},
             onStopClick = {},
             onPlayClick = {},
@@ -266,6 +280,7 @@ fun PracticeScreenRecordingPreview() {
             recordingDurationMillis = 45000L,
             isPlayingAudio = false,
             isAnalyzing = false,
+            textToSpeechWrapper = PreviewTextToSpeechWrapper(),
             onRecordClick = {},
             onStopClick = {},
             onPlayClick = {},
@@ -285,6 +300,7 @@ fun PracticeScreenRecordedPreview() {
             recordingDurationMillis = 65000L,
             isPlayingAudio = false,
             isAnalyzing = false,
+            textToSpeechWrapper = PreviewTextToSpeechWrapper(),
             onRecordClick = {},
             onStopClick = {},
             onPlayClick = {},
