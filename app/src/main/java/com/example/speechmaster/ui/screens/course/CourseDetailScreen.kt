@@ -25,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -43,6 +45,7 @@ import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
 import com.example.speechmaster.ui.layouts.navigateToPractice
 import com.example.speechmaster.ui.theme.AppTheme
+import com.example.speechmaster.ui.viewmodels.TopBarViewModel
 
 /**
 
@@ -53,26 +56,43 @@ import com.example.speechmaster.ui.theme.AppTheme
 fun CourseDetailScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: CourseDetailViewModel = hiltViewModel()
+    viewModel: CourseDetailViewModel = hiltViewModel(),
+    topBarViewModel: TopBarViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isAdded by viewModel.isAdded.collectAsState()
+
+    // 更新TopBar标题
+    LaunchedEffect(uiState) {
+        if (uiState is CourseDetailUiState.Success) {
+            topBarViewModel.updateTitle((uiState as CourseDetailUiState.Success).course.title)
+        }
+    }
+
+    // 清理TopBar标题
+    DisposableEffect(Unit) {
+        onDispose {
+            topBarViewModel.updateTitle("")
+        }
+    }
 
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        when (val state = uiState) {
+        when (uiState) {
             is CourseDetailUiState.Loading -> {
                 LoadingView()
             }
             is CourseDetailUiState.Error -> {
+                val error = uiState as CourseDetailUiState.Error
                 ErrorView(
-                    message = stringResource(id = state.messageResId),
-                    onRetry = {  }
+                    message = stringResource(id = error.messageResId),
+                    onRetry = { viewModel.loadCourseDetail(isAdded) }
                 )
             }
             is CourseDetailUiState.Success -> {
+                val success = uiState as CourseDetailUiState.Success
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
@@ -80,7 +100,7 @@ fun CourseDetailScreen(
                 ) {
                     item {
                         CourseHeader(
-                            course = state.course,
+                            course = success.course,
                             isAdded = isAdded,
                             onToggleAdd = { 
                                 if (isAdded) {
@@ -92,12 +112,12 @@ fun CourseDetailScreen(
                         )
                     }
 
-                    items(state.cards) { card ->
+                    items(success.cards) { card ->
                         CardListItem(
                             card = card,
                             onClick = { 
                                 navController.navigateToPractice(
-                                    courseId = state.course.id,
+                                    courseId = success.course.id,
                                     cardId = card.id
                                 )
                             }

@@ -111,4 +111,7 @@
     <string name="analysis_result_try_again_later">try again later</string>
     <string name="listen_to_reference">AI narration</string>
     <string name="stop_speech_text">Stop</string>
+    <string name="back">Back</string>
+    <string name="permission_record_audio_denied">Record audio permission is required for this feature. Please enable it in Settings.</string>
+    <string name="open_menu">Open menu</string>
 </resources>

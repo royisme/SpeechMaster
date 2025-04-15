@@ -23,6 +23,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +57,9 @@ import com.example.speechmaster.ui.components.practice.PreviewTextToSpeechWrappe
 import com.example.speechmaster.ui.theme.AppTheme
 import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 import com.example.speechmaster.utils.permissions.PermissionRequest
+import com.example.speechmaster.ui.viewmodels.TopBarViewModel
+import com.example.speechmaster.ui.state.TopBarState
+import com.example.speechmaster.ui.state.defaultTopBarState
 
 /**
 
@@ -70,28 +74,48 @@ import com.example.speechmaster.utils.permissions.PermissionRequest
 fun PracticeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: PracticeViewModel = hiltViewModel()
+    viewModel: PracticeViewModel = hiltViewModel(),
+    topBarViewModel: TopBarViewModel = hiltViewModel()
 ) {
-    // 收集UI状态
     val uiState by viewModel.uiState.collectAsState()
     val recordingState by viewModel.recordingState.collectAsState()
     val recordingDuration by viewModel.recordingDurationMillis.collectAsState()
     val isPlayingAudio by viewModel.isPlayingAudio.collectAsState()
     val isAnalyzing by viewModel.isAnalyzing.collectAsState()
-
-    // 权限状态
     var shouldShowPermissionRequest by remember { mutableStateOf(false) }
+    val practiceTitle = stringResource(R.string.practice)
 
-    // 导航处理
-    LaunchedEffect(true) {
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is PracticeUiState.Success -> {
+                topBarViewModel.updateState(
+                    TopBarState(
+                        title = practiceTitle,
+                        showBackButton = true,
+                        showMenuButton = false,
+                        actions = {}
+                    )
+                )
+                topBarViewModel.updateActions {
+                    BackButton(onBackClick = { navController.navigateUp() })
+                }
+            }
+            else -> {
+                topBarViewModel.updateState(defaultTopBarState)
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            topBarViewModel.updateState(defaultTopBarState)
+        }
+    }
+
+    LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
                 is NavigationEvent.NavigateToFeedback -> {
-                    // 导航到反馈页面
-                    // 实际实现中，这里应该导航到FeedbackScreen
-                    // navController.navigate("feedback/${event.practiceId}")
-
-                    // 临时实现：返回到上一个页面
                     navController.navigateUp()
                 }
                 is NavigationEvent.RequestPermission -> {
@@ -101,65 +125,68 @@ fun PracticeScreen(
         }
     }
 
-    // 权限请求UI
     if (shouldShowPermissionRequest) {
         PermissionRequest(
             permission = Manifest.permission.RECORD_AUDIO,
             rationale = stringResource(R.string.record_permission_rationale),
             permissionNotAvailableContent = {
-                // 当权限被拒绝且选择"不再询问"时显示的内容
-                // 此处不阻塞UI，用户仍然可以看到练习内容，但录音功能不可用
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(R.string.permission_record_audio_denied),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         ) {
             shouldShowPermissionRequest = false
-            // 权限授予后直接开始录音
             viewModel.startRecording()
         }
     }
 
-    Surface(
-        modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        when (val state = uiState) {
-            is PracticeUiState.Loading -> {
-                LoadingView()
-            }
-            is PracticeUiState.Error -> {
-                ErrorView(
-                    message = stringResource(id = state.messageResId),
-                    onRetry = { viewModel.retryLoading() }
-                )
-            }
-            is PracticeUiState.Success -> {
-                PracticeContent(
-                    textContent = state.textContent,
-                    recordingState = recordingState,
-                    recordingDurationMillis = recordingDuration,
-                    isPlayingAudio = isPlayingAudio,
-                    isAnalyzing = isAnalyzing,
-                    textToSpeechWrapper = viewModel.textToSpeechWrapper,
-                    onRecordClick = {
-                        // 检查权限
-                        if (viewModel.hasRecordAudioPermission()) {
-                            viewModel.startRecording()
-                        } else {
-                            shouldShowPermissionRequest = true
-                        }
-                    },
-                    onStopClick = {
-                        viewModel.stopRecording()
-                    },
-                    onPlayClick = {
-                        viewModel.togglePlayback()
-                    },
-                    onResetClick = {
-                        viewModel.resetRecording()
-                    },
-                    onSubmitClick = {
-                        viewModel.submitForAnalysis()
-                    }
-                )
+    Scaffold { paddingValues ->
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            when (val state = uiState) {
+                is PracticeUiState.Loading -> {
+                    LoadingView()
+                }
+                is PracticeUiState.Error -> {
+                    ErrorView(
+                        message = stringResource(id = state.messageResId),
+                        onRetry = { viewModel.retryLoading() }
+                    )
+                }
+                is PracticeUiState.Success -> {
+                    PracticeContent(
+                        textContent = state.textContent,
+                        recordingState = recordingState,
+                        recordingDurationMillis = recordingDuration,
+                        isPlayingAudio = isPlayingAudio,
+                        isAnalyzing = isAnalyzing,
+                        textToSpeechWrapper = viewModel.textToSpeechWrapper,
+                        onRecordClick = {
+                            if (viewModel.hasRecordAudioPermission()) {
+                                viewModel.startRecording()
+                            } else {
+                                shouldShowPermissionRequest = true
+                            }
+                        },
+                        onStopClick = { viewModel.stopRecording() },
+                        onPlayClick = { viewModel.togglePlayback() },
+                        onResetClick = { viewModel.resetRecording() },
+                        onSubmitClick = { viewModel.submitForAnalysis() },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
         }
     }
@@ -295,6 +322,16 @@ fun PracticeScreenRecordedPreview() {
             onPlayClick = {},
             onResetClick = {},
             onSubmitClick = {}
+        )
+    }
+}
+
+@Composable
+private fun BackButton(onBackClick: () -> Unit) {
+    IconButton(onClick = onBackClick) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = stringResource(R.string.back)
         )
     }
 }

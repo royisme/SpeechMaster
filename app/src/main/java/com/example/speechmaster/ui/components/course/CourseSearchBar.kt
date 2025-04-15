@@ -1,7 +1,7 @@
 package com.example.speechmaster.ui.components.course
 
-
-
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -14,24 +14,40 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.example.speechmaster.R
 
 @Composable
 fun CourseSearchBar(
-    value: String,
-    onValueChange: (String) -> Unit,
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier,
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         placeholder = { Text(stringResource(R.string.search_courses)) },
-        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+        leadingIcon = { 
+            IconButton(onClick = onSearch) {
+                Icon(
+                    Icons.Default.Search, 
+                    contentDescription = stringResource(R.string.search)
+                )
+            }
+        },
         trailingIcon = {
-            IconButton(onClick = onClose) {
-                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
+            if (query.isNotEmpty()) {
+                IconButton(onClick = onClose) {
+                    Icon(
+                        Icons.Default.Close, 
+                        contentDescription = stringResource(R.string.close)
+                    )
+                }
             }
         },
         singleLine = true,
