@@ -110,7 +110,7 @@ fun PracticeRecordComponent(
 
             // 根据不同状态显示不同的控制按钮
             when (recordingState) {
-                RecordingState.IDLE -> {
+                RecordingState.PREPARED -> {
                     // 准备录音状态: 显示大型录音按钮
                     IdleStateControls(onRecordClick = onRecordClick)
                 }
@@ -120,7 +120,7 @@ fun PracticeRecordComponent(
                     RecordingStateControls(onStopClick = onStopClick)
                 }
 
-                RecordingState.RECORDED -> {
+                RecordingState.STOPPED -> {
                     // 录音完成状态: 显示播放/重录/提交按钮
                     RecordedStateControls(
                         isPlayingAudio = isPlayingAudio,
@@ -130,6 +130,8 @@ fun PracticeRecordComponent(
                         onSubmitClick = onSubmitClick
                     )
                 }
+
+                RecordingState.PAUSED -> TODO()
             }
         }
     }
@@ -271,14 +273,14 @@ private fun RecordedStateControls(
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // 提交分析按钮
         Button(
             onClick = onSubmitClick,
             modifier = Modifier.fillMaxWidth(0.7f),
             enabled = !isAnalyzing,
-            shape = MaterialTheme.shapes.medium
+            shape = MaterialTheme.shapes.small,
         ) {
             if (isAnalyzing) {
                 CircularProgressIndicator(
@@ -317,7 +319,7 @@ fun formatDuration(durationMillis: Long): String {
 fun PracticeRecordComponentIdlePreview() {
     AppTheme {
         PracticeRecordComponent(
-            recordingState = RecordingState.IDLE,
+            recordingState = RecordingState.PREPARED,
             durationMillis = 0L,
             isPlayingAudio = false,
             isAnalyzing = false,
@@ -359,7 +361,7 @@ fun PracticeRecordComponentRecordingPreview() {
 fun PracticeRecordComponentRecordedPreview() {
     AppTheme {
         PracticeRecordComponent(
-            recordingState = RecordingState.RECORDED,
+            recordingState = RecordingState.STOPPED,
             durationMillis = 67000L,
             isPlayingAudio = false,
             isAnalyzing = false,
@@ -380,7 +382,7 @@ fun PracticeRecordComponentRecordedPreview() {
 fun PracticeRecordComponentPlayingPreview() {
     AppTheme {
         PracticeRecordComponent(
-            recordingState = RecordingState.RECORDED,
+            recordingState = RecordingState.STOPPED,
             durationMillis = 45000L,
             isPlayingAudio = true,
             isAnalyzing = false,
@@ -401,7 +403,7 @@ fun PracticeRecordComponentPlayingPreview() {
 fun PracticeRecordComponentAnalyzingPreview() {
     AppTheme {
         PracticeRecordComponent(
-            recordingState = RecordingState.RECORDED,
+            recordingState = RecordingState.STOPPED,
             durationMillis = 45000L,
             isPlayingAudio = false,
             isAnalyzing = true,

@@ -69,7 +69,7 @@ private fun HomeContent(
     ) {
         // 页面标题
         Text(
-            text = "Daily Practice",
+            text = "MOCK数据",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(16.dp)
         )

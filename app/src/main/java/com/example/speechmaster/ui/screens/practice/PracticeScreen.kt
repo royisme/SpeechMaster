@@ -34,12 +34,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import android.Manifest
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.setValue
 import com.example.speechmaster.R
@@ -90,6 +93,8 @@ fun PracticeScreen(
                     // 临时实现：返回到上一个页面
                     navController.navigateUp()
                 }
+
+                is NavigationEvent.RequestPermission -> TODO()
             }
         }
     }
@@ -116,7 +121,7 @@ fun PracticeScreen(
                     when (val state = uiState) {
                         is PracticeUiState.Success -> {
                             Text("${state.courseTitle} - 卡片 ${state.cardSequence}",
-                                style = MaterialTheme.typography.titleMedium
+                                style = MaterialTheme.typography.titleLarge
                             )
                         }
                         else -> {
@@ -124,7 +129,9 @@ fun PracticeScreen(
                         }
                     }
                 },
-                navigationIcon = {
+                windowInsets = TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Horizontal)
+,
+                        navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -213,32 +220,26 @@ fun PracticeContent(
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = MaterialTheme.colorScheme.secondaryContainer
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-// 文本展示组件 - 占据大部分空间
+            // 文本展示组件 - 占据大部分空间
             ReadingPracticeComponent(
                 textContent = textContent,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
-                onListenClick = {}
+                textToSpeechWrapper = textToSpeechWrapper
             )
             // 底部控制区 - 简洁设计
             // Listen to Reference Button
-            ReadingTTS(
-                textContent = textContent,
-                textToSpeechWrapper = textToSpeechWrapper,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(46.dp)
-            )
+
             Spacer(modifier = Modifier.height(8.dp))
 
             // 录音控制组件 - 使用新实现的PracticeRecordComponent
@@ -271,7 +272,7 @@ fun PracticeScreenPreview() {
         // 由于依赖实际ViewModel和导航，预览中仅展示PracticeContent
         PracticeContent(
             textContent = sampleText,
-            recordingState = RecordingState.IDLE,
+            recordingState = RecordingState.PREPARED,
             recordingDurationMillis = 0L,
             isPlayingAudio = false,
             isAnalyzing = false,
@@ -311,7 +312,7 @@ fun PracticeScreenRecordedPreview() {
     AppTheme {
         PracticeContent(
             textContent = "I believe my experience and skills make me well-suited for this position. In my previous role, I successfully led a team that increased productivity by twenty percent. I'm particularly interested in your company because of its innovative approach to problem-solving and strong commitment to sustainability.",
-            recordingState = RecordingState.RECORDED,
+            recordingState = RecordingState.STOPPED,
             recordingDurationMillis = 65000L,
             isPlayingAudio = false,
             isAnalyzing = false,

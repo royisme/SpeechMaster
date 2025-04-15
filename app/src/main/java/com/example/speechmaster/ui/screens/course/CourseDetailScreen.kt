@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -57,8 +60,10 @@ fun CourseDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.course_detail)) },
-                navigationIcon = {
+                title = { Text("测试课程") },//
+                windowInsets = TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Horizontal)
+,
+                        navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -66,6 +71,7 @@ fun CourseDetailScreen(
                         )
                     }
                 },
+
                 actions = {
                     // 添加/移除课程按钮
                     IconButton(
@@ -149,7 +155,7 @@ internal fun CourseDetailContent(
                 text = stringResource(R.string.practice_cards),
                 style = MaterialTheme.typography.titleMedium,
                 // *** 【修改点 3】: 移除 Modifier 上的水平 padding (因为 LazyColumn 已有) ***
-                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp) // 只保留上下边距
+                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp) // 只保留上下边距
             )
         }
 

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -26,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.speechmaster.ui.theme.AppTheme
+import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 
 
 /**
@@ -39,7 +41,7 @@ import com.example.speechmaster.ui.theme.AppTheme
 fun ReadingPracticeComponent(
     textContent: String,
     modifier: Modifier = Modifier,
-    onListenClick: () -> Unit, // Add callback for button action
+    textToSpeechWrapper: TextToSpeechWrapper, // Add callback for button action
 ) {
     Card(
         modifier = modifier,
@@ -53,7 +55,7 @@ fun ReadingPracticeComponent(
     ) {
         Box(
             modifier = Modifier
-                .padding(24.dp)
+                .padding(36.dp)
         ) {
             Text(
                 text = textContent,
@@ -67,21 +69,12 @@ fun ReadingPracticeComponent(
             )
 
         }
-
-    }
-}
-/**
-
-预览函数
- */
-@Preview(showBackground = true)
-@Composable
-fun ReadingPracticeComponentPreview() {
-    AppTheme {
-        ReadingPracticeComponent(
-            textContent = "I believe my experience and skills make me well-suited for this position. In my previous role, I successfully led a team that increased productivity by twenty percent. I'm particularly interested in your company because of its innovative approach to problem-solving and strong commitment to sustainability.",
-            modifier = Modifier.fillMaxWidth(),
-            onListenClick = {},
-            )
+        ReadingTTS(
+            textContent = textContent,
+            textToSpeechWrapper = textToSpeechWrapper,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(46.dp)
+        )
     }
 }

@@ -24,21 +24,17 @@ fun AppDrawer(
 
     val drawerWidth = screenWidth * 0.75f  // 设置为屏幕宽度的3/4
     // 添加背景颜色和固定宽度
-    Surface(
-        modifier = Modifier
-            .width(drawerWidth)
-            .fillMaxHeight(),
-        color = MaterialTheme.colorScheme.secondaryContainer,  // 根据主题的表面颜色
-        tonalElevation = 1.dp  // 添加轻微阴影效果区分层次
+    ModalDrawerSheet(
+        modifier = Modifier.width(drawerWidth),
+        drawerContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+        drawerContentColor = MaterialTheme.colorScheme.onSecondaryContainer
     ) {
-        Column(modifier = Modifier.fillMaxHeight()) {
-            Text(
-                text = stringResource(id = R.string.app_name),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.padding(16.dp)
-            )
-
+        Text(
+            text = stringResource(id = R.string.app_name),
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier.padding(16.dp)
+        )
             HorizontalDivider()
 
             // 首页
@@ -104,6 +100,6 @@ fun AppDrawer(
                 },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
             )
-        }
+
     }
 }

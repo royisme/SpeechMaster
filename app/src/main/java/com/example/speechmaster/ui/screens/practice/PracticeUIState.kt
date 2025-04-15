@@ -50,4 +50,6 @@ sealed class NavigationEvent {
         val courseId: String,
         val cardId: String
     ) : NavigationEvent()
+    data class RequestPermission(val permission: String) : NavigationEvent() // 添加权限请求事件
+
 }
