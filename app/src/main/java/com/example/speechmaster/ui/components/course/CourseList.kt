@@ -61,7 +61,7 @@ fun CourseCard(
     Card(
         modifier = modifier.clickable(onClick = onClick),
         shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
     ) {
         Column(
             modifier = Modifier
@@ -88,13 +88,20 @@ fun CourseCard(
                     MaterialTheme.colorScheme.tertiary
 
                 Surface(
-                    color = sourceColor.copy(alpha = 0.1f),
+                    color = if (course.source == "BUILT_IN")
+                        MaterialTheme.colorScheme.primaryContainer
+                    else
+                        MaterialTheme.colorScheme.tertiaryContainer,
                     shape = MaterialTheme.shapes.small
                 ) {
                     Text(
                         text = sourceText,
+                        color = if (course.source == "BUILT_IN")
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        else
+                            MaterialTheme.colorScheme.onTertiaryContainer,
                         style = MaterialTheme.typography.labelSmall,
-                        color = sourceColor,
+
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }

@@ -69,7 +69,7 @@ fun NavController.navigateToCreateCourse() {
     this.navigate(CREATE_COURSE_ROUTE)
 }
 fun NavController.navigateToPractice(courseId: String, cardId: String) {
-    this.navigate("$PRACTICE_ROUTE/courseId/$cardId")
+    this.navigate("$PRACTICE_ROUTE/$courseId/$cardId")
 }
 fun NavGraphBuilder.addCourseRoute(navController: NavHostController) {
     composable(

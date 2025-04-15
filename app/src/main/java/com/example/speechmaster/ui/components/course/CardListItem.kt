@@ -50,13 +50,16 @@ fun CardListItem(
             horizontalArrangement = Arrangement.spacedBy(16.dp) // 内部元素间距
         ) {
             Surface(
-                modifier = Modifier.size(40.dp), // 调整大小
-                shape = RoundedCornerShape(8.dp), // 圆角矩形
-                // 根据 isCompleted 设置背景色
-                color = if (card.isCompleted) Color(MaterialTheme.colorScheme.surfaceVariant.value)
-                else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-                contentColor = if (card.isCompleted) Color(MaterialTheme.colorScheme.onPrimaryContainer.value)
-                else MaterialTheme.colorScheme.onPrimaryContainer
+                modifier = Modifier.size(40.dp),
+                shape = RoundedCornerShape(8.dp),
+                color = if (card.isCompleted)
+                    MaterialTheme.colorScheme.surfaceVariant
+                else
+                    MaterialTheme.colorScheme.primaryContainer,
+                contentColor = if (card.isCompleted)
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                else
+                    MaterialTheme.colorScheme.onPrimaryContainer
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     if (card.isCompleted) {
@@ -89,8 +92,7 @@ fun CardListItem(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = stringResource(R.string.start_practice), // 或 null 如果纯装饰性
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) // 调整透明度
-            )
+                tint = MaterialTheme.colorScheme.outline            )
         }
     }
 }

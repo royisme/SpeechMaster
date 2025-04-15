@@ -1,13 +1,11 @@
 package com.example.speechmaster.ui.screens.course
 
 import androidx.compose.foundation.layout.*
-
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -29,61 +27,66 @@ fun CourseScreen(
     val showSearch by viewModel.showSearch.collectAsState()
     val filterState by viewModel.filterState.collectAsState()
 
-    Column(modifier = modifier.fillMaxSize()) {
-        // 搜索框 - 仅在showSearch为true时显示
-        if (showSearch) {
-            CourseSearchBar(
-                value = searchQuery,
-                onValueChange = viewModel::updateSearchQuery,
-                onClose = viewModel::toggleSearchVisibility,
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // 搜索框 - 仅在showSearch为true时显示
+            if (showSearch) {
+                CourseSearchBar(
+                    value = searchQuery,
+                    onValueChange = viewModel::updateSearchQuery,
+                    onClose = viewModel::toggleSearchVisibility,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
+
+            // 筛选栏
+            FilterBar(
+                filterState = filterState,
+                onSourceSelected = viewModel::updateSourceFilter,
+                onDifficultySelected = viewModel::updateDifficultyFilter,
+                onCategorySelected = viewModel::updateCategoryFilter,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(horizontal = 8.dp)
             )
-        }
 
-        // 筛选栏
-        FilterBar(
-            filterState = filterState,
-            onSourceSelected = viewModel::updateSourceFilter,
-            onDifficultySelected = viewModel::updateDifficultyFilter,
-            onCategorySelected = viewModel::updateCategoryFilter,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-        )
-
-        // 课程列表及状态显示
-        when (val state = uiState) {
-            CourseListUiState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+            // 课程列表及状态显示
+            when (val state = uiState) {
+                CourseListUiState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
-            }
-            is CourseListUiState.Error -> {
-                ErrorView(
-                    message = stringResource(id = state.messageResId),
-                    onRetry = { /* 重试逻辑 */ },
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-            CourseListUiState.Empty -> {
-                EmptyCoursesView(
-                    onCreateCourse = viewModel::navigateToCreateCourse,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-            is CourseListUiState.Success -> {
-                CourseList(
-                    courses = state.courses,
-                    onCourseClick = { courseId ->
-                        navController.navigateToCourseDetail(courseId)
-                    },
-                    modifier = Modifier.fillMaxSize()
-                )
+                is CourseListUiState.Error -> {
+                    ErrorView(
+                        message = stringResource(id = state.messageResId),
+                        onRetry = { /* 重试逻辑 */ },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                CourseListUiState.Empty -> {
+                    EmptyCoursesView(
+                        onCreateCourse = viewModel::navigateToCreateCourse,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                is CourseListUiState.Success -> {
+                    CourseList(
+                        courses = state.courses,
+                        onCourseClick = { courseId ->
+                            navController.navigateToCourseDetail(courseId)
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
         }
     }

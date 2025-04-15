@@ -21,10 +21,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -43,8 +45,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.setValue
 import com.example.speechmaster.R
 import com.example.speechmaster.common.enums.RecordingState
 import com.example.speechmaster.ui.components.common.ErrorView
@@ -70,18 +70,19 @@ import com.example.speechmaster.utils.permissions.PermissionRequest
 fun PracticeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: PracticeViewModel = hiltViewModel(),
+    viewModel: PracticeViewModel = hiltViewModel()
 ) {
-// 收集UI状态
+    // 收集UI状态
     val uiState by viewModel.uiState.collectAsState()
     val recordingState by viewModel.recordingState.collectAsState()
     val recordingDuration by viewModel.recordingDurationMillis.collectAsState()
     val isPlayingAudio by viewModel.isPlayingAudio.collectAsState()
     val isAnalyzing by viewModel.isAnalyzing.collectAsState()
 
-// 权限状态
+    // 权限状态
     var shouldShowPermissionRequest by remember { mutableStateOf(false) }
-// 导航处理
+
+    // 导航处理
     LaunchedEffect(true) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
@@ -93,11 +94,13 @@ fun PracticeScreen(
                     // 临时实现：返回到上一个页面
                     navController.navigateUp()
                 }
-
-                is NavigationEvent.RequestPermission -> TODO()
+                is NavigationEvent.RequestPermission -> {
+                    shouldShowPermissionRequest = true
+                }
             }
         }
     }
+
     // 权限请求UI
     if (shouldShowPermissionRequest) {
         PermissionRequest(
@@ -106,92 +109,62 @@ fun PracticeScreen(
             permissionNotAvailableContent = {
                 // 当权限被拒绝且选择"不再询问"时显示的内容
                 // 此处不阻塞UI，用户仍然可以看到练习内容，但录音功能不可用
-            },
-            content = {
-                // 当权限被授予时的内容（这里不需要内容，因为权限UI和主UI是分开的）
             }
-        )
+        ) {
+            shouldShowPermissionRequest = false
+            // 权限授予后直接开始录音
+            viewModel.startRecording()
+        }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    // 动态标题: "课程标题 - 卡片 N"
-                    when (val state = uiState) {
-                        is PracticeUiState.Success -> {
-                            Text("${state.courseTitle} - 卡片 ${state.cardSequence}",
-                                style = MaterialTheme.typography.titleLarge
-                            )
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        when (val state = uiState) {
+            is PracticeUiState.Loading -> {
+                LoadingView()
+            }
+            is PracticeUiState.Error -> {
+                ErrorView(
+                    message = stringResource(id = state.messageResId),
+                    onRetry = { viewModel.retryLoading() }
+                )
+            }
+            is PracticeUiState.Success -> {
+                PracticeContent(
+                    textContent = state.textContent,
+                    recordingState = recordingState,
+                    recordingDurationMillis = recordingDuration,
+                    isPlayingAudio = isPlayingAudio,
+                    isAnalyzing = isAnalyzing,
+                    textToSpeechWrapper = viewModel.textToSpeechWrapper,
+                    onRecordClick = {
+                        // 检查权限
+                        if (viewModel.hasRecordAudioPermission()) {
+                            viewModel.startRecording()
+                        } else {
+                            shouldShowPermissionRequest = true
                         }
-                        else -> {
-                            Text(stringResource(R.string.practice))
-                        }
+                    },
+                    onStopClick = {
+                        viewModel.stopRecording()
+                    },
+                    onPlayClick = {
+                        viewModel.togglePlayback()
+                    },
+                    onResetClick = {
+                        viewModel.resetRecording()
+                    },
+                    onSubmitClick = {
+                        viewModel.submitForAnalysis()
                     }
-                },
-                windowInsets = TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Horizontal)
-,
-                        navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back)
-                        )
-                    }
-                }
-                // TTS按钮将在SUBTASK-UI04.3中实现
-            )
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            when (val state = uiState) {
-                is PracticeUiState.Loading -> {
-                    LoadingView()
-                }
-                is PracticeUiState.Error -> {
-                    ErrorView(
-                        message = stringResource(id = state.messageResId),
-                        onRetry = { viewModel.retryLoading() }
-                    )
-                }
-                is PracticeUiState.Success -> {
-                    PracticeContent(
-                        textContent = state.textContent,
-                        recordingState = recordingState,
-                        recordingDurationMillis = recordingDuration,
-                        isPlayingAudio = isPlayingAudio,
-                        isAnalyzing = isAnalyzing,
-                        textToSpeechWrapper = viewModel.textToSpeechWrapper,
-                        onRecordClick = {
-                            // 检查权限
-                            if (viewModel.hasRecordAudioPermission()) {
-                                viewModel.startRecording()
-                            } else {
-                                shouldShowPermissionRequest = true
-                            }
-                        },
-                        onStopClick = {
-                            viewModel.stopRecording()
-                        },
-                        onPlayClick = {
-                            viewModel.togglePlayback()
-                        },
-                        onResetClick = {
-                            viewModel.resetRecording()
-                        },
-                        onSubmitClick = {
-                            viewModel.submitForAnalysis()
-                        }
-                    )
-                }
+                )
             }
         }
     }
 }
+
 /**
 
 练习内容布局
