@@ -8,6 +8,7 @@ data class DetailedFeedback(
     val pronunciationScore: Float,
     val completenessScore: Float,
     val fluencyScore: Float,
+    val prosodyScore: Float,
     val durationMs: Long,
     val recognizedText: String,
     val wordFeedbacks: List<WordFeedback>
@@ -29,5 +30,6 @@ data class PhonemeAssessment(
     val accuracy: Float,
     val offset: Int,
     val duration: Int,
-    val errorType: String?
+    val errorType: String?,
+    val nBestPhonemes: List<String>
 ) 
