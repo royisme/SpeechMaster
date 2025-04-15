@@ -41,6 +41,7 @@
     <string name="error_stopping_audiorecord">Failed to stop AudioRecord</string>
     <string name="error_failed_to_clean_resources">Failed to clean resources</string>
     <!-- Home Screen -->
+    <string name="error_recording_too_short">Recording too short</string>
     <string name="daily_practice">Daily Practice</string>
     <string name="your_progress">Your Progress</string>
     <string name="current_streak">Current Streak</string>

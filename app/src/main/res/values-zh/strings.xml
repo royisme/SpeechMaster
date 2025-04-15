@@ -10,6 +10,7 @@
     <string name="about">关于应用</string>
 
     <!-- Home Screen -->
+    <string name="error_recording_too_short">你的录音太短了</string>
     <string name="daily_practice">每日练习</string>
     <string name="your_progress">你的进度</string>
     <string name="current_streak">当前连续</string>

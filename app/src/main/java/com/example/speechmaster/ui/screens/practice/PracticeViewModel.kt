@@ -162,6 +162,11 @@ class PracticeViewModel @Inject constructor(
                     return@launch
                 }
 
+                // 停止可能的播放
+                if (_isPlayingAudio.value) {
+                    audioPlayerWrapper.stop()
+                }
+
                 // 创建临时文件
                 tempAudioFile = createTempAudioFile()
 
@@ -211,11 +216,11 @@ class PracticeViewModel @Inject constructor(
                 // 获取录音时长
                 val recordingDuration = _recordingDurationMillis.value
 
-                // 停止录音 - 使用AudioRecorderWrapper的错误处理
-                val result = audioRecorderWrapper.stopRecording()
-
                 // 停止计时器
                 stopTimer()
+
+                // 停止录音 - 使用AudioRecorderWrapper的错误处理
+                val result = audioRecorderWrapper.stopRecording()
 
                 if (result.isSuccess) {
                     // 获取录音文件
@@ -279,24 +284,34 @@ class PracticeViewModel @Inject constructor(
 
     /**
      * 切换音频播放状态（播放/暂停）
-     *
-     * 使用AudioPlayerWrapper播放录制的音频
      */
     fun togglePlayback() {
+        Log.d(TAG, "尝试播放录音")
         viewModelScope.launch {
             try {
                 // 获取录音URI
                 val uri = _recordedAudioUri.value
+                Log.d(TAG, "获取录音URI $uri")
                 
                 // 如果没有录音文件，不做任何操作
                 if (uri == null) {
                     Log.e(TAG, "没有录音文件可播放")
                     return@launch
                 }
+
+                // 如果正在录音，先停止录音
+                if (_recordingState.value == RecordingState.RECORDING) {
+                    stopRecording()
+                }
                 
+                Log.d(TAG, "切换播放状态")
                 // 切换播放状态
                 val success = audioPlayerWrapper.togglePlayback(uri)
-                
+                Log.d(TAG, "切换播放状态返回 $success")
+
+                // 更新播放状态
+                _isPlayingAudio.value = audioPlayerWrapper.isPlaying.value
+
                 if (!success) {
                     Log.e(TAG, "播放音频失败")
                 }
@@ -305,21 +320,22 @@ class PracticeViewModel @Inject constructor(
                 _isPlayingAudio.value = false
             }
         }
-     }
+    }
 
     /**
      * 重置录音状态
-     *
-     * 清除所有录音相关状态和资源
      */
     fun resetRecording() {
         try {
             // 停止计时器
             stopTimer()
+
             // 停止音频播放
             if (_isPlayingAudio.value) {
                 audioPlayerWrapper.stop()
+                _isPlayingAudio.value = false
             }
+
             // 删除临时文件
             deleteTempFile()
 
