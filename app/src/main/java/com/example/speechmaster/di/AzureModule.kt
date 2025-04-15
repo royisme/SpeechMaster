@@ -1,14 +1,14 @@
 package com.example.speechmaster.di
 
-import android.content.Context
 import com.example.speechmaster.BuildConfig
-import com.example.speechmaster.data.preferences.SpeechSettings
+import com.example.speechmaster.domain.settings.speech.SpeechSettings
 import com.microsoft.cognitiveservices.speech.SpeechConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import javax.inject.Singleton
 
 /**
@@ -35,24 +35,20 @@ object AzureModule {
      */
     @Provides
     @Singleton
-    fun provideSpeechSettings(@ApplicationContext context: Context): SpeechSettings {
-        return SpeechSettings(context)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSpeechConfig(
-        speechSettings: SpeechSettings
-    ): SpeechConfig {
-        return SpeechConfig.fromSubscription(
+    fun provideSpeechConfig(speechSettings: SpeechSettings): SpeechConfig {
+        val config = SpeechConfig.fromSubscription(
             BuildConfig.MICROSOFT_SPEECH_KEY,
             BuildConfig.MICROSOFT_SPEECH_REGION
-        ).apply {
-            // 设置默认值为美式英语
-            speechRecognitionLanguage = Defaults.RECOGNITION_LANGUAGE
-            speechSynthesisLanguage = Defaults.SYNTHESIS_LANGUAGE
-            speechSynthesisVoiceName = Defaults.SYNTHESIS_VOICE
+        )
+
+        // 使用 runBlocking 获取初始设置值
+        runBlocking {
+            config.speechRecognitionLanguage = speechSettings.getSpeechRecognitionLanguage().first()
+            config.speechSynthesisLanguage = speechSettings.getSpeechSynthesisLanguage().first()
+            config.speechSynthesisVoiceName = speechSettings.getSpeechSynthesisVoice().first()
         }
+
+        return config
     }
 
     // 如果需要更新配置，可以提供一个更新方法

@@ -121,23 +121,35 @@ fun UserPractice.toEntity(): UserPracticeEntity = UserPracticeEntity(
 
 // PracticeFeedback 映射扩展函数
 fun PracticeFeedbackEntity.toModel(): PracticeFeedback = PracticeFeedback(
-    id = id,
+    id = id.toString(),
     practiceId = practiceId,
-    overallScore = overallScore,
+    overallScore = overallAccuracyScore,
     fluencyScore = fluencyScore,
     pronunciationScore = pronunciationScore,
-    feedback = json.decodeFromString<Map<String, String>>(feedback),
+    feedback = mapOf(
+        "accuracy" to overallAccuracyScore.toString(),
+        "pronunciation" to pronunciationScore.toString(),
+        "completeness" to completenessScore.toString(),
+        "fluency" to fluencyScore.toString(),
+        "recognizedText" to recognizedText,
+        "audioFilePath" to audioFilePath,
+        "durationMs" to durationMs.toString()
+    ),
     createdAt = createdAt
 )
 
 fun PracticeFeedback.toEntity(): PracticeFeedbackEntity = PracticeFeedbackEntity(
-    id = id,
+    id = id.toLong(),
     practiceId = practiceId,
-    overallScore = overallScore,
-    fluencyScore = fluencyScore,
+    referenceText = "",
+    audioFilePath = feedback["audioFilePath"] ?: "",
+    overallAccuracyScore = overallScore,
     pronunciationScore = pronunciationScore,
-    feedback = json.encodeToString(feedback),
-    createdAt = createdAt
+    completenessScore = feedback["completeness"]?.toFloat() ?: 0f,
+    fluencyScore = fluencyScore,
+    createdAt = createdAt,
+    durationMs = feedback["durationMs"]?.toLong() ?: 0L,
+    recognizedText = feedback["recognizedText"] ?: ""
 )
 
 // UserProgress 映射扩展函数

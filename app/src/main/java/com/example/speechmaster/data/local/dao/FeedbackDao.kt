@@ -43,18 +43,52 @@ interface FeedbackDao {
     suspend fun deleteFeedback(feedbackId: String)
     
     /**
-     * 获取用户的平均评分
+     * 获取用户的各维度平均评分
      */
-    @Query("SELECT AVG(overall_score) FROM $PRACTICE_FEEDBACK_TABLE_NAME " +
-           "INNER JOIN $USER_PRACTICES_TABLE_NAME ON $PRACTICE_FEEDBACK_TABLE_NAME.practice_id = user_practices.id " +
-           "WHERE $USER_PRACTICES_TABLE_NAME.user_id = :userId")
-    suspend fun getUserAverageScore(userId: String): Float?
+    @Query("""
+        SELECT 
+            AVG(overall_accuracy_score) as avgAccuracy,
+            AVG(pronunciation_score) as avgPronunciation,
+            AVG(completeness_score) as avgCompleteness,
+            AVG(fluency_score) as avgFluency
+        FROM $PRACTICE_FEEDBACK_TABLE_NAME 
+        INNER JOIN $USER_PRACTICES_TABLE_NAME 
+            ON $PRACTICE_FEEDBACK_TABLE_NAME.practice_id = $USER_PRACTICES_TABLE_NAME.id 
+        WHERE $USER_PRACTICES_TABLE_NAME.user_id = :userId
+    """)
+    suspend fun getUserAverageScores(userId: String): UserAverageScores?
     
     /**
-     * 获取用户在特定课程的平均评分
+     * 获取用户在特定课程的各维度平均评分
      */
-    @Query("SELECT AVG(overall_score) FROM $PRACTICE_FEEDBACK_TABLE_NAME " +
-           "INNER JOIN $USER_PRACTICES_TABLE_NAME ON $PRACTICE_FEEDBACK_TABLE_NAME.practice_id = user_practices.id " +
-           "WHERE $USER_PRACTICES_TABLE_NAME.user_id = :userId AND $USER_PRACTICES_TABLE_NAME.course_id = :courseId")
-    suspend fun getUserCourseAverageScore(userId: String, courseId: String): Float?
+    @Query("""
+        SELECT 
+            AVG(overall_accuracy_score) as avgAccuracy,
+            AVG(pronunciation_score) as avgPronunciation,
+            AVG(completeness_score) as avgCompleteness,
+            AVG(fluency_score) as avgFluency
+        FROM $PRACTICE_FEEDBACK_TABLE_NAME 
+        INNER JOIN $USER_PRACTICES_TABLE_NAME 
+            ON $PRACTICE_FEEDBACK_TABLE_NAME.practice_id = $USER_PRACTICES_TABLE_NAME.id 
+        WHERE $USER_PRACTICES_TABLE_NAME.user_id = :userId 
+            AND $USER_PRACTICES_TABLE_NAME.course_id = :courseId
+    """)
+    suspend fun getUserCourseAverageScores(userId: String, courseId: String): UserAverageScores?
+}
+
+/**
+ * 用户平均分数据类
+ */
+data class UserAverageScores(
+    val avgAccuracy: Float,
+    val avgPronunciation: Float,
+    val avgCompleteness: Float,
+    val avgFluency: Float
+) {
+    /**
+     * 计算综合得分（如果需要）
+     */
+    fun calculateOverallScore(): Float {
+        return (avgAccuracy + avgPronunciation + avgCompleteness + avgFluency) / 4
+    }
 }
