@@ -6,6 +6,7 @@ import android.util.Log
 import com.example.speechmaster.data.model.DetailedFeedback
 import com.example.speechmaster.data.model.PhonemeAssessment
 import com.example.speechmaster.data.model.WordFeedback
+import com.example.speechmaster.domain.repository.IPronunciationAnalysisRepository
 import com.microsoft.cognitiveservices.speech.CancellationDetails
 import com.microsoft.cognitiveservices.speech.CancellationErrorCode
 import com.microsoft.cognitiveservices.speech.CancellationReason
@@ -13,7 +14,6 @@ import com.microsoft.cognitiveservices.speech.PronunciationAssessmentConfig
 import com.microsoft.cognitiveservices.speech.PronunciationAssessmentGradingSystem
 import com.microsoft.cognitiveservices.speech.PronunciationAssessmentGranularity
 import com.microsoft.cognitiveservices.speech.PronunciationAssessmentResult
-import com.microsoft.cognitiveservices.speech.PropertyId
 import com.microsoft.cognitiveservices.speech.ResultReason
 import com.microsoft.cognitiveservices.speech.SpeechConfig
 import com.microsoft.cognitiveservices.speech.SpeechRecognitionCanceledEventArgs
@@ -24,7 +24,6 @@ import com.microsoft.cognitiveservices.speech.audio.AudioConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -33,8 +32,6 @@ import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.inject.Inject
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.resume
 
 class PronunciationAnalysisRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,

@@ -1,6 +1,6 @@
 package com.example.speechmaster.di
 
-import com.example.speechmaster.data.repository.IPronunciationAnalysisRepository
+import com.example.speechmaster.domain.repository.IPronunciationAnalysisRepository
 import com.example.speechmaster.data.repository.PronunciationAnalysisRepositoryImpl
 import dagger.Binds
 import dagger.Module

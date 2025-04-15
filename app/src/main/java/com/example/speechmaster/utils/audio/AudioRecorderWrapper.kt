@@ -71,20 +71,20 @@ class AudioRecorderWrapper @Inject constructor(
 
             mediaRecorder?.apply {
                 // 设置音频源为麦克风
-                setAudioSource(MediaRecorder.AudioSource.MIC)
+                setAudioSource(MediaRecorder.AudioSource.UNPROCESSED)
                 
                 // 设置输出格式为AAC_ADTS
                 // 这确保AAC数据被封装在ADTS容器中，可以被大多数播放器直接播放
                 setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
                 
                 // 设置音频编码器为AAC
-                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+                setAudioEncoder(MediaRecorder.AudioEncoder.AAC_ELD)
                 
                 // 设置音频采样率 (44.1kHz 是音频CD质量)
-                setAudioSamplingRate(44100)
+                setAudioSamplingRate(16000)
                 
                 // 设置比特率 (128kbps 对于语音来说足够了)
-                setAudioEncodingBitRate(128000)
+                setAudioEncodingBitRate(192000)
                 
                 // 设置输出文件
                 setOutputFile(outputFile.absolutePath)
