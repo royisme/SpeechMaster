@@ -35,7 +35,8 @@ okhttp = "4.12.0"
 room = "2.7.0"
 hilt = "2.56.1"
 hiltExt = "1.2.0"
-google-material = "1.9.0"
+google-material = "1.12.0"
+microsoft-cognitiveservices = "1.43.0"
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -108,6 +109,8 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt"
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 hilt-ext-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltExt" }
+#microsoft
+microsoft-speech = { module = "com.microsoft.cognitiveservices.speech:client-sdk", version.ref="microsoft-cognitiveservices"}
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }

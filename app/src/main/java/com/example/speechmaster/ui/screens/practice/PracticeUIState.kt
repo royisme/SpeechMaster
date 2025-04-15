@@ -33,3 +33,21 @@ sealed class PracticeUiState {
         val textContent: String
     ) : PracticeUiState()
 }
+
+/**
+ * 练习界面导航事件
+ */
+sealed class NavigationEvent {
+    /**
+    导航到反馈页面的事件
+     *
+    @param practiceId 练习ID
+    @param courseId 课程ID
+    @param cardId 卡片ID
+     **/
+    data class NavigateToFeedback(
+        val practiceId: String,
+        val courseId: String,
+        val cardId: String
+    ) : NavigationEvent()
+}

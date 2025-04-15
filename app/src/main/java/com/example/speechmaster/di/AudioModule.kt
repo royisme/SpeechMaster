@@ -1,6 +1,7 @@
 package com.example.speechmaster.di
 
 import android.content.Context
+import com.example.speechmaster.utils.audio.AudioPlayerWrapper
 import com.example.speechmaster.utils.audio.AudioRecorderWrapper
 import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 import com.example.speechmaster.utils.audio.TextToSpeechWrapperImpl
@@ -47,8 +48,20 @@ object AudioModule {
     ): TextToSpeechWrapper {
         return TextToSpeechWrapperImpl(context)
     }
+    /**
+     * 提供AudioPlayerWrapper单例
+     *
+     * @param context 应用上下文，由Hilt自动注入
+     * @return AudioPlayerWrapper实例
+     */
+    @Provides
+    @Singleton
+    fun provideAudioPlayerWrapper(
+        @ApplicationContext context: Context
+    ): AudioPlayerWrapper {
+        return AudioPlayerWrapper(context)
+    }
 
     // 未来可能添加的其他音频相关依赖项：
-    // - AudioPlayerWrapper
     // - AudioAnalyzer
 }

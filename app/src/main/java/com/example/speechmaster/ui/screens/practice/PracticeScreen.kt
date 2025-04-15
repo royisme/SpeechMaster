@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.setValue
 import com.example.speechmaster.R
 import com.example.speechmaster.common.enums.RecordingState
@@ -77,7 +78,21 @@ fun PracticeScreen(
 
 // 权限状态
     var shouldShowPermissionRequest by remember { mutableStateOf(false) }
+// 导航处理
+    LaunchedEffect(true) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is NavigationEvent.NavigateToFeedback -> {
+                    // 导航到反馈页面
+                    // 实际实现中，这里应该导航到FeedbackScreen
+                    // navController.navigate("feedback/${event.practiceId}")
 
+                    // 临时实现：返回到上一个页面
+                    navController.navigateUp()
+                }
+            }
+        }
+    }
     // 权限请求UI
     if (shouldShowPermissionRequest) {
         PermissionRequest(

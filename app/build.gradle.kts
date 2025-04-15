@@ -1,4 +1,11 @@
+import java.util.Properties
+import java.io.FileInputStream
 
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -21,6 +28,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "MICROSOFT_SPEECH_KEY", "\"${localProperties.getProperty("microsoft.speech.key")}\"")
+        buildConfigField("String", "MICROSOFT_SPEECH_REGION", "\"${localProperties.getProperty("microsoft.speech.region")}\"")
     }
 
     buildTypes {
@@ -41,7 +50,9 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+
 }
 
 dependencies {
@@ -86,7 +97,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
     ksp(libs.hilt.ext.compiler)
-
+    implementation(libs.microsoft.speech)
     testImplementation(libs.junit) // 添加这行
     testImplementation(libs.kotlinx.coroutines.test) // 添加这行
 
