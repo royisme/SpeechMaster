@@ -17,7 +17,6 @@ object DatabaseConstants {
     const val WORD_FEEDBACK_TABLE_NAME = "word_feedback"
     const val PHONEME_ASSESSMENT_TABLE_NAME = "phoneme_assessment"
     const val USER_PROFILE_TABLE_NAME = "user_profile"
-    const val PRACTICE_SESSION_TABLE_NAME = "practice_session"
     //Column value list
     const val COURSE_FILED_SOURCE_BUILT_IN = "BUILT_IN"
     const val COURSE_FILED_SOURCE_UGC = "UGC"

@@ -13,9 +13,21 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.gradle.plugin)
-
+    alias(libs.plugins.room)
 }
+room {
+    // Applies to 'demoDebug' only
+    schemaDirectory("demoDebug", "$projectDir/schemas/demoDebug")
 
+    // Applies to 'demoDebug' and 'demoRelease'
+    schemaDirectory("demo", "$projectDir/schemas/demo")
+
+    // Applies to 'demoDebug' and 'fullDebug'
+    schemaDirectory("debug", "$projectDir/schemas/debug")
+
+    // Applies to variants that aren't matched by other configurations.
+    schemaDirectory("$projectDir/schemas")
+}
 android {
     namespace = "com.example.speechmaster"
     compileSdk = 35

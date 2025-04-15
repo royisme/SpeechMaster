@@ -1,8 +1,9 @@
 package com.example.speechmaster.di
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.speechmaster.data.local.AppDatabase
 import com.example.speechmaster.data.local.CourseDataSeeder
 import com.example.speechmaster.data.local.DatabaseConstants.DATABASE_NAME
@@ -31,21 +32,18 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
+
     @Provides
     @Singleton
-    fun provideAppDatabase(@ApplicationContext context: Context,
-                            databaseProvider: Provider<AppDatabase>
-    ): AppDatabase {
-        Log.i("DatabaseModule","provideAppDatabase")
-//        context.deleteDatabase(DATABASE_NAME) // 强制删除旧数据库
+    fun provideAppDatabase(@ApplicationContext context: Context, databaseProvider: Provider<AppDatabase>): AppDatabase {
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
             DATABASE_NAME
         )
-            .fallbackToDestructiveMigration(false) // 简化开发阶段的迁移，生产环境应删除此项并实现迁移
-            .addCallback(CourseDataSeeder(context, databaseProvider)) // 添加预填充回调
-            .build()
+        .fallbackToDestructiveMigration(false) // 简化开发阶段的迁移，生产环境应删除此项并实现迁移
+        .addCallback(CourseDataSeeder(context, databaseProvider)) // 添加预填充回调
+        .build()
     }
 
     @Provides
