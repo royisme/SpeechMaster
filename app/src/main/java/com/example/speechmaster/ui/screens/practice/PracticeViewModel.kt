@@ -461,14 +461,18 @@ class PracticeViewModel @Inject constructor(
         // 删除临时文件
         deleteTempFile()
 
-        // 释放录音资源
-        audioRecorderWrapper.release()
+        // 停止当前录音（如果正在进行）
+        if (_recordingState.value == RecordingState.RECORDING) {
+            audioRecorderWrapper.stopRecording()
+        }
 
-        // 释放音频播放资源
-        audioPlayerWrapper.release()
+        // 停止当前音频播放（如果正在播放）
+        if (_isPlayingAudio.value) {
+            audioPlayerWrapper.stop()
+        }
 
-        // 释放TTS资源
-        textToSpeechWrapper.release()
+        // 停止当前TTS播放（如果正在播放）
+            textToSpeechWrapper.stop()
 
         Log.d(TAG, "ViewModel资源已清理")
     }
