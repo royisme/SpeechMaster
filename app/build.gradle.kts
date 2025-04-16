@@ -39,11 +39,23 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.speechmaster.CustomTestRunner"
+
         buildConfigField("String", "MICROSOFT_SPEECH_KEY", "\"${localProperties.getProperty("microsoft.speech.key")}\"")
         buildConfigField("String", "MICROSOFT_SPEECH_REGION", "\"${localProperties.getProperty("microsoft.speech.region")}\"")
     }
 
+    sourceSets {
+        getByName("androidTest") {
+            resources.srcDirs("src/androidTest/res")
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1,LICENSE.md,LICENSE-notice.md}"
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -131,6 +143,8 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.compose.ui.test)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(kotlin("test"))
     debugImplementation(libs.androidx.compose.ui.tooling)
-
+    kspAndroidTest(libs.hilt.android.testing)
 }

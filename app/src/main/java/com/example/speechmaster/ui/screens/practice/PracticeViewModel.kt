@@ -447,53 +447,7 @@ class PracticeViewModel @Inject constructor(
      * 将在SUBTASK-UI04.3中实现
      */
     fun submitForAnalysis() {
-        viewModelScope.launch {
-            try {
-                // 检查是否有录音且录音有效
-                val audioUri = _recordedAudioUri.value
-                if (audioUri == null || !_isRecordingValid.value) {
-                    Log.e(TAG, "没有有效的录音可提交分析")
-                    return@launch
-                }
-                
-                // 如果正在播放，停止播放
-                if (_isPlayingAudio.value) {
-                    audioPlayerWrapper.stop()
-                }
-                
-                // 更新分析状态
-                _isAnalyzing.value = true
-                
-                try {
-                    // 模拟分析过程的延迟
-                    delay(2000)
-                    
-                    // 模拟生成练习ID
-                    val practiceId = "practice_${System.currentTimeMillis()}"
-                    
-                    // 更新状态并发送导航事件
-                    _isAnalyzing.value = false
-                    
-                    // 发送导航事件 - 导航到反馈页面
-                    _navigationEvent.emit(
-                        NavigationEvent.NavigateToFeedback(
-                            practiceId = practiceId,
-                            courseId = courseId,
-                            cardId = cardId
-                        )
-                    )
-                    
-                    Log.d(TAG, "分析完成，导航到反馈页面")
-                } catch (e: Exception) {
-                    // 处理分析过程中的错误
-                    _isAnalyzing.value = false
-                    Log.e(TAG, "分析过程出错", e)
-                }
-            } catch (e: Exception) {
-                _isAnalyzing.value = false
-                Log.e(TAG, "提交分析异常", e)
-            }
-        }
+
     }
 
     /**
