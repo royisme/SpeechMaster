@@ -20,7 +20,11 @@ import com.example.speechmaster.AppRouteList.COURSES_ROUTE
 import com.example.speechmaster.AppRouteList.CREATE_COURSE_ROUTE
 import com.example.speechmaster.AppRouteList.HOME_ROUTE
 import com.example.speechmaster.AppRouteList.PRACTICE_ROUTE
+import com.example.speechmaster.AppRouteList.PRACTICE_RESULT_ROUTE
 import com.example.speechmaster.ui.screens.practice.PracticeScreen
+import com.example.speechmaster.ui.screens.practice.PracticeResultScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.speechmaster.ui.screens.practice.PracticeViewModel
 
 // 定义应用中的路由
 
@@ -52,9 +56,20 @@ fun AppNav(
                 navArgument("cardId") { type = NavType.StringType }
             )
         ) {
-            // PracticeScreen将在TASK-UI04中实现
-            // 目前可以使用临时占位组件
-             PracticeScreen(navController = navController)
+            val viewModel = hiltViewModel<PracticeViewModel>()
+            PracticeScreen(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+
+        // 练习结果页面路由
+        composable(PRACTICE_RESULT_ROUTE) {
+            val viewModel = hiltViewModel<PracticeViewModel>()
+            PracticeResultScreen(
+                navController = navController,
+                viewModel = viewModel
+            )
         }
 
         // 其他路由...
@@ -70,6 +85,9 @@ fun NavController.navigateToCreateCourse() {
 }
 fun NavController.navigateToPractice(courseId: String, cardId: String) {
     this.navigate("$PRACTICE_ROUTE/$courseId/$cardId")
+}
+fun NavController.navigateToPracticeResult() {
+    this.navigate(PRACTICE_RESULT_ROUTE)
 }
 fun NavGraphBuilder.addCourseRoute(navController: NavHostController) {
     composable(

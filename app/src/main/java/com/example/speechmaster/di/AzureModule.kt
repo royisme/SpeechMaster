@@ -2,6 +2,7 @@ package com.example.speechmaster.di
 
 import com.example.speechmaster.BuildConfig
 import com.example.speechmaster.domain.settings.speech.SpeechSettings
+import com.example.speechmaster.utils.audio.SpeechAnalyzerWrapper
 import com.microsoft.cognitiveservices.speech.SpeechConfig
 import dagger.Module
 import dagger.Provides
@@ -49,6 +50,22 @@ object AzureModule {
         }
 
         return config
+    }
+
+    /**
+     * 提供语音分析工具类实例
+     *
+     * @param context 应用上下文
+     * @param speechConfig Speech服务配置
+     * @return SpeechAnalyzerWrapper 语音分析工具类实例
+     */
+    @Provides
+    @Singleton
+    fun provideSpeechAnalyzer(
+        @dagger.hilt.android.qualifiers.ApplicationContext context: android.content.Context,
+        speechConfig: SpeechConfig
+    ): SpeechAnalyzerWrapper {
+        return SpeechAnalyzerWrapper(context, speechConfig)
     }
 
     // 如果需要更新配置，可以提供一个更新方法

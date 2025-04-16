@@ -114,4 +114,15 @@
     <string name="back">Back</string>
     <string name="permission_record_audio_denied">Record audio permission is required for this feature. Please enable it in Settings.</string>
     <string name="open_menu">Open menu</string>
+
+    <!-- Practice Result Screen -->
+    <string name="overall_accuracy">Overall Accuracy</string>
+    <string name="pronunciation">Pronunciation</string>
+    <string name="completeness">Completeness</string>
+    <string name="fluency">Fluency</string>
+    <string name="proszody">Proszody</string>
+    <string name="recognized_text">Recognized Text</string>
+    <string name="word_details">Word Details</string>
+    <string name="error_type">Error Type: %s</string>
+    <string name="phonemes">Phonemes</string>
 </resources>

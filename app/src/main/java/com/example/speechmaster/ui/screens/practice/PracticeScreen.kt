@@ -44,6 +44,7 @@ import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.TopAppBarDefaults
 import com.example.speechmaster.R
@@ -54,12 +55,14 @@ import com.example.speechmaster.ui.components.practice.PracticeRecordComponent
 import com.example.speechmaster.ui.components.practice.ReadingPracticeComponent
 import com.example.speechmaster.ui.components.practice.ReadingTTS
 import com.example.speechmaster.ui.components.practice.PreviewTextToSpeechWrapper
+import com.example.speechmaster.ui.layouts.navigateToPracticeResult
 import com.example.speechmaster.ui.theme.AppTheme
 import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 import com.example.speechmaster.utils.permissions.PermissionRequest
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
 import com.example.speechmaster.ui.state.TopBarState
 import com.example.speechmaster.ui.state.defaultTopBarState
+
 
 /**
 
@@ -103,6 +106,16 @@ fun PracticeScreen(
             else -> {
                 topBarViewModel.updateState(defaultTopBarState)
             }
+        }
+    }
+
+    // 监听分析状态，当分析完成时导航到结果界面
+    LaunchedEffect(viewModel.analysisState.collectAsState().value) {
+        when (val analysisState = viewModel.analysisState.value) {
+            is AnalysisState.Success -> {
+                navController.navigateToPracticeResult()
+            }
+            else -> {} // 其他状态不处理
         }
     }
 
@@ -161,7 +174,7 @@ fun PracticeScreen(
                 }
                 is PracticeUiState.Error -> {
                     ErrorView(
-                        message = stringResource(id = state.messageResId),
+                        message = stringResource(id =state.messageResId),
                         onRetry = { viewModel.retryLoading() }
                     )
                 }

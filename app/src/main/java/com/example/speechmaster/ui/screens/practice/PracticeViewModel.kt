@@ -11,10 +11,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.speechmaster.R
 import com.example.speechmaster.common.enums.RecordingState
+import com.example.speechmaster.data.model.DetailedFeedback
 import com.example.speechmaster.domain.repository.ICardRepository
 import com.example.speechmaster.domain.repository.ICourseRepository
 import com.example.speechmaster.utils.audio.AudioPlayerWrapper
 import com.example.speechmaster.utils.audio.AudioRecorderWrapper
+import com.example.speechmaster.utils.audio.SpeechAnalyzerWrapper
 import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 import com.example.speechmaster.utils.audio.wavaudiorecoder.IRecorderEventListener
 import com.example.speechmaster.utils.audio.wavaudiorecoder.WavAudioRecorder
@@ -56,13 +58,15 @@ class PracticeViewModel @Inject constructor(
     private val cardRepository: ICardRepository,
     private val audioPlayerWrapper: AudioPlayerWrapper, // 新增AudioPlayerWrapper依赖
     val textToSpeechWrapper: TextToSpeechWrapper,
+    private val speechAnalyzer: SpeechAnalyzerWrapper,
     @ApplicationContext private val context: Context,
-    savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     companion object {
         private const val TAG = "PracticeViewModel"
         private const val MIN_RECORDING_DURATION_MS = 1000L // 最小录音时长1秒
         private const val MIN_FILE_SIZE_BYTES = 1024L // 最小文件大小1KB
+        private const val KEY_ANALYSIS_RESULT = "analysis_result"
     }
     // 从导航参数获取课程ID和卡片ID
     private val courseId: String = checkNotNull(savedStateHandle.get<String>("courseId"))
@@ -100,6 +104,9 @@ class PracticeViewModel @Inject constructor(
     private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
     val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvent.asSharedFlow()
 
+    // 分析状态
+    private val _analysisState = MutableStateFlow<AnalysisState>(AnalysisState.NotStarted)
+    val analysisState: StateFlow<AnalysisState> = _analysisState.asStateFlow()
 
     // 临时录音文件
     private var tempAudioFile: File? = null
@@ -180,6 +187,10 @@ class PracticeViewModel @Inject constructor(
     // 初始化时加载卡片数据
     init {
         loadCardData()
+        // 从 SavedStateHandle 恢复分析结果
+        savedStateHandle.get<DetailedFeedback>(KEY_ANALYSIS_RESULT)?.let { feedback ->
+            _analysisState.value = AnalysisState.Success(feedback)
+        }
     }
 
     /**
@@ -443,11 +454,50 @@ class PracticeViewModel @Inject constructor(
 
     /**
      * 提交分析
-     *
-     * 将在SUBTASK-UI04.3中实现
      */
     fun submitForAnalysis() {
+        viewModelScope.launch {
+            try {
+                // 检查是否有录音文件
+                val audioUri = _recordedAudioUri.value
+                if (audioUri == null) {
+                    _analysisState.value = AnalysisState.Error("没有可用的录音文件")
+                    return@launch
+                }
 
+                // 检查是否有参考文本
+                val referenceText = when (val currentState = _uiState.value) {
+                    is PracticeUiState.Success -> currentState.textContent
+                    else -> {
+                        _analysisState.value = AnalysisState.Error("无法获取参考文本")
+                        return@launch
+                    }
+                }
+
+                // 更新分析状态
+                _analysisState.value = AnalysisState.Analyzing
+                _isAnalyzing.value = true
+
+                // 调用语音分析
+                val result = speechAnalyzer.analyzeAudio(audioUri, referenceText)
+                
+                result.fold(
+                    onSuccess = { feedback ->
+                        // 保存分析结果到 SavedStateHandle
+                        savedStateHandle[KEY_ANALYSIS_RESULT] = feedback
+                        _analysisState.value = AnalysisState.Success(feedback)
+                    },
+                    onFailure = { error ->
+                        _analysisState.value = AnalysisState.Error(error.message ?: "分析失败")
+                    }
+                )
+            } catch (e: Exception) {
+                Log.e(TAG, "分析过程中发生错误", e)
+                _analysisState.value = AnalysisState.Error(e.message ?: "未知错误")
+            } finally {
+                _isAnalyzing.value = false
+            }
+        }
     }
 
     /**
@@ -558,4 +608,14 @@ class PracticeViewModel @Inject constructor(
 
         Log.d(TAG, "ViewModel资源已清理")
     }
+}
+
+/**
+ * 分析状态密封类
+ */
+sealed class AnalysisState {
+    data object NotStarted : AnalysisState()
+    data object Analyzing : AnalysisState()
+    data class Success(val feedback: DetailedFeedback) : AnalysisState()
+    data class Error(val message: String) : AnalysisState()
 }

@@ -115,5 +115,14 @@
     <string name="open_menu">打开菜单</string>
     <string name="back">返回</string>
     <string name="permission_record_audio_denied">请在系统中设置录音权限</string>
-
+    <!-- Practice Result Screen -->
+    <string name="overall_accuracy">总体准确度</string>
+    <string name="pronunciation">发音</string>
+    <string name="completeness">完整度</string>
+    <string name="fluency">流利度</string>
+    <string name="proszody">韵律</string>
+    <string name="recognized_text">识别的文本</string>
+    <string name="word_details">单词详细评分</string>
+    <string name="error_type">错误类型：%s</string>
+    <string name="phonemes">音素</string>
 </resources>
