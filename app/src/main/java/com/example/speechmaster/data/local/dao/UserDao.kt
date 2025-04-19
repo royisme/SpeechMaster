@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
-    @Query("SELECT * FROM $USERS_TABLE_NAME WHERE isCurrentUser = 1 LIMIT 1")
+    @Query("SELECT * FROM $USERS_TABLE_NAME WHERE is_current_user = 1 LIMIT 1")
     fun getCurrentUser(): Flow<UserEntity?>
 
-    @Query("SELECT COUNT(*) FROM $USERS_TABLE_NAME WHERE isCurrentUser = 1")
+    @Query("SELECT COUNT(*) FROM $USERS_TABLE_NAME WHERE is_current_user = 1")
     suspend fun hasCurrentUser(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

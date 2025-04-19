@@ -2,10 +2,8 @@ package com.example.speechmaster.data.model
 
 import com.example.speechmaster.R
 
-data class DetailedFeedback(
+data class PracticeFeedback(
     val practiceId: Long,
-    val referenceText: String,
-    val audioFilePath: String,
     val overallAccuracyScore: Float,
     val pronunciationScore: Float,
     val completenessScore: Float,
@@ -42,3 +40,19 @@ data class WordFeedback(
 
 )
 
+/**
+ * 用户平均分数据类
+ */
+data class UserAverageScores(
+    val avgAccuracy: Float,
+    val avgPronunciation: Float,
+    val avgCompleteness: Float,
+    val avgFluency: Float
+) {
+    /**
+     * 计算综合得分（如果需要）
+     */
+    fun calculateOverallScore(): Float {
+        return (avgAccuracy + avgPronunciation + avgCompleteness + avgFluency) / 4
+    }
+}

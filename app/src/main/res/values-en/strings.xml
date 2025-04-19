@@ -25,6 +25,15 @@
     <string name="permission_denied">record audio permission not granted</string>
     <string name="permission_denied_message">please grant permission to record audio</string>
     <!--Error message -->
+    <string name="error_user_not_found">User not found</string>
+    <string name="error_course_not_found">Course not found</string>
+    <string name="error_practice_not_found">Practice not found</string>
+    <string name="error_feedback_not_found">Feedback not found</string>
+    <string name="error_network">Network error</string>
+    <string name="error_user_not_logged_in">User not logged in</string>
+    <string name="error_analysis_failed">Analysis failed</string>
+    <string name="error_loading_practice_result_failed">Failed to load practice result</string>
+
     <string name="error_invalid_course_or_not_logged_in">Invalid course ID or user not logged in</string>
     <string name="error_course_list_not_exist">Course does not exist</string>
     <string name="error_loading_course_detail_failed">Failed to load course details</string>
@@ -112,13 +121,15 @@
     <string name="back">Back</string>
     <string name="permission_record_audio_denied">Record audio permission is required for this feature. Please enable it in Settings.</string>
     <string name="open_menu">Open menu</string>
-    <string name="overall_accuracy">Overall Accuracy</string>
-    <string name="pronunciation">Pronunciation</string>
-    <string name="completeness">Completeness</string>
-    <string name="fluency">Fluency</string>
+    <string name="analysis_result_overall_accuracy">Overall Accuracy</string>
+    <string name="analysis_result_pronunciation">Pronunciation</string>
+    <string name="analysis_result_completeness">Completeness</string>
+    <string name="analysis_result_fluency">Fluency</string>
     <string name="proszody">Proszody</string>
     <string name="recognized_text">Recognized Text</string>
-    <string name="word_details">Word Details</string>
+    <string name="analysis_word_details">Word Details</string>
     <string name="error_type">Error Type: %s</string>
     <string name="phonemes">Phonemes</string>
+    <string name="best_score_format">Best: %s</string>
+    <string name="latest_score_format">Latest: %s</string>
 </resources>

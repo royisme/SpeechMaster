@@ -26,16 +26,11 @@ data class WordFeedbackEntity(
     val id: Long = 0,
 
     @ColumnInfo(name = "feedback_id")
-    val feedbackId: String,
+    val feedbackId: Long,
 
     @ColumnInfo(name = "word_text")
     val wordText: String,
 
-    @ColumnInfo(name = "offset")
-    val offset: Int,
-
-    @ColumnInfo(name = "duration")
-    val duration: Int,
 
     @ColumnInfo(name = "accuracy_score")
     val accuracyScore: Float,
@@ -43,9 +38,4 @@ data class WordFeedbackEntity(
     @ColumnInfo(name = "error_type")
     val errorType: String?, // 可能的值：Mispronunciation, Omission, Insertion, 或 null
 
-    @ColumnInfo(name = "syllable_count")
-    val syllableCount: Int,
-
-    @ColumnInfo(name = "syllable_data")
-    val syllableData: String? // 以JSON格式存储音节数据
 ) 

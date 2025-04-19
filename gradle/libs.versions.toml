@@ -8,7 +8,7 @@ accompanist = "0.37.2"
 ksp ="2.1.20-2.0.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
-androidx-corektx = "1.15.0"
+androidx-corektx = "1.16.0"
 androidx-glance = "1.1.1"
 androidx-core-splashscreen = "1.0.1"
 
@@ -35,10 +35,12 @@ okhttp = "4.12.0"
 room = "2.7.0"
 hilt = "2.56.1"
 hiltExt = "1.2.0"
+hilt-work="1.2.0"
 google-material = "1.12.0"
 microsoft-cognitiveservices = "1.43.0"
 
 androidx-datastore= "1.1.4"
+work_version= "2.9.1"
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -111,10 +113,14 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt"
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 hilt-ext-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltExt" }
+hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt-work" }
 #microsoft
 microsoft-speech = { module = "com.microsoft.cognitiveservices.speech:client-sdk", version.ref="microsoft-cognitiveservices"}
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidx-datastore" }
 androidx-datastore-preferences-core-android = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "androidx-datastore" }
+#---work---
+work-runtime= { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work_version" }
+work-multiprocess = { group = "androidx.work", name = "work-multiprocess", version.ref = "work_version" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }

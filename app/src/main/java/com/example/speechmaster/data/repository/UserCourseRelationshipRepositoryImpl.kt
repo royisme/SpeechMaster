@@ -21,14 +21,14 @@ class UserCourseRelationshipRepositoryImpl @Inject constructor(
     /**
      * 查询用户是否已添加课程
      */
-    override fun isCourseAdded(userId: String, courseId: String): Flow<Boolean> {
+    override fun isCourseAdded(userId: String, courseId: Long): Flow<Boolean> {
         return userCourseRelationshipDao.isCourseAdded(userId, courseId)
     }
 
     /**
      * 添加用户-课程关系
      */
-    override suspend fun addRelationship(userId: String, courseId: String) {
+    override suspend fun addRelationship(userId: String, courseId: Long) {
         val relationship = UserCourseRelationshipEntity(
             userId = userId,
             courseId = courseId,
@@ -40,14 +40,14 @@ class UserCourseRelationshipRepositoryImpl @Inject constructor(
     /**
      * 移除用户-课程关系
      */
-    override suspend fun removeRelationship(userId: String, courseId: String) {
+    override suspend fun removeRelationship(userId: String, courseId: Long) {
         userCourseRelationshipDao.deleteRelationship(userId, courseId)
     }
 
     /**
      * 获取用户添加的所有课程ID
      */
-    override fun getUserAddedCourseIds(userId: String): Flow<List<String>> {
+    override fun getUserAddedCourseIds(userId: String): Flow<List<Long>> {
         return userCourseRelationshipDao.getUserAddedCourseIds(userId)
     }
 }

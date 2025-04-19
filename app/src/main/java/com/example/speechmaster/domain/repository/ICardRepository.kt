@@ -10,19 +10,19 @@ interface ICardRepository {
     /**
      * 获取课程的所有卡片
      */
-    fun getCardsByCourse(courseId: String): Flow<List<Card>>
+    fun getCardsByCourse(courseId: Long): Flow<List<Card>>
 
     /**
      * 获取单个卡片
      */
-    fun getCardById(cardId: String): Flow<Card?>
+    fun getCardById(cardId: Long): Flow<Card?>
 
     /**
      * 添加卡片到课程
      */
     suspend fun addCardToCourse(
         userId: String,
-        courseId: String,
+        courseId: Long,
         textContent: String
     ): Result<Card>
 
@@ -31,7 +31,7 @@ interface ICardRepository {
      */
     suspend fun addMultipleCardsToCourse(
         userId: String,
-        courseId: String,
+        courseId: Long,
         textContents: List<String>
     ): Result<List<Card>>
 
@@ -40,22 +40,22 @@ interface ICardRepository {
      */
     suspend fun updateCard(
         userId: String,
-        cardId: String,
+        cardId: Long,
         textContent: String
     ): Result<Card>
 
     /**
      * 删除卡片
      */
-    suspend fun deleteCard(userId: String, cardId: String): Result<Boolean>
+    suspend fun deleteCard(userId: String, cardId: Long): Result<Boolean>
 
     /**
      * 更新卡片顺序
      */
-    suspend fun updateCardOrder(userId: String, cardId: String, newOrder: Int): Result<Boolean>
+    suspend fun updateCardOrder(userId: String, cardId: Long, newOrder: Int): Result<Boolean>
 
     /**
      * 获取下一个卡片序号
      */
-    suspend fun getNextSequenceOrder(courseId: String): Int
+    suspend fun getNextSequenceOrder(courseId: Long): Int
 }

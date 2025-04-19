@@ -56,3 +56,4 @@ proguard-project.txt
 .cursorrules
 .cursor/*
 schemas/*
+/.cursor/

@@ -2,12 +2,15 @@ package com.example.speechmaster.ui.components.practice
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -46,16 +49,22 @@ fun ReadingPracticeComponent(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surface, //MaterialTheme.colorScheme.surface,
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 0.dp
+            defaultElevation = 1.dp
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant) // Example border
     ) {
-        Box(
-            modifier = Modifier
-                .padding(36.dp)
+        Column(modifier = Modifier.fillMaxSize()) { // Fill the Card's size
+
+            Box(
+                modifier = Modifier
+                    .weight(1f) // Allow Box to take available space above the button
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp) // Adjust padding
+                    // --- CHANGE: Apply scroll to the Box ---
+                    .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = textContent,
@@ -63,18 +72,20 @@ fun ReadingPracticeComponent(
                     lineHeight = 24.sp,
                     fontSize = 18.sp // 更大的字体便于阅读
                 ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .verticalScroll(rememberScrollState())
             )
 
         }
-        ReadingTTS(
-            textContent = textContent,
-            textToSpeechWrapper = textToSpeechWrapper,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(46.dp)
-        )
+            ReadingTTS(
+                textContent = textContent,
+                textToSpeechWrapper = textToSpeechWrapper,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    // .height(48.dp) // Let the button determine its height
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 8.dp) // Add padding
+            )
+        }
     }
 }

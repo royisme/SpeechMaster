@@ -21,7 +21,7 @@ interface UserCourseRelationshipDao {
     @return 返回关系的存在性
      */
     @Query("SELECT EXISTS(SELECT 1 FROM $USER_COURSE_RELATIONSHIPS_TABLE_NAME WHERE user_id = :userId AND course_id = :courseId LIMIT 1)")
-    fun isCourseAdded(userId: String, courseId: String): Flow<Boolean>
+    fun isCourseAdded(userId: String, courseId: Long): Flow<Boolean>
     /**
      * 添加用户-课程关系
      * @param relationship 用户-课程关系实体
@@ -37,7 +37,7 @@ interface UserCourseRelationshipDao {
      * @return 删除的行数
      */
     @Query("DELETE FROM $USER_COURSE_RELATIONSHIPS_TABLE_NAME WHERE user_id = :userId AND course_id = :courseId")
-    suspend fun deleteRelationship(userId: String, courseId: String): Int
+    suspend fun deleteRelationship(userId: String, courseId: Long): Int
 
     /**
      * 获取用户添加的所有课程ID
@@ -45,7 +45,7 @@ interface UserCourseRelationshipDao {
      * @return 课程ID列表
      */
     @Query("SELECT course_id FROM $USER_COURSE_RELATIONSHIPS_TABLE_NAME WHERE user_id = :userId")
-    fun getUserAddedCourseIds(userId: String): Flow<List<String>>
+    fun getUserAddedCourseIds(userId: String): Flow<List<Long>>
 
     /**
      * 获取课程的添加用户数量
@@ -53,5 +53,5 @@ interface UserCourseRelationshipDao {
      * @return 添加用户数量
      */
     @Query("SELECT COUNT(*) FROM $USER_COURSE_RELATIONSHIPS_TABLE_NAME WHERE course_id = :courseId")
-    fun getCourseAddedCount(courseId: String): Flow<Int>
+    fun getCourseAddedCount(courseId: Long): Flow<Int>
 }

@@ -38,13 +38,13 @@ fun CourseHeader(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(8.dp)
     ) {
         // 标题行
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
             Text(
                 text = course.title,
@@ -145,7 +145,7 @@ fun CourseHeaderPreview() {
     AppTheme {
         CourseHeader(
             course = CourseDetail(
-                id = "1",
+                id = 1111,
                 title = "Business English",
                 description = "A course designed to improve your business English skills, including presentations, negotiations, and professional emails.",
                 difficulty = "intermediate",
@@ -164,7 +164,7 @@ fun CourseHeaderPreviewUserCreated() {
     AppTheme {
         CourseHeader(
             course = CourseDetail(
-                id = "2",
+                id = 2222,
                 title = "Daily Conversations",
                 description = "Practice everyday conversations in various scenarios.",
                 difficulty = "beginner",

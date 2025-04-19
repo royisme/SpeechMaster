@@ -9,8 +9,8 @@ import androidx.room.Update
 import com.example.speechmaster.data.local.DatabaseConstants.COURSES_TABLE_NAME
 import com.example.speechmaster.data.local.DatabaseConstants.COURSE_FILED_SOURCE_BUILT_IN
 import com.example.speechmaster.data.local.DatabaseConstants.COURSE_FILED_SOURCE_UGC
-import com.example.speechmaster.data.local.entity.CardEntity
 import com.example.speechmaster.data.local.entity.CourseEntity
+import com.example.speechmaster.data.local.entity.CourseWithCards
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -71,12 +71,12 @@ interface CourseDao {
      * 检查用户是否为课程创建者
      */
     @Query("SELECT COUNT(*) FROM $COURSES_TABLE_NAME WHERE id = :courseId AND creator_id = :userId")
-    suspend fun isUserTheCourseCreator(courseId: String, userId: String): Int
+    suspend fun isUserTheCourseCreator(courseId: Long, userId: String): Int
     /**
      * 根据ID获取单个课程
      */
     @Query("SELECT * FROM $COURSES_TABLE_NAME WHERE id = :courseId")
-    fun getCourseById(courseId: String): Flow<CourseEntity?>
+    fun getCourseById(courseId: Long): Flow<CourseEntity?>
     
     /**
      * 插入课程
@@ -101,7 +101,7 @@ interface CourseDao {
      * 删除课程
      */
     @Query("DELETE FROM courses WHERE id = :courseId AND creator_id = :userId")
-    suspend fun deleteUserCourse(courseId: String, userId: String): Int
+    suspend fun deleteUserCourse(courseId: Long, userId: String): Int
 
 
     /**
@@ -109,7 +109,7 @@ interface CourseDao {
      */
     @Transaction
     @Query("SELECT * FROM courses WHERE id = :courseId")
-    fun getCourseWithCards(courseId: String): Flow<CourseWithCards?>
+    fun getCourseWithCards(courseId: Long): Flow<CourseWithCards?>
 
     /**
      * 获取用户可访问的所有课程及其卡片
@@ -119,17 +119,3 @@ interface CourseDao {
             " OR creator_id = :userId ORDER BY created_at DESC")
     fun getAccessibleCoursesWithCards(userId: String): Flow<List<CourseWithCards>>
 }
-
-/**
- * 课程与卡片的关系类
- */
-data class CourseWithCards(
-    @androidx.room.Embedded
-    val course: CourseEntity,
-    
-    @androidx.room.Relation(
-        parentColumn = "id",
-        entityColumn = "course_id"
-    )
-    val cards: List<CardEntity>
-)

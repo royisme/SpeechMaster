@@ -6,7 +6,7 @@ import com.example.speechmaster.ui.screens.course.SortingType
 
 // UI用的课程数据模型
 data class CourseItem(
-    val id: String,
+    val id: Long,
     val title: String,
     val description: String?,
     val difficulty: String,
@@ -28,7 +28,7 @@ data class FilterState(
 课程详情UI模型
  */
 data class CourseDetail(
-    val id: String,
+    val id: Long,
     val title: String,
     val description: String?,
     val difficulty: String,
@@ -40,8 +40,11 @@ data class CourseDetail(
 卡片列表项UI模型
  */
 data class CourseCardItem(
-    val id: String,
+    val id: Long,
     val sequenceOrder: Int,
     val textPreview: String,
-    val isCompleted: Boolean
+    val isCompleted: Boolean,
+    val bestScore: Float? = null,
+    val latestScore: Float? = null
 )
+

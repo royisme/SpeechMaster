@@ -30,7 +30,6 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val userSessionManager: UserSessionManager,
-
     private val practiceRepository: MockPracticeRepository
 ) : ViewModel() {
 
@@ -49,53 +48,17 @@ class HomeViewModel @Inject constructor(
             // 监听当前用户变化
             userSessionManager.currentUserFlow.collect { user ->
                 _uiState.update { it.copy(user = user) }
-
-                user?.let { currentUser ->
-                    // 基于用户ID加载进度
-                    practiceRepository.getUserProgress(currentUser.id).collect { progress ->
-                        _uiState.update { it.copy(userProgress = progress) }
-                    }
-                }
-            }
-        }
-
-
-// 加载用户的练习历史
-        viewModelScope.launch {
-            // 监听用户和练习历史
-            combine(
-                userSessionManager.currentUserFlow,
-                practiceRepository.getAvailablePracticeSessions()
-            ) { user, sessions ->
-                Pair(user, sessions)
-            }.collect { (user, sessions) ->
-                if (user != null) {
-                    // 加载最近练习
-                    practiceRepository.getRecentPractices(user.id).collect { practices ->
-                        _uiState.update {
-                            it.copy(
-                                recentPractices = practices,
-                                isLoading = false
-                            )
-                        }
-                    }
-                }
-
-                // 设置特色会话
-                if (sessions.isNotEmpty()) {
-                    _uiState.update { it.copy(featuredSession = sessions[0]) }
-                }
+                // 基于用户ID加载进度
+//                user?.let { currentUser ->
+//
+//                    practiceRepository.getUserProgress(currentUser.id).collect { progress ->
+//                        _uiState.update { it.copy(userProgress = progress) }
+//                    }
+//                }
             }
         }
     }
 
-    fun startPractice(sessionId: String) {
-        viewModelScope.launch {
-            val user = userSessionManager.currentUserFlow.value
-            user?.let { currentUser ->
-                practiceRepository.startPracticeSession(sessionId)
-            }
-            // 此处应该导航到练习界面，但暂不实现
-        }
-    }
+    // TODO: 加载用户的练习历史
+
 }

@@ -24,7 +24,7 @@ class UserCardCompletionRepositoryImpl @Inject constructor(
     /**
      * 获取用户在特定课程中已完成的卡片ID集合
      */
-    override fun getCompletedCardIds(userId: String, courseId: String): Flow<Set<String>> {
+    override fun getCompletedCardIds(userId: String, courseId: Long): Flow<Set<Long>> {
         return userCardCompletionDao.getCompletedCardIds(userId, courseId)
             .map { it.toSet() }
     }
@@ -32,7 +32,7 @@ class UserCardCompletionRepositoryImpl @Inject constructor(
     /**
      * 标记卡片为已完成
      */
-    override suspend fun markCardAsCompleted(userId: String, courseId: String, cardId: String) {
+    override suspend fun markCardAsCompleted(userId: String, courseId: Long, cardId: Long) {
         val completion = UserCardCompletionEntity(
             userId = userId,
             courseId = courseId,
@@ -45,27 +45,27 @@ class UserCardCompletionRepositoryImpl @Inject constructor(
     /**
      * 标记卡片为未完成
      */
-    override suspend fun markCardAsNotCompleted(userId: String, courseId: String, cardId: String) {
+    override suspend fun markCardAsNotCompleted(userId: String, courseId: Long, cardId: Long) {
         userCardCompletionDao.markCardAsNotCompleted(userId, cardId)
     }
 
     /**
      * 检查卡片是否已完成
      */
-    override fun isCardCompleted(userId: String, cardId: String): Flow<Boolean> {
+    override fun isCardCompleted(userId: String, cardId: Long): Flow<Boolean> {
         return userCardCompletionDao.isCardCompleted(userId, cardId)
     }
 
     /**
      * 获取用户在所有课程中的完成率统计
      */
-    override fun getCourseCompletionRates(userId: String): Flow<Map<String, Float>> {
+    override fun getCourseCompletionRates(userId: String): Flow<Map<Long, Float>> {
         // 获取用户已添加的所有课程ID
         return flow {
             val courseIds = database.userCourseRelationshipDao().getUserAddedCourseIds(userId).first()
 
             // 创建结果Map
-            val completionRates = mutableMapOf<String, Float>()
+            val completionRates = mutableMapOf<Long, Float>()
 
             // 对每个课程计算完成率
             for (courseId in courseIds) {

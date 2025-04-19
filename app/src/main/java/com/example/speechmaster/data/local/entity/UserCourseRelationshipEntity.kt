@@ -41,7 +41,7 @@ data class UserCourseRelationshipEntity(
     val userId: String,
 
     @ColumnInfo(name = "course_id")
-    val courseId: String,
+    val courseId: Long,
 
     @ColumnInfo(name = "added_at")
     val addedAt: Long = System.currentTimeMillis()

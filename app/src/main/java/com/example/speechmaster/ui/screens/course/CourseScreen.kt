@@ -9,16 +9,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.speechmaster.R
+import com.example.speechmaster.domain.model.CourseItem
 import com.example.speechmaster.ui.components.common.ErrorView
+import com.example.speechmaster.ui.components.common.LoadingView
 import com.example.speechmaster.ui.components.course.CourseList
 import com.example.speechmaster.ui.components.course.CourseSearchBar
 import com.example.speechmaster.ui.components.course.EmptyCoursesView
 import com.example.speechmaster.ui.components.course.FilterBar
-import com.example.speechmaster.ui.layouts.navigateToCourseDetail
+import com.example.speechmaster.ui.navigation.navigateToCourseDetail
+import com.example.speechmaster.ui.state.BaseUiState
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
 
 @Composable
@@ -61,47 +63,49 @@ fun CourseScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        when (uiState) {
-            is CourseListUiState.Loading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
+        when (val state = uiState) {
+            is BaseUiState.Loading -> {
+                LoadingView()
             }
-            is CourseListUiState.Error -> {
-                val error = uiState as CourseListUiState.Error
+            is BaseUiState.Error -> {
                 ErrorView(
-                    message = stringResource(id = error.messageResId),
-                    onRetry = { /* 重试逻辑 */ }
+                    message = stringResource(id = state.messageResId),
+                    onRetry = { viewModel.loadCourses() }
                 )
             }
-            CourseListUiState.Empty -> {
-                EmptyCoursesView(
-                    onCreateCourse = { viewModel.navigateToCreateCourse() }
-                )
-            }
-            is CourseListUiState.Success -> {
-                val success = uiState as CourseListUiState.Success
-                Column {
-                    if (showSearch) {
-                        CourseSearchBar(
-                            query = searchQuery,
-                            onQueryChange = { viewModel.updateSearchQuery(it) },
-                            onSearch = { /* 搜索逻辑 */ },
-                            onClose = { viewModel.toggleSearchVisibility() }
+
+            is BaseUiState.Success -> {
+                val courseListData = state.data
+                when (courseListData) {
+                    is CourseListData.Success -> {
+                        Column {
+                            if (showSearch) {
+                                CourseSearchBar(
+                                    query = searchQuery,
+                                    onQueryChange = { viewModel.updateSearchQuery(it) },
+                                    onSearch = { /* 搜索逻辑 */ },
+                                    onClose = { viewModel.toggleSearchVisibility() }
+                                )
+                            }
+                            FilterBar(
+                                filterState = filterState,
+                                onSourceSelected = { viewModel.updateSourceFilter(it) },
+                                onDifficultySelected = { viewModel.updateDifficultyFilter(it) },
+                                onCategorySelected = { viewModel.updateCategoryFilter(it) }
+                            )
+                            CourseList(
+                                courses = courseListData.courses,
+                                onCourseClick = { courseId ->
+                                    navController.navigateToCourseDetail(courseId)
+                                }
+                            )
+                        }
+                    }
+                    is CourseListData.Empty -> {
+                        EmptyCoursesView(
+                            onCreateCourse = { viewModel.navigateToCreateCourse() }
                         )
                     }
-                    FilterBar(
-                        filterState = filterState,
-                        onSourceSelected = { viewModel.updateSourceFilter(it) },
-                        onDifficultySelected = { viewModel.updateDifficultyFilter(it) },
-                        onCategorySelected = { viewModel.updateCategoryFilter(it) }
-                    )
-                    CourseList(
-                        courses = success.courses,
-                        onCourseClick = { courseId ->
-                            navController.navigateToCourseDetail(courseId)
-                        }
-                    )
                 }
             }
         }

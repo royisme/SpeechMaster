@@ -14,7 +14,7 @@ interface IUserCardCompletionRepository {
      * @param courseId 课程ID
      * @return 返回包含已完成卡片ID集合的Flow
      */
-    fun getCompletedCardIds(userId: String, courseId: String): Flow<Set<String>>
+    fun getCompletedCardIds(userId: String, courseId: Long): Flow<Set<Long>>
 
     /**
      * 标记卡片为已完成
@@ -22,7 +22,7 @@ interface IUserCardCompletionRepository {
      * @param courseId 课程ID
      * @param cardId 卡片ID
      */
-    suspend fun markCardAsCompleted(userId: String, courseId: String, cardId: String)
+    suspend fun markCardAsCompleted(userId: String, courseId: Long, cardId: Long)
 
     /**
      * 标记卡片为未完成
@@ -30,7 +30,7 @@ interface IUserCardCompletionRepository {
      * @param courseId 课程ID
      * @param cardId 卡片ID
      */
-    suspend fun markCardAsNotCompleted(userId: String, courseId: String, cardId: String)
+    suspend fun markCardAsNotCompleted(userId: String, courseId: Long, cardId: Long)
 
     /**
      * 检查卡片是否已完成
@@ -38,12 +38,12 @@ interface IUserCardCompletionRepository {
      * @param cardId 卡片ID
      * @return 返回包含布尔值的Flow，表示卡片是否已完成
      */
-    fun isCardCompleted(userId: String, cardId: String): Flow<Boolean>
+    fun isCardCompleted(userId: String, cardId: Long): Flow<Boolean>
 
     /**
      * 获取用户在所有课程中的完成率统计
      * @param userId 用户ID
      * @return 返回包含课程ID到完成率（百分比）映射的Flow
      */
-    fun getCourseCompletionRates(userId: String): Flow<Map<String, Float>>
+    fun getCourseCompletionRates(userId: String): Flow<Map<Long, Float>>
 }

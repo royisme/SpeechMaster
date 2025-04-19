@@ -1,7 +1,6 @@
 package com.example.speechmaster.ui.screens.practice
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,32 +35,24 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import android.Manifest
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.TopAppBarDefaults
 import com.example.speechmaster.R
 import com.example.speechmaster.common.enums.RecordingState
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
 import com.example.speechmaster.ui.components.practice.PracticeRecordComponent
 import com.example.speechmaster.ui.components.practice.ReadingPracticeComponent
-import com.example.speechmaster.ui.components.practice.ReadingTTS
 import com.example.speechmaster.ui.components.practice.PreviewTextToSpeechWrapper
-import com.example.speechmaster.ui.layouts.navigateToPracticeResult
+import com.example.speechmaster.ui.components.practice.ReadingTTS
+import com.example.speechmaster.ui.navigation.navigateToPracticeResult
 import com.example.speechmaster.ui.theme.AppTheme
 import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 import com.example.speechmaster.utils.permissions.PermissionRequest
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
 import com.example.speechmaster.ui.state.TopBarState
+import com.example.speechmaster.ui.state.BaseUiState
 import com.example.speechmaster.ui.state.defaultTopBarState
+import com.example.speechmaster.ui.state.get
 
 
 /**
@@ -88,32 +79,32 @@ fun PracticeScreen(
     var shouldShowPermissionRequest by remember { mutableStateOf(false) }
     val practiceTitle = stringResource(R.string.practice)
 
-    LaunchedEffect(uiState) {
-        when (uiState) {
-            is PracticeUiState.Success -> {
-                topBarViewModel.updateState(
-                    TopBarState(
-                        title = practiceTitle,
-                        showBackButton = true,
-                        showMenuButton = false,
-                        actions = {}
-                    )
-                )
-                topBarViewModel.updateActions {
-                    BackButton(onBackClick = { navController.navigateUp() })
-                }
-            }
-            else -> {
-                topBarViewModel.updateState(defaultTopBarState)
-            }
-        }
-    }
+//    LaunchedEffect(uiState) {
+//        when (uiState) {
+//            is BaseUiState.Success -> {
+//                topBarViewModel.updateState(
+//                    TopBarState(
+//                        title = practiceTitle,
+//                        showBackButton = true,
+//                        showMenuButton = false,
+//                        actions = {}
+//                    )
+//                )
+//                topBarViewModel.updateActions {
+//                    BackButton(onBackClick = { navController.navigateUp() })
+//                }
+//            }
+//            else -> {
+//                topBarViewModel.updateState(defaultTopBarState)
+//            }
+//        }
+//    }
 
     // 监听分析状态，当分析完成时导航到结果界面
     LaunchedEffect(viewModel.analysisState.collectAsState().value) {
         when (val analysisState = viewModel.analysisState.value) {
             is AnalysisState.Success -> {
-                navController.navigateToPracticeResult()
+                navController.navigateToPracticeResult(analysisState.feedback.practiceId)
             }
             else -> {} // 其他状态不处理
         }
@@ -134,6 +125,7 @@ fun PracticeScreen(
                 is NavigationEvent.RequestPermission -> {
                     shouldShowPermissionRequest = true
                 }
+                else -> {}
             }
         }
     }
@@ -161,26 +153,25 @@ fun PracticeScreen(
         }
     }
 
-    Scaffold { paddingValues ->
-        Surface(
+    Surface(
             modifier = modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(8.dp),
             color = MaterialTheme.colorScheme.background
         ) {
             when (val state = uiState) {
-                is PracticeUiState.Loading -> {
+                is BaseUiState.Loading -> {
                     LoadingView()
                 }
-                is PracticeUiState.Error -> {
+                is BaseUiState.Error -> {
                     ErrorView(
                         message = stringResource(id =state.messageResId),
                         onRetry = { viewModel.retryLoading() }
                     )
                 }
-                is PracticeUiState.Success -> {
+                is BaseUiState.Success -> {
                     PracticeContent(
-                        textContent = state.textContent,
+                        textContent = (state.get<PracticeUiData>()?.textContent ?: ""),
                         recordingState = recordingState,
                         recordingDurationMillis = recordingDuration,
                         isPlayingAudio = isPlayingAudio,
@@ -200,9 +191,10 @@ fun PracticeScreen(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
+
             }
         }
-    }
+
 }
 
 /**
@@ -233,28 +225,29 @@ fun PracticeContent(
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.secondaryContainer
+        color = MaterialTheme.colorScheme.background // Use standard background
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp), // Increased spacing
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // 文本展示组件 - 占据大部分空间
             ReadingPracticeComponent(
                 textContent = textContent,
                 modifier = Modifier
-                    .weight(1f)
+                    .height(300.dp) // Adjust this DP value as needed
                     .fillMaxWidth(),
                 textToSpeechWrapper = textToSpeechWrapper
             )
             // 底部控制区 - 简洁设计
-            // Listen to Reference Button
 
             Spacer(modifier = Modifier.height(8.dp))
 
+
+            Spacer(modifier = Modifier.height(8.dp))
             // 录音控制组件 - 使用新实现的PracticeRecordComponent
             PracticeRecordComponent(
                 recordingState = recordingState,
@@ -270,6 +263,7 @@ fun PracticeContent(
                     .fillMaxWidth()
                     .height(220.dp)
             )
+           Spacer(modifier = Modifier.weight(1f)) // Pushes recorder up if needed
         }
     }
 }

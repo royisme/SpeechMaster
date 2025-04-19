@@ -51,7 +51,7 @@ class CourseDataSeeder (
             for (courseData in coursesData) {
                 // 插入课程
                 val courseEntity = CourseEntity(
-                    id = courseData.id,
+                    id = 0,
                     title = courseData.title,
                     description = courseData.description,
                     difficulty = courseData.difficulty,
@@ -64,13 +64,12 @@ class CourseDataSeeder (
                     createdAt = System.currentTimeMillis(),
                     updatedAt = System.currentTimeMillis()
                 )
-                database.courseDao().insertCourse(courseEntity)
+                var courseId = database.courseDao().insertCourse(courseEntity)
 
                 // 插入该课程的所有卡片
                 val cardEntities = courseData.cards.map { cardData ->
                     CardEntity(
-                        id = cardData.id,
-                        courseId = courseData.id,
+                        courseId = courseId,
                         textContent = cardData.textContent,
                         sequenceOrder = cardData.sequenceOrder
                     )
@@ -92,7 +91,7 @@ class CourseDataSeeder (
 
     @Serializable
     private data class CourseData(
-        val id: String,
+        val id: Long,
         val title: String,
         val description: String?,
         val difficulty: String,
@@ -104,7 +103,7 @@ class CourseDataSeeder (
 
     @Serializable
     private data class CardData(
-        val id: String,
+        val id: Long,
         val textContent: String,
         val sequenceOrder: Int
     )

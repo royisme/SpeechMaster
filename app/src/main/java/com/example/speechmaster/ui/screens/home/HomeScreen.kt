@@ -1,6 +1,7 @@
 // 在ui/screens/home目录下创建HomeScreen.kt
 package com.example.speechmaster.ui.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,6 +31,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     // 使用Mock数据
+    val TAG = "HomeScreen"
+    Log.d(TAG, "HomeScreen: start loading home screen")
     val uiState by viewModel.uiState.collectAsState()
     if (uiState.isLoading) {
         Box(
@@ -44,7 +47,7 @@ fun HomeScreen(
             userProgress = uiState.userProgress,
             featuredSession = uiState.featuredSession,
             recentPractices = uiState.recentPractices,
-            onStartPractice = { sessionId -> viewModel.startPractice(sessionId) },
+            onStartPractice = { /* 导航到课程*/ },
             onPracticeClick = { /* 导航到练习详情 */ },
             modifier = modifier
         )
@@ -57,8 +60,8 @@ private fun HomeContent(
     userProgress: UserProgress?,
     featuredSession: PracticeSession?,
     recentPractices: List<RecentPractice>,
-    onStartPractice: (String) -> Unit,
-    onPracticeClick: (String) -> Unit,
+    onStartPractice: (Long) -> Unit,
+    onPracticeClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(

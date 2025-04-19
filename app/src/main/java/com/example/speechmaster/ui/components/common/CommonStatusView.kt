@@ -97,6 +97,23 @@ fun ErrorView(
         }
     }
 }
+@Composable
+fun EmptyView(
+    message: String = "没有数据",
+    ){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
+        )
+    }
+}
 @Preview
 @Composable
 fun LoadingViewPreview() {

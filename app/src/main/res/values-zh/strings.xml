@@ -73,11 +73,20 @@
     <string name="error_loading_course">加载课程失败</string>
 
     <!--Error message -->
+    <string name="error_user_not_found">用户不存在</string>
+    <string name="error_course_not_found">课程不存在</string>
+    <string name="error_practice_not_found">练习不存在</string>
+    <string name="error_feedback_not_found">反馈不存在</string>
+    <string name="error_network">网络错误</string>
+    <string name="error_user_not_logged_in">用户未登录</string>
     <string name="error_invalid_course_or_not_logged_in">无效的课程ID或用户未登录</string>
     <string name="error_course_list_not_exist">课程不存在</string>
     <string name="error_loading_course_detail_failed">加载课程详情失败</string>
     <string name="error_loading_practice_card_failed">加载练习卡片失败</string>
     <string name="error_loading_default">加载资源失败</string>
+    <string name="error_analysis_failed">分析失败</string>
+    <string name="error_loading_practice_result_failed">加载分析结果失败</string>
+
     <string name="error_unknown">未知错误</string>
     <string name="error_record_permission_not_granted">录音权限未被授予</string>
     <string name="error_invalid_audio_parameters">无效的音频参数</string>
@@ -116,13 +125,16 @@
     <string name="back">返回</string>
     <string name="permission_record_audio_denied">请在系统中设置录音权限</string>
     <!-- Practice Result Screen -->
-    <string name="overall_accuracy">总体准确度</string>
-    <string name="pronunciation">发音</string>
-    <string name="completeness">完整度</string>
-    <string name="fluency">流利度</string>
+    <string name="analysis_result_overall_accuracy">总体准确度</string>
+    <string name="analysis_result_pronunciation">发音</string>
+    <string name="analysis_result_completeness">完整度</string>
+    <string name="analysis_result_fluency">流利度</string>
     <string name="proszody">韵律</string>
     <string name="recognized_text">识别的文本</string>
-    <string name="word_details">单词详细评分</string>
+    <string name="analysis_word_details">单词详细评分</string>
     <string name="error_type">错误类型：%s</string>
     <string name="phonemes">音素</string>
+    <!-- Practice Scores -->
+    <string name="best_score_format">最佳分数：%s</string>
+    <string name="latest_score_format">最新分数：%s</string>
 </resources>

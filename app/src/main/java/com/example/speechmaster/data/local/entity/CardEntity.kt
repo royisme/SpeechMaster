@@ -21,11 +21,11 @@ import com.example.speechmaster.data.local.DatabaseConstants.CARDS_TABLE_NAME
     ]
 )
 data class CardEntity(
-    @PrimaryKey
-    val id: String,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
     
     @ColumnInfo(name = "course_id")
-    val courseId: String,
+    val courseId: Long,
     
     @ColumnInfo(name = "text_content")
     val textContent: String,

@@ -18,7 +18,7 @@ import com.example.speechmaster.data.model.RecentPractice
 @Composable
 fun RecentPracticesCard(
     practices: List<RecentPractice>,
-    onPracticeClick: (String) -> Unit,
+    onPracticeClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(

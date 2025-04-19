@@ -48,10 +48,10 @@ data class UserCardCompletionEntity(
     val userId: String,
 
     @ColumnInfo(name = "card_id")
-    val cardId: String,
+    val cardId: Long,
 
     @ColumnInfo(name = "course_id")
-    val courseId: String,
+    val courseId: Long,
 
     @ColumnInfo(name = "completed_at")
     val completedAt: Long = System.currentTimeMillis(),

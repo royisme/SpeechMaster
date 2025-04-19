@@ -130,6 +130,10 @@ dependencies {
     ksp(libs.hilt.compiler)
     ksp(libs.hilt.ext.compiler)
     implementation(libs.microsoft.speech)
+    implementation(libs.work.runtime)
+    implementation(libs.work.multiprocess)
+    implementation(libs.hilt.work)
+
     testImplementation(libs.junit) // 添加这行
     testImplementation(libs.kotlinx.coroutines.test) // 添加这行
 

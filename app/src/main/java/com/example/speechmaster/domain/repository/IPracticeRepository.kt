@@ -1,31 +1,36 @@
 package com.example.speechmaster.domain.repository
 
-import com.example.speechmaster.data.model.PracticeSession
-import com.example.speechmaster.data.model.RecentPractice
-import com.example.speechmaster.data.model.UserProgress
+
+import com.example.speechmaster.data.model.PracticeFeedback
+import com.example.speechmaster.data.model.UserPractice
+import com.example.speechmaster.domain.model.PracticeWithFeedbackModel
+import com.example.speechmaster.domain.model.PracticeHistoryItem
 import kotlinx.coroutines.flow.Flow
 
 interface IPracticeRepository {
-    // 获取用户进度
-    fun getUserProgress(userId: String): Flow<UserProgress>
+    // 基本的CRUD操作
+    suspend fun insertPractice(practice: UserPractice)
+    suspend fun updatePractice(practice: UserPractice)
+    suspend fun deletePractice(practiceId: Long)
+    suspend fun insertFeedback(feedback: PracticeFeedback)
 
-    // 获取可用的练习会话
-    fun getAvailablePracticeSessions(): Flow<List<PracticeSession>>
-
-    // 获取单个练习会话
-    fun getPracticeSession(id: String): Flow<PracticeSession?>
-
-    // 获取最近练习历史
-    fun getRecentPractices(userId: String, limit: Int = 5): Flow<List<RecentPractice>>
-
-    // 开始新练习会话 (记录开始时间)
-    suspend fun startPracticeSession(sessionId: String): Result<Boolean>
-
-    // 完成练习会话 (更新用户进度)
-    suspend fun completePracticeSession(
-        userId: String,
-        sessionId: String,
-        durationMinutes: Int,
-        durationSeconds: Int
-    ): Result<Boolean>
+    fun getPracticeById(practiceId: Long): Flow<UserPractice?>
+    
+    // 查询操作
+    fun getPracticeWithFeedback(practiceId: Long): Flow<PracticeWithFeedbackModel?>
+    fun getPracticesWithFeedbackByCard(userId: String, cardId: Long): Flow<List<PracticeHistoryItem>>
+    fun hasPracticedInCourse(userId: String, courseId: Long): Flow<Boolean>
+    
+    // 分析相关
+    suspend fun retryAnalysis(practiceId: Long)
+    suspend fun updateAnalysisStatus(practiceId: Long, status: String, error: String? = null)
+    
+    // 分数查询
+    suspend fun getBestScoreForCard(userId: String, cardId: Long): Float?
+    suspend fun getLatestScoreForCard(userId: String, cardId: Long): Float?
+    
+    /**
+     * 获取用户对特定卡片的最新一次练习记录（包含反馈）
+     */
+    fun getLatestPracticeWithFeedback(userId: String, cardId: Long): Flow<PracticeWithFeedbackModel?>
 }

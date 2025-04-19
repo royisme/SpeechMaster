@@ -20,13 +20,13 @@ class CardRepositoryImpl @Inject constructor(
     private val cardDao = database.cardDao()
     private val courseDao = database.courseDao()
 
-    override fun getCardsByCourse(courseId: String): Flow<List<Card>> {
+    override fun getCardsByCourse(courseId: Long): Flow<List<Card>> {
         return cardDao.getCardsByCourse(courseId).map { cards ->
             cards.map { it.toModel() }
         }
     }
 
-    override fun getCardById(cardId: String): Flow<Card?> {
+    override fun getCardById(cardId: Long): Flow<Card?> {
         return cardDao.getCardById(cardId).map { entity ->
             entity?.toModel()
         }
@@ -34,7 +34,7 @@ class CardRepositoryImpl @Inject constructor(
 
     override suspend fun addCardToCourse(
         userId: String,
-        courseId: String,
+        courseId: Long,
         textContent: String
     ): Result<Card> {
         return try {
@@ -47,9 +47,7 @@ class CardRepositoryImpl @Inject constructor(
             // 获取下一个序号
             val sequenceOrder = cardDao.getNextSequenceOrder(courseId)
 
-            val cardId = UUID.randomUUID().toString()
             val card = Card(
-                id = cardId,
                 courseId = courseId,
                 textContent = textContent,
                 sequenceOrder = sequenceOrder
@@ -64,7 +62,7 @@ class CardRepositoryImpl @Inject constructor(
 
     override suspend fun addMultipleCardsToCourse(
         userId: String,
-        courseId: String,
+        courseId: Long,
         textContents: List<String>
     ): Result<List<Card>> {
         return try {
@@ -79,9 +77,7 @@ class CardRepositoryImpl @Inject constructor(
 
             // 创建卡片列表
             val cards = textContents.map { textContent ->
-                val cardId = UUID.randomUUID().toString()
                 val card = Card(
-                    id = cardId,
                     courseId = courseId,
                     textContent = textContent,
                     sequenceOrder = sequenceOrder++
@@ -100,7 +96,7 @@ class CardRepositoryImpl @Inject constructor(
 
     override suspend fun updateCard(
         userId: String,
-        cardId: String,
+        cardId: Long,
         textContent: String
     ): Result<Card> {
         return try {
@@ -124,7 +120,7 @@ class CardRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteCard(userId: String, cardId: String): Result<Boolean> {
+    override suspend fun deleteCard(userId: String, cardId: Long): Result<Boolean> {
         return try {
             // 获取卡片
             val card = cardDao.getCardById(cardId).firstOrNull()
@@ -144,7 +140,7 @@ class CardRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateCardOrder(userId: String, cardId: String, newOrder: Int): Result<Boolean> {
+    override suspend fun updateCardOrder(userId: String, cardId: Long, newOrder: Int): Result<Boolean> {
         return try {
             // 获取卡片
             val card = cardDao.getCardById(cardId).firstOrNull()
@@ -164,7 +160,7 @@ class CardRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getNextSequenceOrder(courseId: String): Int {
+    override suspend fun getNextSequenceOrder(courseId: Long): Int {
         return cardDao.getNextSequenceOrder(courseId)
     }
 }

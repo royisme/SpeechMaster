@@ -5,25 +5,23 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.speechmaster.R
 import com.example.speechmaster.common.enums.RecordingState
-import com.example.speechmaster.data.model.DetailedFeedback
 import com.example.speechmaster.domain.repository.ICardRepository
 import com.example.speechmaster.domain.repository.ICourseRepository
+
+import com.example.speechmaster.domain.session.UserSessionManager
 import com.example.speechmaster.utils.audio.AudioPlayerWrapper
-import com.example.speechmaster.utils.audio.AudioRecorderWrapper
 import com.example.speechmaster.utils.audio.SpeechAnalyzerWrapper
 import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 import com.example.speechmaster.utils.audio.wavaudiorecoder.IRecorderEventListener
 import com.example.speechmaster.utils.audio.wavaudiorecoder.WavAudioRecorder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -31,7 +29,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -39,14 +36,26 @@ import java.util.Locale
 import java.io.File
 import android.Manifest // <--- 检查权限需要
 import android.media.AudioFormat
+import androidx.core.content.ContextCompat
 import com.example.speechmaster.utils.audio.wavaudiorecoder.AudioEncoding
 import com.example.speechmaster.utils.audio.wavaudiorecoder.RecorderConfig
 import com.example.speechmaster.utils.audio.wavaudiorecoder.SampleRate
 import java.io.IOException
 import javax.inject.Inject
-
-
-
+import androidx.work.BackoffPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.ExistingWorkPolicy
+import androidx.work.WorkRequest
+import androidx.work.workDataOf
+import com.example.speechmaster.data.model.UserPractice
+import com.example.speechmaster.domain.model.AnalysisStatus
+import com.example.speechmaster.domain.repository.IPracticeRepository
+import com.example.speechmaster.worker.SpeechAnalysisWorker
+import java.util.concurrent.TimeUnit
+import com.example.speechmaster.domain.repository.IUserCourseRelationshipRepository
+import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.state.get
 
 
 /**
@@ -60,21 +69,24 @@ class PracticeViewModel @Inject constructor(
     val textToSpeechWrapper: TextToSpeechWrapper,
     private val speechAnalyzer: SpeechAnalyzerWrapper,
     @ApplicationContext private val context: Context,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val practiceRepository: IPracticeRepository,
+    private val userSessionManager: UserSessionManager,
+    private val userCourseRelationshipRepository: IUserCourseRelationshipRepository
 ) : ViewModel() {
     companion object {
         private const val TAG = "PracticeViewModel"
         private const val MIN_RECORDING_DURATION_MS = 1000L // 最小录音时长1秒
         private const val MIN_FILE_SIZE_BYTES = 1024L // 最小文件大小1KB
-        private const val KEY_ANALYSIS_RESULT = "analysis_result"
     }
-    // 从导航参数获取课程ID和卡片ID
-    private val courseId: String = checkNotNull(savedStateHandle.get<String>("courseId"))
-    private val cardId: String = checkNotNull(savedStateHandle.get<String>("cardId"))
 
+    // 从导航参数获取课程ID和卡片ID
+    private val courseId: Long = checkNotNull(savedStateHandle.get<Long>("courseId"))
+    private val cardId: Long = checkNotNull(savedStateHandle.get<Long>("cardId"))
+    private var recordingStartTime: Long = 0
     // UI状态
-    private val _uiState = MutableStateFlow<PracticeUiState>(PracticeUiState.Loading)
-    val uiState: StateFlow<PracticeUiState> = _uiState.asStateFlow()
+    private val _Base_uiState = MutableStateFlow<PracticeUiState>(BaseUiState.Loading)
+    val uiState: StateFlow<PracticeUiState> = _Base_uiState.asStateFlow()
 
     // 录音状态(这个阶段只定义，不实现功能)
     private val _recordingState = MutableStateFlow(RecordingState.PREPARED)
@@ -187,10 +199,7 @@ class PracticeViewModel @Inject constructor(
     // 初始化时加载卡片数据
     init {
         loadCardData()
-        // 从 SavedStateHandle 恢复分析结果
-        savedStateHandle.get<DetailedFeedback>(KEY_ANALYSIS_RESULT)?.let { feedback ->
-            _analysisState.value = AnalysisState.Success(feedback)
-        }
+        loadLatestPracticeResult()
     }
 
     /**
@@ -198,7 +207,7 @@ class PracticeViewModel @Inject constructor(
      */
     private fun loadCardData() {
         viewModelScope.launch {
-            _uiState.value = PracticeUiState.Loading
+            _Base_uiState.value = BaseUiState.Loading
             try {
                 // 获取卡片数据
                 val card = cardRepository.getCardById(cardId).first()
@@ -206,18 +215,20 @@ class PracticeViewModel @Inject constructor(
                 val course = courseRepository.getCourseById(courseId).first()
 
                 if (card != null && course != null) {
-                    _uiState.value = PracticeUiState.Success(
+                    _Base_uiState.value = BaseUiState.Success(
+                        PracticeUiData(
                         courseId = courseId,
                         cardId = cardId,
                         courseTitle = course.title,
                         cardSequence = card.sequenceOrder,
                         textContent = card.textContent
+                        )
                     )
                 } else {
-                    _uiState.value = PracticeUiState.Error(R.string.error_loading_practice_card_failed)
+                    _Base_uiState.value = BaseUiState.Error(R.string.error_loading_practice_card_failed)
                 }
             } catch (e: Exception) {
-                _uiState.value = PracticeUiState.Error(R.string.error_loading_default)
+                _Base_uiState.value = BaseUiState.Error(R.string.error_loading_default)
             }
         }
     }
@@ -247,6 +258,7 @@ class PracticeViewModel @Inject constructor(
     * 开始录音 (使用 RawAudioRecorder)
     */
     fun startRecording() {
+        recordingStartTime = System.currentTimeMillis()
         viewModelScope.launch {
             // 1. 权限检查
             if (!hasRecordAudioPermission()) {
@@ -378,7 +390,7 @@ class PracticeViewModel @Inject constructor(
                 // 获取录音URI
                 val uri = _recordedAudioUri.value
                 Log.d(TAG, "获取录音URI $uri")
-                
+
                 // 如果没有录音文件，不做任何操作
                 if (uri == null) {
                     Log.e(TAG, "没有录音文件可播放")
@@ -389,7 +401,7 @@ class PracticeViewModel @Inject constructor(
                 if (_recordingState.value == RecordingState.RECORDING) {
                     stopRecording()
                 }
-                
+
                 Log.d(TAG, "切换播放状态")
                 // 切换播放状态
                 val success = audioPlayerWrapper.togglePlayback(uri)
@@ -453,49 +465,91 @@ class PracticeViewModel @Inject constructor(
     }
 
     /**
+     * 加载当前卡片的最新练习结果
+     */
+    private fun loadLatestPracticeResult() {
+        viewModelScope.launch {
+            try {
+                val userId = userSessionManager.currentUserFlow.value?.id ?: return@launch
+                Log.d(TAG, "Loading latest practice result for card $cardId")
+                practiceRepository.getLatestPracticeWithFeedback(userId, cardId)
+                    .collect { practiceWithFeedback ->
+                        if (practiceWithFeedback?.feedback != null) {
+                            _analysisState.value = AnalysisState.Success(practiceWithFeedback.feedback )
+                            Log.d(TAG, "Loaded latest practice result for card $cardId")
+                        } else {
+                            Log.d(TAG, "No previous practice result found for card $cardId")
+                        }
+                    }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error loading latest practice result", e)
+                // 这里我们不设置错误状态，因为这只是额外的功能，不影响主要流程
+            }
+        }
+    }
+
+    /**
      * 提交分析
      */
     fun submitForAnalysis() {
         viewModelScope.launch {
             try {
-                // 检查是否有录音文件
-                val audioUri = _recordedAudioUri.value
-                if (audioUri == null) {
-                    _analysisState.value = AnalysisState.Error("没有可用的录音文件")
+                val user = userSessionManager.currentUserFlow.value ?: run {
                     return@launch
                 }
 
-                // 检查是否有参考文本
-                val referenceText = when (val currentState = _uiState.value) {
-                    is PracticeUiState.Success -> currentState.textContent
-                    else -> {
-                        _analysisState.value = AnalysisState.Error("无法获取参考文本")
-                        return@launch
-                    }
+                // 检查是否是首次练习该课程
+                val hasExistingPractices = practiceRepository.hasPracticedInCourse(user.id, courseId).first()
+                if (!hasExistingPractices) {
+                    // 创建用户-课程关系
+                    userCourseRelationshipRepository.addRelationship(user.id, courseId)
                 }
+                // 创建练习记录
 
-                // 更新分析状态
-                _analysisState.value = AnalysisState.Analyzing
-                _isAnalyzing.value = true
-
-                // 调用语音分析
-                val result = speechAnalyzer.analyzeAudio(audioUri, referenceText)
-                
-                result.fold(
-                    onSuccess = { feedback ->
-                        // 保存分析结果到 SavedStateHandle
-                        savedStateHandle[KEY_ANALYSIS_RESULT] = feedback
-                        _analysisState.value = AnalysisState.Success(feedback)
-                    },
-                    onFailure = { error ->
-                        _analysisState.value = AnalysisState.Error(error.message ?: "分析失败")
-                    }
+                val endTime = System.currentTimeMillis()
+                val durationMillis = endTime - recordingStartTime
+                val practice = UserPractice(
+                    userId = user.id,
+                    courseId = courseId,
+                    cardId = cardId,
+                    startTime = recordingStartTime,
+                    endTime = endTime,
+                    durationMinutes = (durationMillis / 1000 / 60).toInt(),
+                    durationSeconds = (durationMillis / 1000 % 60).toInt(),
+                    audioFilePath = tempAudioFile?.absolutePath ?: "",
+                    analysisStatus = AnalysisStatus.PENDING.name,
+                    practiceContent = (uiState.value.get<PracticeUiData>()?.textContent ?: "")
                 )
+
+                // 保存到数据库
+                practiceRepository.insertPractice(practice)
+
+                // 触发分析任务
+                val analysisWorkRequest = OneTimeWorkRequestBuilder<SpeechAnalysisWorker>()
+                    .setInputData(workDataOf(
+                        SpeechAnalysisWorker.KEY_PRACTICE_ID to practice.id
+                    ))
+                    .setBackoffCriteria(
+                        BackoffPolicy.LINEAR,
+                        WorkRequest.MIN_BACKOFF_MILLIS,
+                        TimeUnit.MILLISECONDS
+                    )
+                    .build()
+
+                WorkManager.getInstance(context)
+                    .enqueueUniqueWork(
+                        "speech_analysis_${practice.id}",
+                        ExistingWorkPolicy.REPLACE,
+                        analysisWorkRequest
+                    )
+
+                // 导航到结果页面
+                _navigationEvent.emit(
+                    NavigationEvent.NavigateToPracticeResult(practice.id)
+                )
+
             } catch (e: Exception) {
-                Log.e(TAG, "分析过程中发生错误", e)
-                _analysisState.value = AnalysisState.Error(e.message ?: "未知错误")
-            } finally {
-                _isAnalyzing.value = false
+                _Base_uiState.value = BaseUiState.Error(R.string.error_unknown)
             }
         }
     }
@@ -505,31 +559,24 @@ class PracticeViewModel @Inject constructor(
      *
      * @return 创建的临时文件
      */
-    private fun createTempAudioFile(): File? {
+    @Throws(IOException::class)
+    private fun createTempAudioFile(): File {
         return try {
             val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "RECORDING_${timestamp}.wav" // <--- 改为 .wav
-            File(context.cacheDir, fileName).apply {
-                // 确保父目录存在
-                if (!parentFile.exists()) {
-                    parentFile.mkdirs()
-                }
-                // 如果文件已存在，删除旧的（通常不应该，除非时间戳重复）
-                if (exists()) {
-                    delete()
-                }
-                // 创建新文件
-                if (createNewFile()) {
-                    Log.d(TAG, "Created temp file: $absolutePath")
-                } else {
-                    Log.e(TAG, "Failed to create temp file: $absolutePath")
-                    // return null // createNewFile 失败时返回 null
-                    throw IOException("Failed to create temp file: $absolutePath")
-                }
-            }
+            val fileName = "RECORDING_${timestamp}.wav"
+            val tempFile = File(context.cacheDir, fileName)
+
+            // Ensure parent directory exists.  Less error-prone than checking and creating.
+            context.cacheDir.mkdirs()
+
+            // Create the new file.  Throws IOException on failure, no need to check return value.
+            tempFile.createNewFile()
+
+            Log.d(TAG, "Created temp file: ${tempFile.absolutePath}")
+            tempFile
         } catch (e: IOException) {
-            Log.e(TAG, "创建临时文件失败", e)
-            null
+            Log.e(TAG, "Failed to create temp file", e)
+            throw e // Re-throw the exception after logging.  More informative for the caller.
         }
     }
 
@@ -610,12 +657,4 @@ class PracticeViewModel @Inject constructor(
     }
 }
 
-/**
- * 分析状态密封类
- */
-sealed class AnalysisState {
-    data object NotStarted : AnalysisState()
-    data object Analyzing : AnalysisState()
-    data class Success(val feedback: DetailedFeedback) : AnalysisState()
-    data class Error(val message: String) : AnalysisState()
-}
+

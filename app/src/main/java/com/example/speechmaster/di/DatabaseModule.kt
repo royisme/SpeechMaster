@@ -33,6 +33,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context, databaseProvider: Provider<AppDatabase>): AppDatabase {
@@ -41,7 +42,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             DATABASE_NAME
         )
-        .fallbackToDestructiveMigration(false) // 简化开发阶段的迁移，生产环境应删除此项并实现迁移
+        .fallbackToDestructiveMigration(true) // 简化开发阶段的迁移，生产环境应删除此项并实现迁移
         .addCallback(CourseDataSeeder(context, databaseProvider)) // 添加预填充回调
         .build()
     }

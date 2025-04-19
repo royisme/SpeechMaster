@@ -34,7 +34,7 @@ import com.example.speechmaster.domain.model.CourseItem
 @Composable
 fun CourseList(
     courses: List<CourseItem>,
-    onCourseClick: (String) -> Unit,
+    onCourseClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(

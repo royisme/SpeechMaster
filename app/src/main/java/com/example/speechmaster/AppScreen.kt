@@ -9,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -20,7 +21,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.speechmaster.ui.components.TopBar
 import com.example.speechmaster.ui.layouts.AppDrawer
-import com.example.speechmaster.ui.layouts.AppNav
+import com.example.speechmaster.ui.navigation.AppNav
+import com.example.speechmaster.ui.navigation.AppRouteList
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
 import kotlinx.coroutines.launch
 
@@ -39,9 +41,18 @@ fun AppScreen() {
     // 根据当前路由更新TopBar状态
     UpdateTopBarState(currentDestination, viewModel)
 
+
     // 添加滚动行为
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
+//    // --- START: 添加重置逻辑 ---
+//    LaunchedEffect(currentDestination?.route) {
+//        // 每当导航目标改变时，重置 TopAppBar 的滚动状态
+//        // 这可以防止从一个可滚动屏幕导航到另一个屏幕时，TopAppBar保持偏移状态
+//        scrollBehavior.state.heightOffset = 0f
+//        scrollBehavior.state.contentOffset = 0f
+//        println("ScrollBehavior reset for route: ${currentDestination?.route}") // 用于调试
+//    }
+    // --- END: 添加重置逻辑 ---
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -79,7 +90,9 @@ private fun UpdateTopBarState(
 ) {
     val appName = stringResource(id = R.string.app_name)
     val dailyPractice = stringResource(id = R.string.daily_practice)
-    val courses = stringResource(id = R.string.course_list)
+    val coursesList = stringResource(id = R.string.course_list)
+    val courseDetail = stringResource(id = R.string.course_detail)
+    val practice = stringResource(id = R.string.practice_cards)
     val practiceHistory = stringResource(id = R.string.practice_history)
     val settings = stringResource(id = R.string.settings)
     val about = stringResource(id = R.string.about)
@@ -91,15 +104,17 @@ private fun UpdateTopBarState(
             viewModel.showMenuButton(true)
         }
         AppRouteList.COURSES_ROUTE -> {
-            viewModel.updateTitle(courses)
+            viewModel.updateTitle(coursesList)
             viewModel.showBackButton(false)
             viewModel.showMenuButton(true)
         }
         "${AppRouteList.COURSE_DETAIL_ROUTE}/{courseId}" -> {
+            viewModel.updateTitle(courseDetail)
             viewModel.showBackButton(true)
             viewModel.showMenuButton(false)
         }
         "${AppRouteList.PRACTICE_ROUTE}/{courseId}/{cardId}" -> {
+            viewModel.updateTitle(practice)
             viewModel.showBackButton(true)
             viewModel.showMenuButton(false)
         }

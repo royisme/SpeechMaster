@@ -11,6 +11,7 @@ import com.example.speechmaster.domain.repository.ICourseRepository
 import com.example.speechmaster.domain.model.CourseItem
 import com.example.speechmaster.domain.model.FilterState
 import com.example.speechmaster.domain.session.UserSessionManager
+import com.example.speechmaster.ui.state.BaseUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -44,8 +45,8 @@ class CourseViewModel @Inject constructor(
 ) : ViewModel() {
 
     // UI状态
-    private val _uiState = MutableStateFlow<CourseListUiState>(CourseListUiState.Loading)
-    val uiState: StateFlow<CourseListUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<BaseUiState<CourseListData>>(BaseUiState.Loading)
+    val uiState: StateFlow<BaseUiState<CourseListData>> = _uiState.asStateFlow()
 
     // 搜索查询
     private val _searchQuery = MutableStateFlow("")
@@ -74,19 +75,25 @@ class CourseViewModel @Inject constructor(
     }.catch { e ->
         emit(emptyList())
         Log.e("CourseViewModel", "Error loading courses", e)
-        _uiState.value = CourseListUiState.Error(R.string.error_unknown)
+        _uiState.value = BaseUiState.Error(R.string.error_unknown)
     }
 
     // 初始化
     init {
         Log.d("CourseViewModel","init data")
+        loadCourses()
+    }
+    
+    // 加载课程数据
+    fun loadCourses() {
         viewModelScope.launch {
+            _uiState.value = BaseUiState.Loading
             searchAndFilterFlow.collect { courses ->
                 Log.d("CourseViewModel", "Loaded ${courses.size} courses")
                 _uiState.value = if (courses.isEmpty()) {
-                    CourseListUiState.Empty
+                    BaseUiState.Success(CourseListData.Empty)
                 } else {
-                    CourseListUiState.Success(courses.map { it.toUiModel() })
+                    BaseUiState.Success(CourseListData.Success(courses.map { it.toUiModel() }))
                 }
             }
         }
@@ -186,7 +193,7 @@ class CourseViewModel @Inject constructor(
     }
 
     // 导航到练习界面
-    fun navigateToPractice(courseId: String) {
+    fun navigateToPractice(courseId: Long) {
         // 导航逻辑将由UI调用，在此处可添加额外的前处理逻辑
     }
 

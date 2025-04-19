@@ -84,7 +84,7 @@ fun ReadingTTS(
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
         ),
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp)
     ) {
         AnimatedContent(
             targetState = isPlaying,

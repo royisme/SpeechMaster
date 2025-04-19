@@ -1,0 +1,187 @@
+### 4.2 修改 PracticeViewModel
+
+**操作步骤:**
+1. 调整 `submitForAnalysis` 方法以建立用户-课程关系
+```kotlin
+fun submitForAnalysis() {
+    viewModelScope.launch {
+        try {
+            // 现有代码...
+            
+            // 建立用户-课程关系
+            val userId = userSessionManager.currentUserFlow.value?.id ?: return@launch
+            val courseId = // 从状态获取课程ID
+            
+            // 检查是否是首次练习该课程
+            val hasExistingPractices = practiceRepository.hasPracticedInCourse(userId, courseId).first()
+            if (!hasExistingPractices) {
+                // 创建用户-课程关系
+                userCourseRelationshipRepository.addRelationship(userId, courseId)
+            }
+            
+            // 创建练习记录
+            val practice = UserPractice(
+                id = UUID.randomUUID().toString(),
+                userId = userId,
+                courseId = courseId,
+                cardId = cardId,
+                startTime = /* 开始时间 */,
+                endTime = /* 结束时间 */,
+                durationMinutes = /* 分钟 */,
+                durationSeconds = /* 秒 */,
+                audioFilePath = /* 录音文件路径 */,
+                feedbackId = null,
+                analysisStatus = PracticeRepository.ANALYSIS_STATUS_PENDING
+            )
+            
+            practiceRepository.insertPractice(practice.toEntity())
+            
+            // 开始分析并将结果关联到practiceId
+            // ...
+            
+            // 分析完成后更新practice状态
+            // ...
+            
+        } catch (e: Exception) {
+            // 错误处理
+        }
+    }
+}
+```
+
+## 阶段5: 新界面实现
+
+### 5.1 创建卡片练习历史列表界面
+
+**操作步骤:**
+1. 创建 `CardHistoryScreen.kt` 和 `CardHistoryViewModel.kt`
+```kotlin
+// CardHistoryViewModel.kt
+@HiltViewModel
+class CardHistoryViewModel @Inject constructor(
+    private val practiceRepository: IPracticeRepository,
+    private val userSessionManager: UserSessionManager,
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
+    // 获取传入的参数
+    private val cardId: Long = checkNotNull(savedStateHandle.get<String>("cardId"))
+    private val courseId: Long = checkNotNull(savedStateHandle.get<String>("courseId"))
+    
+    // UI状态
+    private val _uiState = MutableStateFlow<CardHistoryUiState>(CardHistoryUiState.Loading)
+    val uiState: StateFlow<CardHistoryUiState> = _uiState.asStateFlow()
+    
+    init {
+        loadPracticeHistory()
+    }
+    
+    private fun loadPracticeHistory() {
+        viewModelScope.launch {
+            try {
+                val userId = userSessionManager.currentUserFlow.value?.id ?: return@launch
+                
+                // 使用现有的 toModel() 扩展函数
+                practiceRepository.getPracticesWithFeedbackByCard(userId, cardId).collect { practicesWithFeedback ->
+                    if (practicesWithFeedback.isEmpty()) {
+                        _uiState.value = CardHistoryUiState.Empty
+                    } else {
+                        val historyItems = practicesWithFeedback.map { practice -> 
+                            PracticeHistoryItem(
+                                practiceId = practice.id,
+                                date = Date(practice.endTime),
+                                duration = "${practice.durationMinutes}m ${practice.durationSeconds}s",
+                                score = practice.feedback?.overallScore
+                            )
+                        }
+                        _uiState.value = CardHistoryUiState.Success(historyItems)
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.value = CardHistoryUiState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+} 
+```
+
+### 2.1 扩展 PracticeRepository
+
+**操作步骤:**
+1. 修改 `IPracticeRepository.kt` 接口添加新方法
+```kotlin
+// 检查用户是否在课程中练习过
+fun hasPracticedInCourse(userId: String, courseId: Long): Flow<Boolean>
+
+// 获取用户对特定卡片的所有练习
+fun getUserPracticesByCard(userId: String, cardId: Long): Flow<List<UserPractice>>
+
+// 获取用户在卡片上的最佳/最新分数
+suspend fun getBestScoreForCard(userId: String, cardId: Long): Float?
+suspend fun getLatestScoreForCard(userId: String, cardId: Long): Float?
+
+// 创建分析状态常量
+companion object {
+    const val ANALYSIS_STATUS_PENDING = "PENDING"
+    const val ANALYSIS_STATUS_COMPLETED = "COMPLETED"
+    const val ANALYSIS_STATUS_ERROR = "ERROR"
+}
+```
+
+2. 实现 `PracticeRepositoryImpl.kt` 中的新方法
+```kotlin
+class PracticeRepositoryImpl @Inject constructor(
+    private val database: AppDatabase,
+    private val practiceDao: PracticeDao,
+    private val feedbackDao: PracticeFeedbackDao
+) : IPracticeRepository {
+
+    override fun getUserPracticesByCard(userId: String, cardId: Long): Flow<List<UserPractice>> {
+        return practiceDao.getUserPracticesByCard(userId, cardId).map { practices ->
+            practices.map { it.toModel() }
+        }
+    }
+
+    override fun hasPracticedInCourse(userId: String, courseId: Long): Flow<Boolean> {
+        return practiceDao.hasPracticedInCourse(userId, courseId)
+    }
+
+    override fun getPracticesWithFeedbackByCard(userId: String, cardId: Long): Flow<List<PracticeWithFeedback>> {
+        return practiceDao.getPracticesWithFeedbackByCard(userId, cardId).map { list ->
+            list.map { practiceWithFeedback ->
+                PracticeWithFeedback(
+                    practice = practiceWithFeedback.practice.toModel(),
+                    feedback = practiceWithFeedback.feedback?.toModel()
+                )
+            }
+        }
+    }
+
+    override suspend fun getBestScoreForCard(userId: String, cardId: Long): Float? {
+        return feedbackDao.getBestScoreForCard(userId, cardId)
+    }
+
+    override suspend fun getLatestScoreForCard(userId: String, cardId: Long): Float? {
+        return feedbackDao.getLatestScoreForCard(userId, cardId)
+    }
+
+    override suspend fun updateAnalysisStatus(practiceId: String, status: String, error: String?) {
+        practiceDao.getPracticeById(practiceId).collect { practice ->
+            practice?.let {
+                val updatedPractice = it.copy(
+                    analysisStatus = status,
+                    analysisError = error
+                )
+                practiceDao.updatePractice(updatedPractice)
+            }
+        }
+    }
+
+    override suspend fun insertPractice(practice: UserPractice) {
+        practiceDao.insertPractice(practice.toEntity())
+    }
+
+    override suspend fun updatePractice(practice: UserPractice) {
+        practiceDao.updatePractice(practice.toEntity())
+    }
+}
+```

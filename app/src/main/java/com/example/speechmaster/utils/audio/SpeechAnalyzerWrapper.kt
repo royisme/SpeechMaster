@@ -5,7 +5,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.database.Cursor
 import android.util.Log
-import com.example.speechmaster.data.model.DetailedFeedback
+import com.example.speechmaster.data.model.PracticeFeedback
 import com.example.speechmaster.data.model.WordFeedback
 import com.microsoft.cognitiveservices.speech.*
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig
@@ -15,9 +15,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.coroutines.resumeWithException
 
@@ -46,7 +43,7 @@ class SpeechAnalyzerWrapper @Inject constructor(
     suspend fun analyzeAudio(
         audioUri: Uri,
         referenceText: String
-    ): Result<DetailedFeedback> =
+    ): Result<PracticeFeedback> =
         try {
             val result = performAnalysis(audioUri, referenceText)
             Result.success(result)
@@ -57,7 +54,7 @@ class SpeechAnalyzerWrapper @Inject constructor(
         }
 
     @OptIn(InternalCoroutinesApi::class)
-    private suspend fun performAnalysis(audioUri: Uri, referenceText: String): DetailedFeedback =
+    private suspend fun performAnalysis(audioUri: Uri, referenceText: String): PracticeFeedback =
         suspendCancellableCoroutine { continuation ->
             var recognizer: SpeechRecognizer? = null
             var audioConfig: AudioConfig? = null
@@ -104,7 +101,7 @@ class SpeechAnalyzerWrapper @Inject constructor(
                                     referenceText,
                                     audioUri.toString()
                                 )
-                                continuation.resume(feedback, null)
+                                continuation.resume(feedback) { cause, _, _ -> null?.let { it(cause) } }
                             } catch (error: Exception) {
                                 Log.e(TAG, "Error processing recognition result", error)
                                 continuation.resumeWithException(
@@ -183,7 +180,7 @@ class SpeechAnalyzerWrapper @Inject constructor(
         jsonString: String,
         referenceText: String,
         audioPath: String
-    ): DetailedFeedback {
+    ): PracticeFeedback {
         try {
             val jsonObject = JSONObject(jsonString)
 
@@ -210,8 +207,6 @@ class SpeechAnalyzerWrapper @Inject constructor(
             for (i in 0 until wordCount) {
                 val wordObj = words.getJSONObject(i)
                 val word = wordObj.getString("Word")
-                val offset = wordObj.getLong("Offset").toInt()
-                val wordDuration = wordObj.getLong("Duration").toInt()
 
                 val wordPronAssessment = wordObj.getJSONObject("PronunciationAssessment")
                 val wordAccuracyScore = wordPronAssessment.getDouble("AccuracyScore").toFloat()
@@ -226,28 +221,21 @@ class SpeechAnalyzerWrapper @Inject constructor(
                 wordFeedbacks.add(
                     WordFeedback(
                         wordText = word,
-                        offset = offset,
-                        duration = wordDuration,
                         accuracyScore = wordAccuracyScore,
                         errorType = errorType,
-                        syllableCount = 0,
-                        syllableData = null,
-                        phonemeAssessments = emptyList()
                     )
                 )
             }
 
-            return DetailedFeedback(
-                sessionId = System.currentTimeMillis(),
-                referenceText = referenceText,
-                audioFilePath = audioPath,
+            return PracticeFeedback(
+                practiceId = 0,
+
                 overallAccuracyScore = accuracyScore,
                 pronunciationScore = pronScore,
                 completenessScore = completenessScore,
                 fluencyScore = fluencyScore,
                 prosodyScore = 0.0f, // JSON中没有prosody评分，设为0
                 durationMs = duration,
-                recognizedText = displayText,
                 wordFeedbacks = wordFeedbacks
             )
         } catch (e: Exception) {

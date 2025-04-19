@@ -19,9 +19,11 @@ import com.example.speechmaster.data.local.entity.*
         UserCardCompletionEntity::class,
         WordFeedbackEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
-
+//    autoMigrations = [
+//        AutoMigration (from = 4, to = 5)
+//    ]
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -29,11 +31,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun courseDao(): CourseDao
     abstract fun cardDao(): CardDao
-    abstract fun practiceDao(): PracticeDao
-    abstract fun feedbackDao(): FeedbackDao
+    abstract fun practiceDao(): UserPracticeDao
+    abstract fun feedbackDao(): PracticeFeedbackDao
     abstract fun progressDao(): ProgressDao
     // 新增DAO接口访问器 v3
     abstract fun userCourseRelationshipDao(): UserCourseRelationshipDao
     abstract fun userCardCompletionDao(): UserCardCompletionDao
-    abstract fun wordFeedbackDao(): WordFeedbackDao
 }

@@ -1,4 +1,4 @@
-package com.example.speechmaster.domain.model
+package com.example.speechmaster.data.model
 
 /**
  * 表示用户的练习进度和统计数据

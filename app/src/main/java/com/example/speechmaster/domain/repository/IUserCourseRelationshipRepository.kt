@@ -14,26 +14,26 @@ interface IUserCourseRelationshipRepository {
      * @param courseId 课程ID
      * @return 返回包含布尔值的Flow，表示是否已添加
      */
-    fun isCourseAdded(userId: String, courseId: String): Flow<Boolean>
+    fun isCourseAdded(userId: String, courseId: Long): Flow<Boolean>
 
     /**
      * 添加用户-课程关系（将课程添加到用户的学习列表）
      * @param userId 用户ID
      * @param courseId 课程ID
      */
-    suspend fun addRelationship(userId: String, courseId: String)
+    suspend fun addRelationship(userId: String, courseId: Long)
 
     /**
      * 移除用户-课程关系（从用户的学习列表中移除课程）
      * @param userId 用户ID
      * @param courseId 课程ID
      */
-    suspend fun removeRelationship(userId: String, courseId: String)
+    suspend fun removeRelationship(userId: String, courseId: Long)
 
     /**
      * 获取用户添加的所有课程ID列表
      * @param userId 用户ID
      * @return 返回包含课程ID列表的Flow
      */
-    fun getUserAddedCourseIds(userId: String): Flow<List<String>>
+    fun getUserAddedCourseIds(userId: String): Flow<List<Long>>
 }

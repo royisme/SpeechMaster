@@ -1,29 +1,17 @@
 package com.example.speechmaster.ui.screens.course
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
@@ -36,16 +24,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.speechmaster.R
-import com.example.speechmaster.domain.model.CourseCardItem
 import com.example.speechmaster.ui.components.course.CardListItem
 import com.example.speechmaster.ui.components.course.CourseHeader
-import com.example.speechmaster.domain.model.CourseDetail
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
-import com.example.speechmaster.ui.layouts.navigateToPractice
+import com.example.speechmaster.ui.navigation.navigateToPractice
+import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.state.get
 import com.example.speechmaster.ui.theme.AppTheme
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
+
+private const val TAG = "CourseDetailScreen"
 
 /**
 
@@ -59,13 +48,16 @@ fun CourseDetailScreen(
     viewModel: CourseDetailViewModel = hiltViewModel(),
     topBarViewModel: TopBarViewModel = hiltViewModel()
 ) {
+
     val uiState by viewModel.uiState.collectAsState()
     val isAdded by viewModel.isAdded.collectAsState()
+    Log.d(TAG, "uiState: $uiState")
 
     // 更新TopBar标题
     LaunchedEffect(uiState) {
-        if (uiState is CourseDetailUiState.Success) {
-            topBarViewModel.updateTitle((uiState as CourseDetailUiState.Success).course.title)
+        Log.d(TAG, "uiState: $uiState")
+        if (uiState is BaseUiState.Success) {
+            topBarViewModel.updateTitle((uiState.get()?.course?.title.toString()))
         }
     }
 
@@ -76,23 +68,21 @@ fun CourseDetailScreen(
         }
     }
 
-    Surface(
-        modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+    Box(
+        modifier = modifier.fillMaxSize()
     ) {
-        when (uiState) {
-            is CourseDetailUiState.Loading -> {
+        when (val state = uiState) {
+            is BaseUiState.Loading -> {
                 LoadingView()
             }
-            is CourseDetailUiState.Error -> {
-                val error = uiState as CourseDetailUiState.Error
+            is BaseUiState.Error -> {
                 ErrorView(
-                    message = stringResource(id = error.messageResId),
+                    message = stringResource(id = state.messageResId),
                     onRetry = { viewModel.loadCourseDetail(isAdded) }
                 )
             }
-            is CourseDetailUiState.Success -> {
-                val success = uiState as CourseDetailUiState.Success
+            is BaseUiState.Success -> {
+                val success = uiState.get() as CourseDetailData  // 类型转换
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
@@ -129,6 +119,8 @@ fun CourseDetailScreen(
                     }
                 }
             }
+
+            is BaseUiState.Success<*> -> TODO()
         }
     }
 }

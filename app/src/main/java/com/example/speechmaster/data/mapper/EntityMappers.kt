@@ -1,16 +1,17 @@
 package com.example.speechmaster.data.mapper
 
 import com.example.speechmaster.data.local.entity.*
+import com.example.speechmaster.data.model.UserPractice
 
 import com.example.speechmaster.data.model.Card
 import com.example.speechmaster.data.model.Course
-import com.example.speechmaster.data.model.PracticeFeedback
 import com.example.speechmaster.data.model.User
-import com.example.speechmaster.data.model.UserPractice
 import com.example.speechmaster.data.model.UserProgress
+import com.example.speechmaster.data.model.PracticeFeedback
+import com.example.speechmaster.data.model.WordFeedback
+import com.example.speechmaster.domain.model.PracticeWithFeedbackModel
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -100,10 +101,13 @@ fun UserPracticeEntity.toModel(): UserPractice = UserPractice(
     cardId = cardId,
     startTime = startTime,
     endTime = endTime,
+    feedbackId = feedbackId,
     durationMinutes = durationMinutes,
     durationSeconds = durationSeconds,
     audioFilePath = audioFilePath,
-    feedbackId = feedbackId
+    analysisStatus = analysisStatus,
+    practiceContent = practiceContent,
+    analysisError = analysisError
 )
 
 fun UserPractice.toEntity(): UserPracticeEntity = UserPracticeEntity(
@@ -116,41 +120,12 @@ fun UserPractice.toEntity(): UserPracticeEntity = UserPracticeEntity(
     durationMinutes = durationMinutes,
     durationSeconds = durationSeconds,
     audioFilePath = audioFilePath,
-    feedbackId = feedbackId
+    analysisStatus = analysisStatus,
+    practiceContent = practiceContent,
+    feedbackId = feedbackId,
+    analysisError = analysisError
 )
 
-// PracticeFeedback 映射扩展函数
-fun PracticeFeedbackEntity.toModel(): PracticeFeedback = PracticeFeedback(
-    id = id.toString(),
-    practiceId = practiceId,
-    overallScore = overallAccuracyScore,
-    fluencyScore = fluencyScore,
-    pronunciationScore = pronunciationScore,
-    feedback = mapOf(
-        "accuracy" to overallAccuracyScore.toString(),
-        "pronunciation" to pronunciationScore.toString(),
-        "completeness" to completenessScore.toString(),
-        "fluency" to fluencyScore.toString(),
-        "recognizedText" to recognizedText,
-        "audioFilePath" to audioFilePath,
-        "durationMs" to durationMs.toString()
-    ),
-    createdAt = createdAt
-)
-
-fun PracticeFeedback.toEntity(): PracticeFeedbackEntity = PracticeFeedbackEntity(
-    id = id.toLong(),
-    practiceId = practiceId,
-    referenceText = "",
-    audioFilePath = feedback["audioFilePath"] ?: "",
-    overallAccuracyScore = overallScore,
-    pronunciationScore = pronunciationScore,
-    completenessScore = feedback["completeness"]?.toFloat() ?: 0f,
-    fluencyScore = fluencyScore,
-    createdAt = createdAt,
-    durationMs = feedback["durationMs"]?.toLong() ?: 0L,
-    recognizedText = feedback["recognizedText"] ?: ""
-)
 
 // UserProgress 映射扩展函数
 fun UserProgressEntity.toModel(): UserProgress = UserProgress(
@@ -175,7 +150,61 @@ fun UserProgress.toEntity(): UserProgressEntity = UserProgressEntity(
     lastPracticeDate = lastPracticeDate
 )
 
+// PracticeFeedbackEntity 映射扩展函数
+fun PracticeFeedbackEntity.toModel(wordFeedbacks: List<WordFeedbackEntity>): PracticeFeedback = PracticeFeedback(
+    practiceId = practiceId,
+    overallAccuracyScore = overallAccuracyScore,
+    pronunciationScore = pronunciationScore,
+    completenessScore = completenessScore,
+    fluencyScore =  fluencyScore,
+    prosodyScore = prosodyScore,
+    durationMs = durationMs,
+    wordFeedbacks = wordFeedbacks.map { wordEntity ->
+        WordFeedback(
+            wordText = wordEntity.wordText,
+            accuracyScore = wordEntity.accuracyScore,
+            errorType = wordEntity.errorType,
+        )
+    }
+)
 
+fun PracticeFeedback.toEntity(): PracticeFeedbackEntity = PracticeFeedbackEntity(
+    id = 0,  // 使用0让Room自动生成ID
+    practiceId = practiceId,  // 假设DetailedFeedback包含practiceId
+    overallAccuracyScore = overallAccuracyScore,
+    pronunciationScore = pronunciationScore,
+    completenessScore = completenessScore,
+    fluencyScore = fluencyScore,
+    prosodyScore = prosodyScore,
+    createdAt = System.currentTimeMillis(),  // 使用当前时间
+    durationMs = durationMs,
+)
+
+
+//fun PracticeWithFeedback.toHistoryItem(): PracticeHistoryItem {
+//    // practice is guaranteed non-null in PracticeWithFeedback from the DAO query structure
+//    // feedback is nullable
+//    return PracticeHistoryItem(
+//        practiceId = this.practice.id,
+//        endTime = this.practice.endTime,
+//        durationMinutes = this.practice.durationMinutes,
+//        durationSeconds = this.practice.durationSeconds,
+//        overallScore = this.feedback?.overallAccuracyScore // Safely access score, defaults to null if feedback is null
+//    )
+//}
+
+///**
+// * Maps a list of PracticeWithFeedback entities to a list of PracticeHistoryItem domain models.
+// */
+//fun List<PracticeWithFeedback>.toHistoryItemList(): List<PracticeHistoryItem> {
+//    return this.map { it.toHistoryItem() } // Use the individual item mapper
+//}
+fun PracticeWithFeedbackAndWords.toModel(): PracticeWithFeedbackModel {
+    return PracticeWithFeedbackModel(
+        userPractice = this.practice.toModel(),
+        feedback = this.feedbackWithWords?.feedback?.toModel(this.feedbackWithWords.wordFeedbacks)
+    )
+}
 
 private fun Map<String, Any>.toJsonObject(): JsonObject {
     val jsonElements = this.mapValues { (_, value) ->

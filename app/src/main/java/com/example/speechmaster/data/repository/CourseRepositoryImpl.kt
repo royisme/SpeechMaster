@@ -59,13 +59,13 @@ class CourseRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getCourseById(courseId: String): Flow<Course?> {
+    override fun getCourseById(courseId: Long): Flow<Course?> {
         return courseDao.getCourseById(courseId).map { entity ->
             entity?.toModel()
         }
     }
 
-    override fun getPracticeSession(courseId: String): Flow<PracticeSession?> {
+    override fun getPracticeSession(courseId: Long): Flow<PracticeSession?> {
         return courseDao.getCourseById(courseId).map { course ->
             course?.let {
                 val courseModel = it.toModel()
@@ -114,9 +114,8 @@ class CourseRepositoryImpl @Inject constructor(
         tags: List<String>
     ): Result<Course> {
         return try {
-            val courseId = UUID.randomUUID().toString()
             val course = Course(
-                id = courseId,
+                id = 0,
                 title = title,
                 description = description,
                 difficulty = difficulty,
@@ -135,7 +134,7 @@ class CourseRepositoryImpl @Inject constructor(
 
     override suspend fun updateUserCourse(
         userId: String,
-        courseId: String,
+        courseId: Long,
         title: String,
         description: String?,
         difficulty: String,
@@ -169,7 +168,7 @@ class CourseRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteUserCourse(userId: String, courseId: String): Result<Boolean> {
+    override suspend fun deleteUserCourse(userId: String, courseId: Long): Result<Boolean> {
         return try {
             val deletedRows = courseDao.deleteUserCourse(courseId, userId)
             if (deletedRows > 0) {
@@ -182,7 +181,7 @@ class CourseRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getCourseWithCards(courseId: String): Flow<Pair<Course, List<Card>>?> {
+    override fun getCourseWithCards(courseId: Long): Flow<Pair<Course, List<Card>>?> {
         // 通过组合查询获取课程和卡片
         val courseFlow = getCourseById(courseId)
         val cardsFlow = cardRepository.getCardsByCourse(courseId)
@@ -196,7 +195,7 @@ class CourseRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun isUserCourseCreator(courseId: String, userId: String): Boolean {
+    override suspend fun isUserCourseCreator(courseId: Long, userId: String): Boolean {
         return courseDao.isUserTheCourseCreator(courseId, userId) > 0
     }
 }

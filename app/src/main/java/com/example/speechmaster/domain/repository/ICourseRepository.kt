@@ -32,12 +32,12 @@ interface ICourseRepository {
     /**
      * 根据ID获取单个课程
      */
-    fun getCourseById(courseId: String): Flow<Course?>
+    fun getCourseById(courseId: Long): Flow<Course?>
 
     /**
      * 获取单个课程（转换为PracticeSession格式）
      */
-    fun getPracticeSession(courseId: String): Flow<PracticeSession?>
+    fun getPracticeSession(courseId: Long): Flow<PracticeSession?>
 
     /**
      * 根据难度级别获取课程
@@ -76,7 +76,7 @@ interface ICourseRepository {
      */
     suspend fun updateUserCourse(
         userId: String,
-        courseId: String,
+        courseId: Long,
         title: String,
         description: String?,
         difficulty: String,
@@ -87,17 +87,17 @@ interface ICourseRepository {
     /**
      * 删除用户课程
      */
-    suspend fun deleteUserCourse(userId: String, courseId: String): Result<Boolean>
+    suspend fun deleteUserCourse(userId: String, courseId: Long): Result<Boolean>
 
     /**
      * 获取课程及其卡片
      * 协作方法：使用CardRepository获取卡片数据
      */
-    fun getCourseWithCards(courseId: String): Flow<Pair<Course, List<Card>>?>
+    fun getCourseWithCards(courseId: Long): Flow<Pair<Course, List<Card>>?>
 
     /**
      * 检查用户是否为课程创建者
      * 协作方法：提供给CardRepository使用
      */
-    suspend fun isUserCourseCreator(courseId: String, userId: String): Boolean
+    suspend fun isUserCourseCreator(courseId: Long, userId: String): Boolean
 }

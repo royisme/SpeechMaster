@@ -1,4 +1,4 @@
-package com.example.speechmaster.domain.model
+package com.example.speechmaster.data.model
 
 data class User(
     // 唯一标识符，本地生成，将来可以映射到远程ID
