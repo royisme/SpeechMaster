@@ -1,2 +1,4 @@
-package com.example.speechmaster.ui.screens.about 
+package com.example.speechmaster.ui.screens.about
 
+class AboutScreen {
+}

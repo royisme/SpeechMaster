@@ -1,4 +1,4 @@
-package com.example.speechmaster.ui.layouts
+package com.example.speechmaster.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
@@ -12,7 +12,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.speechmaster.R
-import com.example.speechmaster.ui.navigation.AppRoutes
 
 @Composable
 fun AppDrawer(

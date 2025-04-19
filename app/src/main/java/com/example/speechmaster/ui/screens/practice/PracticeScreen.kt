@@ -62,7 +62,8 @@ fun PracticeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: PracticeViewModel = hiltViewModel(),
-    topBarViewModel: TopBarViewModel = hiltViewModel()
+    topBarViewModel: TopBarViewModel = hiltViewModel(),
+
 ) {
     // --- State collection and Effects remain the same ---
     val uiState by viewModel.uiState.collectAsState()

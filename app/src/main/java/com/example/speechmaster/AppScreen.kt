@@ -20,9 +20,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.speechmaster.ui.components.TopBar
-import com.example.speechmaster.ui.layouts.AppDrawer
+import com.example.speechmaster.ui.navigation.AppDrawer
 import com.example.speechmaster.ui.navigation.AppNav
-import com.example.speechmaster.ui.navigation.AppRouteList
+import com.example.speechmaster.ui.navigation.AppRoutes
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
 import kotlinx.coroutines.launch
 
@@ -32,27 +32,18 @@ fun AppScreen() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
-    val viewModel: TopBarViewModel = hiltViewModel()
+    val topBarViewModel: TopBarViewModel = hiltViewModel()
 
     // 获取当前导航状态
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
 
     // 根据当前路由更新TopBar状态
-    UpdateTopBarState(currentDestination, viewModel)
+    UpdateTopBarState(currentDestination, topBarViewModel)
 
 
     // 添加滚动行为
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-//    // --- START: 添加重置逻辑 ---
-//    LaunchedEffect(currentDestination?.route) {
-//        // 每当导航目标改变时，重置 TopAppBar 的滚动状态
-//        // 这可以防止从一个可滚动屏幕导航到另一个屏幕时，TopAppBar保持偏移状态
-//        scrollBehavior.state.heightOffset = 0f
-//        scrollBehavior.state.contentOffset = 0f
-//        println("ScrollBehavior reset for route: ${currentDestination?.route}") // 用于调试
-//    }
-    // --- END: 添加重置逻辑 ---
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -69,7 +60,8 @@ fun AppScreen() {
                 TopBar(
                     onNavigationClick = { navController.navigateUp() },
                     onMenuClick = { scope.launch { drawerState.open() } },
-                    scrollBehavior = scrollBehavior
+                    scrollBehavior = scrollBehavior,
+                    viewModel = topBarViewModel
                 )
             }
         ) { paddingValues ->
@@ -77,7 +69,8 @@ fun AppScreen() {
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(paddingValues),
+                topBarViewModel = topBarViewModel
             )
         }
     }
@@ -89,54 +82,35 @@ private fun UpdateTopBarState(
     viewModel: TopBarViewModel
 ) {
     val appName = stringResource(id = R.string.app_name)
-    val dailyPractice = stringResource(id = R.string.daily_practice)
-    val coursesList = stringResource(id = R.string.course_list)
-    val courseDetail = stringResource(id = R.string.course_detail)
-    val practice = stringResource(id = R.string.practice_cards)
-    val practiceHistory = stringResource(id = R.string.practice_history)
-    val settings = stringResource(id = R.string.settings)
-    val about = stringResource(id = R.string.about)
 
-    when (currentDestination?.route) {
-        AppRouteList.HOME_ROUTE -> {
-            viewModel.updateTitle(dailyPractice)
-            viewModel.showBackButton(false)
-            viewModel.showMenuButton(true)
-        }
-        AppRouteList.COURSES_ROUTE -> {
-            viewModel.updateTitle(coursesList)
-            viewModel.showBackButton(false)
-            viewModel.showMenuButton(true)
-        }
-        "${AppRouteList.COURSE_DETAIL_ROUTE}/{courseId}" -> {
-            viewModel.updateTitle(courseDetail)
-            viewModel.showBackButton(true)
-            viewModel.showMenuButton(false)
-        }
-        "${AppRouteList.PRACTICE_ROUTE}/{courseId}/{cardId}" -> {
-            viewModel.updateTitle(practice)
-            viewModel.showBackButton(true)
-            viewModel.showMenuButton(false)
-        }
-        AppRouteList.HISTORY_ROUTE -> {
-            viewModel.updateTitle(practiceHistory)
-            viewModel.showBackButton(false)
-            viewModel.showMenuButton(true)
-        }
-        AppRouteList.SETTINGS_ROUTE -> {
-            viewModel.updateTitle(settings)
-            viewModel.showBackButton(false)
-            viewModel.showMenuButton(true)
-        }
-        AppRouteList.ABOUT_ROUTE -> {
-            viewModel.updateTitle(about)
-            viewModel.showBackButton(false)
-            viewModel.showMenuButton(true)
-        }
-        else -> {
-            viewModel.updateTitle(appName)
-            viewModel.showBackButton(false)
-            viewModel.showMenuButton(true)
-        }
+    var current_route = currentDestination?.route?.substringBefore('/')
+
+    val title = when (current_route) {
+        AppRoutes.HOME_ROUTE -> appName
+        AppRoutes.COURSES_ROUTE -> stringResource(id = R.string.course_list)
+        AppRoutes.MY_LEARNING_ROUTE -> stringResource(id = R.string.my_learning)
+        AppRoutes.HISTORY_ROUTE -> stringResource(id = R.string.practice_history)
+        AppRoutes.SETTINGS_ROUTE -> stringResource(id = R.string.settings)
+        AppRoutes.ABOUT_ROUTE -> stringResource(id = R.string.about)
+        AppRoutes.COURSE_DETAIL_ROUTE.substringBefore('/') -> stringResource(id = R.string.course_detail)
+        AppRoutes.MY_COURSES_ROUTE.substringBefore('/') -> stringResource(id = R.string.my_courses)
+        AppRoutes.EDIT_COURSE_ROUTE.substringBefore('/') -> stringResource(id = R.string.edit_course)
+        AppRoutes.MANAGE_CARDS_ROUTE.substringBefore('/') -> stringResource(id = R.string.manage_cards)
+        AppRoutes.ADD_CARD_ROUTE.substringBefore('/') -> stringResource(id = R.string.add_card)
+        AppRoutes.EDIT_CARD_ROUTE.substringBefore('/') -> stringResource(id = R.string.edit_card)
+        AppRoutes.IMPORT_CARDS_ROUTE.substringBefore('/') -> stringResource(id = R.string.import_cards)
+        AppRoutes.CARD_HISTORY_ROUTE.substringBefore('/') -> stringResource(id = R.string.card_history)
+        AppRoutes.FEEDBACK_ROUTE.substringBefore('/') -> stringResource(id = R.string.practice_result)
+        AppRoutes.PRACTICE_ROUTE.substringBefore('/') -> stringResource(id = R.string.practice_cards)
+        // Add other routes...
+        else -> appName // Default title
+    }
+
+    val showBackButton = currentDestination?.route !in AppRoutes.MAIN_ROUTE_GROUP
+    val showMenuButton = !showBackButton
+    LaunchedEffect(title, showBackButton, showMenuButton) {
+        viewModel.updateTitle(title)
+        viewModel.showBackButton(showBackButton)
+        viewModel.showMenuButton(showMenuButton)
     }
 }

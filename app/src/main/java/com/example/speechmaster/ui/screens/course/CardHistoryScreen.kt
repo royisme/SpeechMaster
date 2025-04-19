@@ -20,7 +20,7 @@ import com.example.speechmaster.domain.model.PracticeHistoryItem
 import com.example.speechmaster.ui.components.common.EmptyView
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
-import com.example.speechmaster.ui.navigation.AppRouteList
+import com.example.speechmaster.ui.navigation.navigateToCardHistory
 
 import com.example.speechmaster.ui.state.BaseUiState
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
@@ -84,7 +84,7 @@ fun CardHistoryScreen(
                                 PracticeHistoryItem(
                                     item = item,
                                     onClick = {
-                                        navController.navigate("${AppRouteList.PRACTICE_RESULT_ROUTE}/${item.practiceId}")
+//                                        navController.navigateToCardHistory(item.courseId, item.cardId)
                                     }
                                 )
                             }

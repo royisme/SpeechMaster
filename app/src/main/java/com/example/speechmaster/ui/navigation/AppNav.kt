@@ -11,20 +11,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-
-import com.example.speechmaster.ui.screens.home.HomeScreen
+import com.example.speechmaster.ui.screens.about.AboutScreen
+import com.example.speechmaster.ui.screens.course.CardHistoryScreen
 import com.example.speechmaster.ui.screens.course.CourseDetailScreen
-import com.example.speechmaster.ui.screens.course.CourseScreen
-
-import com.example.speechmaster.ui.navigation.AppRouteList.COURSES_ROUTE
-import com.example.speechmaster.ui.navigation.AppRouteList.COURSE_DETAIL_ROUTE
-import com.example.speechmaster.ui.navigation.AppRouteList.CREATE_COURSE_ROUTE
-import com.example.speechmaster.ui.navigation.AppRouteList.HOME_ROUTE
-import com.example.speechmaster.ui.navigation.AppRouteList.PRACTICE_RESULT_ROUTE
-import com.example.speechmaster.ui.navigation.AppRouteList.PRACTICE_ROUTE
-import com.example.speechmaster.ui.screens.card_history.CardHistoryScreen
+import com.example.speechmaster.ui.screens.course.CoursesScreen
+import com.example.speechmaster.ui.screens.home.HomeScreen
+import com.example.speechmaster.ui.screens.my.courses.MyCoursesScreen
+import com.example.speechmaster.ui.screens.my.learning.MyLearningScreen
+import com.example.speechmaster.ui.screens.practice.FeedbackScreen
 import com.example.speechmaster.ui.screens.practice.PracticeScreen
-import com.example.speechmaster.ui.screens.practice.PracticeResultScreen
+import com.example.speechmaster.ui.screens.settings.SettingsScreen
+
+import com.example.speechmaster.ui.viewmodels.TopBarViewModel
 
 // 定义应用中的路由
 
@@ -32,83 +30,263 @@ import com.example.speechmaster.ui.screens.practice.PracticeResultScreen
 fun AppNav(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = HOME_ROUTE
+    startDestination: String = AppRoutes.HOME_ROUTE,
+    topBarViewModel: TopBarViewModel
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
-    ){
+    ) {
+        // 首页相关路由
+        addHomeRoutes(navController)
 
-        composable(HOME_ROUTE){
-            HomeScreen(navController = navController)
-        }
+        // 课程相关路由
+        addCourseRoutes(navController, topBarViewModel)
 
-        // 课程详情页面路由
-        addCourseRoute(navController)
+        // 练习相关路由
+        addPracticeRoutes(navController)
 
-
-        // 练习页面路由
-        composable(
-            route = "$PRACTICE_ROUTE/{courseId}/{cardId}",
-            arguments = listOf(
-                navArgument("courseId") { type = NavType.LongType },
-                navArgument("cardId") { type = NavType.LongType }
-            )
-        ) {
-            PracticeScreen(
-                navController = navController
-            )
-        }
-
-        // 练习结果页面路由
-        composable(
-            route = "$PRACTICE_RESULT_ROUTE/{practiceId}",
-            arguments = listOf(
-                navArgument("practiceId") { type = NavType.LongType }
-            )
-        ) {
-            PracticeResultScreen(
-                navController = navController
-            )
-        }
-        composable(
-            route = AppRouteList.CARD_HISTORY_ROUTE_WITH_ARGS,
-            arguments = listOf(
-                navArgument("courseId") { type = NavType.LongType },
-                navArgument("cardId") { type = NavType.LongType }
-            )
-        ) {
-            CardHistoryScreen(navController = navController)
-        }
-
-
-        // 其他路由...
+//        // 我的学习路由
+//        addLearningRoutes(navController)
+//
+//        // 用户自定义课程管理路由
+//        addUgcRoutes(navController)
+//
+//        // 设置和关于路由
+//        addSettingsRoutes(navController)
     }
 }
 
+// 首页相关路由
+private fun NavGraphBuilder.addHomeRoutes(navController: NavController) {
+    composable(AppRoutes.HOME_ROUTE) {
+        HomeScreen(navController = navController)
+    }
+}
+
+// 课程相关路由
+private fun NavGraphBuilder.addCourseRoutes(
+    navController: NavController,
+    topBarViewModel: TopBarViewModel
+) {
+    // 课程库
+    composable(AppRoutes.COURSES_ROUTE) {
+        CoursesScreen(
+            navController = navController,
+            topBarViewModel = topBarViewModel
+        )
+    }
+
+    // 课程详情
+    composable(
+        route = AppRoutes.COURSE_DETAIL_ROUTE,
+        arguments = listOf(navArgument("courseId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        CourseDetailScreen(
+            navController = navController,
+        )
+    }
+}
+
+// 练习相关路由
+private fun NavGraphBuilder.addPracticeRoutes(navController: NavController) {
+    // 练习界面
+    composable(
+        route = AppRoutes.PRACTICE_ROUTE,
+        arguments = listOf(
+            navArgument("courseId") { type = NavType.LongType },
+            navArgument("cardId") { type = NavType.LongType }
+        )
+    ) { backStackEntry ->
+
+        PracticeScreen(
+            navController = navController,
+
+        )
+    }
+
+    // 练习结果界面
+    composable(
+        route = AppRoutes.FEEDBACK_ROUTE,
+        arguments = listOf(navArgument("practiceId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val practiceId = backStackEntry.arguments?.getLong("practiceId") ?: -1L
+        FeedbackScreen(
+            navController = navController,
+            practiceId = practiceId
+        )
+    }
+    //TODO: 卡片历史记录
+//    composable(
+//        route = AppRoutes.CARD_HISTORY_ROUTE,
+//        arguments = listOf(
+//            navArgument("courseId") { type = NavType.LongType },
+//            navArgument("cardId") { type = NavType.LongType }
+//        )
+//    ) { backStackEntry ->
+//        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
+//        val cardId = backStackEntry.arguments?.getLong("cardId") ?: -1L
+//        CardHistoryScreen(
+//            navController = navController,
+//            courseId = courseId,
+//            cardId = cardId
+//        )
+//    }
+}
+/*
+//TODO: 我的学习路由
+private fun NavGraphBuilder.addLearningRoutes(navController: NavController) {
+    composable(AppRoutes.MY_LEARNING_ROUTE) {
+        MyLearningScreen(navController = navController)
+    }
+}
+
+// 用户自定义课程管理路由
+private fun NavGraphBuilder.addUgcRoutes(navController: NavController) {
+    // 我的课程
+    composable(AppRoutes.MY_COURSES_ROUTE) {
+        MyCoursesScreen(navController = navController)
+    }
+
+    // 创建新课程
+    composable(AppRoutes.CREATE_COURSE_ROUTE) {
+        CreateCourseScreen(navController = navController)
+    }
+
+    // 编辑现有课程
+    composable(
+        route = AppRoutes.EDIT_COURSE_ROUTE,
+        arguments = listOf(navArgument("courseId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
+        EditCourseScreen(
+            navController = navController,
+            courseId = courseId
+        )
+    }
+
+    // 管理课程卡片
+    composable(
+        route = AppRoutes.MANAGE_CARDS_ROUTE,
+        arguments = listOf(navArgument("courseId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
+        ManageCardsScreen(
+            navController = navController,
+            courseId = courseId
+        )
+    }
+
+    // 添加新卡片
+    composable(
+        route = AppRoutes.ADD_CARD_ROUTE,
+        arguments = listOf(navArgument("courseId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
+        AddCardScreen(
+            navController = navController,
+            courseId = courseId
+        )
+    }
+
+    // 编辑现有卡片
+    composable(
+        route = AppRoutes.EDIT_CARD_ROUTE,
+        arguments = listOf(
+            navArgument("courseId") { type = NavType.LongType },
+            navArgument("cardId") { type = NavType.LongType }
+        )
+    ) { backStackEntry ->
+        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
+        val cardId = backStackEntry.arguments?.getLong("cardId") ?: -1L
+        EditCardScreen(
+            navController = navController,
+            courseId = courseId,
+            cardId = cardId
+        )
+    }
+
+    // 批量导入卡片
+    composable(
+        route = AppRoutes.IMPORT_CARDS_ROUTE,
+        arguments = listOf(navArgument("courseId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
+        ImportCardsScreen(
+            navController = navController,
+            courseId = courseId
+        )
+    }
+}
+
+// 设置和关于路由
+private fun NavGraphBuilder.addSettingsRoutes(navController: NavController) {
+    composable(AppRoutes.SETTINGS_ROUTE) {
+        SettingsScreen(navController = navController)
+    }
+
+    composable(AppRoutes.ABOUT_ROUTE) {
+        AboutScreen(navController = navController)
+    }
+}
+
+ */
+// 导航扩展函数
+fun NavController.navigateToHome() {
+    this.navigate(AppRoutes.HOME_ROUTE) {
+        popUpTo(AppRoutes.HOME_ROUTE) { inclusive = true }
+    }
+}
+
+fun NavController.navigateToCourses() {
+    this.navigate(AppRoutes.COURSES_ROUTE)
+}
+
+fun NavController.navigateToMyLearning() {
+    this.navigate(AppRoutes.MY_LEARNING_ROUTE)
+}
+
+fun NavController.navigateToMyCourses() {
+    this.navigate(AppRoutes.MY_COURSES_ROUTE)
+}
 
 fun NavController.navigateToCourseDetail(courseId: Long) {
-    this.navigate("$COURSE_DETAIL_ROUTE/$courseId")
+    this.navigate(AppRoutes.getCourseDetailRoute(courseId))
 }
-fun NavController.navigateToCreateCourse() {
-    this.navigate(CREATE_COURSE_ROUTE)
-}
-fun NavController.navigateToPractice(courseId: Long, cardId: Long) {
-    this.navigate("$PRACTICE_ROUTE/$courseId/$cardId")
-}
-fun NavController.navigateToPracticeResult(practiceId: Long) {
-    this.navigate("$PRACTICE_RESULT_ROUTE/$practiceId")
-}
-fun NavGraphBuilder.addCourseRoute(navController: NavHostController) {
-    composable(
-        route = "$COURSE_DETAIL_ROUTE/{courseId}",
-        arguments = listOf(navArgument("courseId") { type = NavType.LongType })
-    ) {
-        CourseDetailScreen(navController = navController)
-    }
-    composable(COURSES_ROUTE) {
-        CourseScreen(navController = navController)
-    }
 
+fun NavController.navigateToCreateCourse() {
+    this.navigate(AppRoutes.CREATE_COURSE_ROUTE)
+}
+
+fun NavController.navigateToEditCourse(courseId: Long) {
+    this.navigate(AppRoutes.getEditCourseRoute(courseId))
+}
+
+fun NavController.navigateToManageCards(courseId: Long) {
+    this.navigate(AppRoutes.getManageCardsRoute(courseId))
+}
+
+fun NavController.navigateToAddCard(courseId: Long) {
+    this.navigate(AppRoutes.getAddCardRoute(courseId))
+}
+
+fun NavController.navigateToEditCard(courseId: Long, cardId: Long) {
+    this.navigate(AppRoutes.getEditCardRoute(courseId, cardId))
+}
+
+fun NavController.navigateToImportCards(courseId: Long) {
+    this.navigate(AppRoutes.getImportCardsRoute(courseId))
+}
+
+fun NavController.navigateToPractice(courseId: Long, cardId: Long) {
+    this.navigate(AppRoutes.getPracticeRoute(courseId, cardId))
+}
+
+fun NavController.navigateToPracticeResult(practiceId: Long) {
+    this.navigate(AppRoutes.getFeedbackRoute(practiceId))
+}
+
+fun NavController.navigateToCardHistory(courseId: Long, cardId: Long) {
+    this.navigate(AppRoutes.getCardHistoryRoute(courseId, cardId))
 }

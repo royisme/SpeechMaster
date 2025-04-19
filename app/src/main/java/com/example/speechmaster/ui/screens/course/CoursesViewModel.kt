@@ -40,12 +40,12 @@ enum class SortingType(val createComparator: () -> Comparator<Course>) {
 
 
 @HiltViewModel
-class CourseViewModel @Inject constructor(
+class CoursesViewModel @Inject constructor(
     private val userSessionManager: UserSessionManager,
     private val courseRepository: ICourseRepository
 ) : ViewModel() {
     companion object{
-        private const val TAG = "CourseViewModel"
+        private const val TAG = "CoursesViewModel"
     }
     // UI状态
 

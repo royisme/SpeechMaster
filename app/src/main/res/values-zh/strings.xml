@@ -4,14 +4,22 @@
     <!-- Menu -->
     <string name="menu">菜单</string>
     <string name="home">首页</string>
-    <string name="course_list">课程列表</string>
     <string name="practice_history">练习历史</string>
+    <string name="daily_practice">每日练习</string>
+    <string name="course_list">课程库</string>
+    <string name="practice_result">练习结果</string>
+    <string name="my_learning">我的学习</string>
+    <string name="my_courses">我的课程</string>
+    <string name="edit_course">编辑课程</string>
+    <string name="manage_cards">管理卡片</string>
+    <string name="add_card">添加卡片</string>
+    <string name="edit_card">编辑卡片</string>
+    <string name="import_cards">批量导入</string>
+    <string name="card_history">卡片历史</string>
     <string name="settings">设置</string>
-    <string name="about">关于应用</string>
-
+    <string name="about">关于</string>
     <!-- Home Screen -->
     <string name="error_recording_too_short">你的录音太短了</string>
-    <string name="daily_practice">每日练习</string>
     <string name="your_progress">你的进度</string>
     <string name="current_streak">当前连续</string>
     <string name="days">天</string>

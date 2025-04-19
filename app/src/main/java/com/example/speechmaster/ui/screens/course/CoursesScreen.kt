@@ -25,10 +25,10 @@ import com.example.speechmaster.ui.theme.AppTheme
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
 
 @Composable
-fun CourseScreen(
+fun CoursesScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: CourseViewModel = hiltViewModel(),
+    viewModel: CoursesViewModel = hiltViewModel(),
     topBarViewModel: TopBarViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -117,7 +117,7 @@ fun CourseScreen(
 @Composable
 fun CourseScreenPreview() {
     AppTheme {
-        CourseScreen(
+        CoursesScreen(
             navController = NavController(LocalContext.current),
             topBarViewModel = TopBarViewModel(),
             viewModel = hiltViewModel()

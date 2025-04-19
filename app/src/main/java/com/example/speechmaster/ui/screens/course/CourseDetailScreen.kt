@@ -1,6 +1,5 @@
 package com.example.speechmaster.ui.screens.course
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
@@ -56,9 +53,8 @@ fun CourseDetailScreen(
 
     // 更新TopBar标题
     LaunchedEffect(uiState) {
-        Timber.tag(TAG).d("uiState: $uiState")
-        if (uiState is BaseUiState.Success) {
-            topBarViewModel.updateTitle((uiState.get()?.course?.title.toString()))
+        (uiState as? BaseUiState.Success)?.let {
+            topBarViewModel.updateTitle(it.data.course.title)
         }
     }
 

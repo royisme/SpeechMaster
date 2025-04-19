@@ -3,8 +3,6 @@ package com.example.speechmaster.ui.screens.practice
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,15 +18,15 @@ import com.example.speechmaster.data.model.WordFeedback
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
 import com.example.speechmaster.ui.state.BaseUiState
-import com.example.speechmaster.ui.state.get
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
 
 @Composable
-fun PracticeResultScreen(
+fun FeedbackScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: PracticeResultViewModel = hiltViewModel(),
+    viewModel: FeedbackViewModel = hiltViewModel(),
     topBarViewModel: TopBarViewModel = hiltViewModel(),
+    practiceId: Long
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

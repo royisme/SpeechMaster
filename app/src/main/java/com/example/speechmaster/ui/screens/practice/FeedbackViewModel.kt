@@ -4,10 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.speechmaster.R
-import com.example.speechmaster.data.model.PracticeFeedback
 import com.example.speechmaster.domain.repository.IPracticeRepository
 import com.example.speechmaster.domain.session.UserSessionManager
-import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.state.BaseUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +22,7 @@ import javax.inject.Inject
  * 负责加载和显示练习反馈数据
  */
 @HiltViewModel
-class PracticeResultViewModel @Inject constructor(
+class FeedbackViewModel @Inject constructor(
     private val practiceRepository: IPracticeRepository,
     private val userSessionManager: UserSessionManager,
     savedStateHandle: SavedStateHandle
@@ -92,7 +90,7 @@ class PracticeResultViewModel @Inject constructor(
         }
     }
     companion object {
-        const val TAG = "PracticeResultViewModel"
+        const val TAG = "FeedbackViewModel"
     }
 }
 
