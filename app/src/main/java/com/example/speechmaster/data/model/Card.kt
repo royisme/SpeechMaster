@@ -1,4 +1,4 @@
-package com.example.speechmaster.data.model
+package com.example.speechmaster.domain.model
 
 /**
  * 表示一个练习卡片，包含需要朗读的文本内容
