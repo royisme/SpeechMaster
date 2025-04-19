@@ -102,7 +102,7 @@
     <string name="practice_play_recording">play recording</string>
     <string name="practice_pause_playback">pause playback</string>
     <string name="practice_record_again">record again</string>
-    <string name="practice_submit_for_analysis">submit for analysis</string>
+    <string name="practice_submit_for_analysis">analysis</string>
     <string name="record_permission_rationale">record audio permission required</string>
     <string name="text_to_speech">text to speech</string>
     <string name="analysis_in_progress">analysis in progress</string>
