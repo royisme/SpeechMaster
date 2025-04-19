@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -48,8 +49,8 @@ class CourseDetailViewModel @Inject constructor(
     private val userId: String? get() = userSessionManager.currentUserFlow.value?.id
 
     // UI状态
-    private val _uiState = MutableStateFlow<BaseUiState<CourseDetailData>>(BaseUiState.Loading)
-    val uiState: StateFlow<BaseUiState<CourseDetailData>> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<CourseDetailUiState>(BaseUiState.Loading)
+    val uiState: StateFlow<CourseDetailUiState> = _uiState.asStateFlow()
 
     // 课程是否已添加(内部状态)
     private val _isAddedInternal = MutableStateFlow<Boolean?>(null)
@@ -74,7 +75,7 @@ class CourseDetailViewModel @Inject constructor(
                         .first()
                 } catch (e: Exception) {
                     _isAddedInternal.value = false
-                    Log.e(TAG, "Error checking course addition status", e)
+                    Timber.tag(TAG).e(e, "Error checking course addition status")
                 }
             }
 
@@ -155,7 +156,8 @@ class CourseDetailViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                Log.e("CourseDetailViewModel", "Error loading course detail for ID: $courseId", e)
+                Timber.tag("CourseDetailViewModel")
+                    .e(e, "Error loading course detail for ID: $courseId")
                 _uiState.value = BaseUiState.Error(
                     messageResId = R.string.error_loading_course_detail_failed,
                     formatArgs = listOf(e.message ?: "")
@@ -175,7 +177,7 @@ class CourseDetailViewModel @Inject constructor(
                 _isAddedInternal.value = true
             } catch (e: Exception) {
                 // TODO: 添加错误通知机制
-                Log.e(TAG, "Error adding course to learning", e)
+                Timber.tag(TAG).e(e, "Error adding course to learning")
             }
         }
     }
@@ -191,7 +193,7 @@ class CourseDetailViewModel @Inject constructor(
                 _isAddedInternal.value = false
             } catch (e: Exception) {
                 // TODO: 添加错误通知机制
-                Log.e(TAG, "Error removing course from learning", e)
+                Timber.tag(TAG).e(e, "Error removing course from learning")
             }
         }
     }

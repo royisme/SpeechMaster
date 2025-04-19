@@ -132,4 +132,6 @@
     <string name="phonemes">Phonemes</string>
     <string name="best_score_format">Best: %s</string>
     <string name="latest_score_format">Latest: %s</string>
+    <string name="score_format">score: %s</string>
+    <string name="duration_format">duration: %s</string>
 </resources>

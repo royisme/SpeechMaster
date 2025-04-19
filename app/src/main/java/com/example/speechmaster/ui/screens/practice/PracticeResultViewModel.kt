@@ -1,6 +1,5 @@
 package com.example.speechmaster.ui.screens.practice
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +12,7 @@ import com.example.speechmaster.ui.state.BaseUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import timber.log.Timber
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,10 +30,8 @@ class PracticeResultViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val practiceId: Long = checkNotNull(savedStateHandle["practiceId"])
-
-    private val _uiState = MutableStateFlow<BaseUiState<PracticeFeedback>>(BaseUiState.Loading)
-    val uiState: StateFlow<BaseUiState<PracticeFeedback>> = _uiState.asStateFlow()
-
+    private val _uiState = MutableStateFlow<PracticeResultUiState>(BaseUiState.Loading)
+    val uiState: StateFlow<PracticeResultUiState> = _uiState.asStateFlow()
     init {
         loadPracticeResult()
     }
@@ -42,6 +40,7 @@ class PracticeResultViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = BaseUiState.Loading
             try {
+                Timber.tag(TAG).d("Loading practice result for practiceId: %d", practiceId)
                 val userId = userSessionManager.currentUserFlow.value?.id ?: run {
                     return@launch
                 }
@@ -49,7 +48,7 @@ class PracticeResultViewModel @Inject constructor(
                 practiceRepository.getPracticeWithFeedback(practiceId).collect { practiceWithFeedback ->
                     if (practiceWithFeedback == null) {
 
-                        _uiState.value = BaseUiState.Error(R.string.error_practice_not_found)
+                        _uiState.value = BaseUiState.Error(R.string.error_practice_not_found).also { Timber.tag(TAG).e("Practice not found") }
                         return@collect
                     }
 
@@ -57,6 +56,7 @@ class PracticeResultViewModel @Inject constructor(
                         "PENDING", "ANALYZING" -> _uiState.value = BaseUiState.Loading
                         "ERROR" -> {
                             val errorMessage = practiceWithFeedback.userPractice.analysisError ?: "Unknown error"
+                            Timber.tag(TAG).e("Analysis error: $errorMessage")
                         }
                         "COMPLETED" -> {
                             val feedback = practiceWithFeedback.feedback
@@ -69,6 +69,7 @@ class PracticeResultViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Error loading practice result")
             }
         }
     }
@@ -81,14 +82,17 @@ class PracticeResultViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = BaseUiState.Loading
+                Timber.tag(TAG).d("Retrying analysis for practiceId: %d", practiceId)
                 practiceRepository.retryAnalysis(practiceId)
                 loadPracticeResult()
             } catch (e: Exception) {
-               Log.e("PracticeResultViewModel", "Error retrying analysis", e)
-                _uiState.value = BaseUiState.Error(R.string.error_analysis_failed)
+               Timber.tag(TAG).e(e, "Error retrying analysis")
+                _uiState.value = BaseUiState.Error(R.string.error_analysis_failed).also { Timber.tag(TAG).e("retryAnalysis failed") }
             }
         }
     }
-
+    companion object {
+        const val TAG = "PracticeResultViewModel"
+    }
 }
 

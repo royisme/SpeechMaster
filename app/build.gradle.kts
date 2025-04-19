@@ -133,6 +133,7 @@ dependencies {
     implementation(libs.work.runtime)
     implementation(libs.work.multiprocess)
     implementation(libs.hilt.work)
+    implementation(libs.log.timber)
 
     testImplementation(libs.junit) // 添加这行
     testImplementation(libs.kotlinx.coroutines.test) // 添加这行

@@ -56,6 +56,7 @@ import java.util.concurrent.TimeUnit
 import com.example.speechmaster.domain.repository.IUserCourseRelationshipRepository
 import com.example.speechmaster.ui.state.BaseUiState
 import com.example.speechmaster.ui.state.get
+import timber.log.Timber
 
 
 /**
@@ -67,7 +68,6 @@ class PracticeViewModel @Inject constructor(
     private val cardRepository: ICardRepository,
     private val audioPlayerWrapper: AudioPlayerWrapper, // 新增AudioPlayerWrapper依赖
     val textToSpeechWrapper: TextToSpeechWrapper,
-    private val speechAnalyzer: SpeechAnalyzerWrapper,
     @ApplicationContext private val context: Context,
     private val savedStateHandle: SavedStateHandle,
     private val practiceRepository: IPracticeRepository,
@@ -138,30 +138,30 @@ class PracticeViewModel @Inject constructor(
     // 实现 RecorderEventListener
     private val recorderListener = object : IRecorderEventListener {
         override fun onPrepared() {
-            Log.d(TAG, "WavAudioRecorder Prepared")
+            Timber.tag(TAG).d("WavAudioRecorder Prepared")
             // 可以在这里重置一些状态，但通常在 startRecording 前完成
         }
 
         override fun onStart() {
-            Log.d(TAG, "WavAudioRecorder Started")
+            Timber.tag(TAG).d("WavAudioRecorder Started")
             _recordingState.value = RecordingState.RECORDING
             // 库内部应该有计时，我们通过 onProgressUpdate 更新UI
             _recordingDurationMillis.value = 0L // 重置计时显示
         }
 
         override fun onPause() {
-            Log.d(TAG, "WavAudioRecorder Paused")
+            Timber.tag(TAG).d("WavAudioRecorder Paused")
             _recordingState.value = RecordingState.PAUSED
         }
 
         override fun onResume() {
-            Log.d(TAG, "WavAudioRecorder Resumed")
+            Timber.tag(TAG).d("WavAudioRecorder Resumed")
             _recordingState.value = RecordingState.RECORDING
         }
 
         override fun onStop(durationMs: Long) {
             _normalizedAmplitude.value = 0f
-            Log.d(TAG, "RawAudioRecorder Stopped. Duration: $durationMs ms")
+            Timber.tag(TAG).d("RawAudioRecorder Stopped. Duration: $durationMs ms")
             lastRecordedDurationMs = durationMs
             // 注意：此时文件已经写入，并且头已更新 (库内部完成)
 
@@ -174,16 +174,16 @@ class PracticeViewModel @Inject constructor(
                     _recordedAudioUri.value = Uri.fromFile(file)
                     _recordingState.value = RecordingState.STOPPED
                     _isRecordingValid.value = true
-                    Log.d(TAG, "录音有效并保存: ${file.absolutePath}")
+                    Timber.tag(TAG).d("录音有效并保存: ${file.absolutePath}")
                 } else {
-                    Log.w(TAG, "录音无效 (时长或大小不足)，不保存URI")
+                    Timber.tag(TAG).w("录音无效 (时长或大小不足)，不保存URI")
                     _recordedAudioUri.value = null // 确保无效时不设置URI
                     _isRecordingValid.value = false
                     // 可能需要删除无效文件，但 resetRecording 会处理
                     resetRecording() // 重置状态并删除文件
                 }
             } else {
-                Log.e(TAG, "停止录音后文件不存在或为null")
+                Timber.tag(TAG).e("停止录音后文件不存在或为null")
                 _recordedAudioUri.value = null
                 _isRecordingValid.value = false
                 resetRecording()
@@ -273,7 +273,7 @@ class PracticeViewModel @Inject constructor(
         viewModelScope.launch {
             // 1. 权限检查
             if (!hasRecordAudioPermission()) {
-                Log.e(TAG, "录音权限未授予，无法开始录音")
+                Timber.tag(TAG).e("录音权限未授予，无法开始录音")
                 // 可能需要触发一个事件通知UI请求权限
                 _navigationEvent.emit(NavigationEvent.RequestPermission(Manifest.permission.RECORD_AUDIO))
                 return@launch
@@ -281,7 +281,7 @@ class PracticeViewModel @Inject constructor(
 
             // 2. 状态检查
             if (_recordingState.value == RecordingState.RECORDING) {
-                Log.w(TAG, "已经在录音中，忽略请求")
+                Timber.tag(TAG).w("已经在录音中，忽略请求")
                 return@launch
             }
 
@@ -292,11 +292,11 @@ class PracticeViewModel @Inject constructor(
                 // 4. 创建临时文件 (使用 .wav 扩展名)
                 tempAudioFile = createTempAudioFile()
                 if (tempAudioFile == null || !tempAudioFile!!.exists()) {
-                    Log.e(TAG, "创建临时 WAV 文件失败")
+                    Timber.tag(TAG).e("创建临时 WAV 文件失败")
                     resetRecording()
                     return@launch
                 }
-                Log.d(TAG, "创建临时 WAV 文件: ${tempAudioFile!!.absolutePath}")
+                Timber.tag(TAG).d("创建临时 WAV 文件: ${tempAudioFile!!.absolutePath}")
 
                 // 5. 配置 RawAudioRecorder
                 // 推荐配置：16kHz, 单声道, 16-bit PCM (常见的语音识别配置)
@@ -319,8 +319,8 @@ class PracticeViewModel @Inject constructor(
                 rawAudioRecorder.startRecording() // onStart 回调会更新状态
 
             } catch (e: Exception) {
-                Log.e(TAG, "开始录音异常", e)
                 resetRecording() // 确保出错时清理
+                Timber.tag(TAG).e("开始录音异常: %s", e.message)
             }
         }
     }
@@ -331,15 +331,15 @@ class PracticeViewModel @Inject constructor(
     fun stopRecording() {
         viewModelScope.launch {
             if (_recordingState.value == RecordingState.RECORDING || _recordingState.value == RecordingState.PAUSED) {
-                Log.d(TAG, "请求停止 RawAudioRecorder")
+                Timber.tag(TAG).d("请求停止 RawAudioRecorder")
                 try {
                     rawAudioRecorder.stopRecording() // onStop 回调会处理后续状态和文件
                 } catch (e: Exception) {
-                    Log.e(TAG, "停止录音异常", e)
+                    Timber.tag(TAG).e("停止录音异常: %s", e.message)
                     resetRecording() // 确保出错时清理
                 }
             } else {
-                Log.w(TAG, "不在录音或暂停状态，无法停止")
+                Timber.tag(TAG).w("不在录音或暂停状态，无法停止")
             }
         }
     }
@@ -349,11 +349,11 @@ class PracticeViewModel @Inject constructor(
      */
     fun pauseRecording() {
         if (_recordingState.value == RecordingState.RECORDING) {
-            Log.d(TAG, "请求暂停 RawAudioRecorder")
+            Timber.tag(TAG).d("请求暂停 RawAudioRecorder")
             try {
                 rawAudioRecorder.pauseRecording() // onPause 回调更新状态
             } catch (e: Exception) {
-                Log.e(TAG, "暂停录音异常", e)
+                Timber.tag(TAG).e("暂停录音异常 %s", e.message)
             }
         }
     }
@@ -363,11 +363,11 @@ class PracticeViewModel @Inject constructor(
      */
     fun resumeRecording() {
         if (_recordingState.value == RecordingState.PAUSED) {
-            Log.d(TAG, "请求恢复 RawAudioRecorder")
+            Timber.tag(TAG).d("请求恢复 RawAudioRecorder")
             try {
                 rawAudioRecorder.resumeRecording() // onResume 回调更新状态
             } catch (e: Exception) {
-                Log.e(TAG, "恢复录音异常", e)
+                Timber.tag(TAG).e("恢复录音异常 %s", e.message)
             }
         }
     }
@@ -379,32 +379,32 @@ class PracticeViewModel @Inject constructor(
     private fun isRecordingValid(file: File, duration: Long): Boolean {
         // 检查时长
         if (duration < MIN_RECORDING_DURATION_MS) {
-            Log.w(TAG, "录音时长过短: ${duration}ms < ${MIN_RECORDING_DURATION_MS}ms")
+            Timber.tag(TAG).w("录音时长过短: ${duration}ms < ${MIN_RECORDING_DURATION_MS}ms")
             return false
         }
         // 检查文件大小 (WAV 文件头是 44 字节)
         val minValidWavSize = 44 + MIN_FILE_SIZE_BYTES // 至少有头和一点点数据
         if (file.length() < minValidWavSize) {
-            Log.w(TAG, "录音文件过小 (可能只有头或数据不足): ${file.length()}bytes < ${minValidWavSize}bytes")
+            Timber.tag(TAG).w("录音文件过小 (可能只有头或数据不足): ${file.length()}bytes < ${minValidWavSize}bytes")
             return false
         }
-        Log.d(TAG, "录音有效: 时长=${duration}ms, 大小=${file.length()}bytes")
+        Timber.tag(TAG).d("录音有效: 时长=${duration}ms, 大小=${file.length()}bytes")
         return true
     }
     /**
      * 切换音频播放状态（播放/暂停）
      */
     fun togglePlayback() {
-        Log.d(TAG, "尝试播放录音")
+        Timber.tag(TAG).d("尝试播放录音")
         viewModelScope.launch {
             try {
                 // 获取录音URI
                 val uri = _recordedAudioUri.value
-                Log.d(TAG, "获取录音URI $uri")
+                Timber.tag(TAG).d("获取录音URI $uri")
 
                 // 如果没有录音文件，不做任何操作
                 if (uri == null) {
-                    Log.e(TAG, "没有录音文件可播放")
+                    Timber.tag(TAG).e("没有录音文件可播放")
                     return@launch
                 }
 
@@ -413,19 +413,19 @@ class PracticeViewModel @Inject constructor(
                     stopRecording()
                 }
 
-                Log.d(TAG, "切换播放状态")
+                Timber.tag(TAG).d("切换播放状态")
                 // 切换播放状态
                 val success = audioPlayerWrapper.togglePlayback(uri)
-                Log.d(TAG, "切换播放状态返回 $success")
+                Timber.tag(TAG).d("切换播放状态返回 $success")
 
                 // 更新播放状态
                 _isPlayingAudio.value = audioPlayerWrapper.isPlaying.value
 
                 if (!success) {
-                    Log.e(TAG, "播放音频失败")
+                    Timber.tag(TAG).e("播放音频失败")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "播放音频异常", e)
+                Timber.tag(TAG).e("播放音频异常 %s", e.message)
                 _isPlayingAudio.value = false
             }
         }
@@ -438,7 +438,7 @@ class PracticeViewModel @Inject constructor(
      * 重置录音状态
      */
     fun resetRecording() {
-        Log.d(TAG, "重置录音状态...")
+        Timber.tag(TAG).d("重置录音状态...")
         _normalizedAmplitude.value = 0f // Reset amplitude
         try {
             // 停止可能的播放
@@ -448,12 +448,12 @@ class PracticeViewModel @Inject constructor(
             // 停止可能的录音 (如果正在录或暂停，并确保资源释放)
             // 注意：stopRecording 是异步的，但我们这里只需要确保调用，让库处理
             if (_recordingState.value == RecordingState.RECORDING || _recordingState.value == RecordingState.PAUSED) {
-                Log.w(TAG, "Resetting while recording/paused, ensuring stop...")
+                Timber.tag(TAG).w("Resetting while recording/paused, ensuring stop...")
                 // 调用库的停止，但不等待回调，直接重置状态
                 try {
                     rawAudioRecorder.stopRecording()
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error stopping recorder during reset", e)
+                    Timber.tag(TAG).e("Error stopping recorder during reset %s", e.message)
                 }
             }
 
@@ -470,9 +470,9 @@ class PracticeViewModel @Inject constructor(
             lastRecordedDurationMs = 0L
             lastRecordedFile = null
 
-            Log.d(TAG, "录音状态已重置完成")
+            Timber.tag(TAG).d("录音状态已重置完成")
         } catch (e: Exception) {
-            Log.e(TAG, "重置录音状态失败", e)
+            Timber.tag(TAG).e("重置录音状态失败 %s", e.message)
         }
     }
 
@@ -483,18 +483,18 @@ class PracticeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val userId = userSessionManager.currentUserFlow.value?.id ?: return@launch
-                Log.d(TAG, "Loading latest practice result for card $cardId")
+                Timber.tag(TAG).d("Loading latest practice result for card $cardId")
                 practiceRepository.getLatestPracticeWithFeedback(userId, cardId)
                     .collect { practiceWithFeedback ->
                         if (practiceWithFeedback?.feedback != null) {
                             _analysisState.value = AnalysisState.Success(practiceWithFeedback.feedback )
-                            Log.d(TAG, "Loaded latest practice result for card $cardId")
+                            Timber.tag(TAG).d("Loaded latest practice result for card $cardId")
                         } else {
-                            Log.d(TAG, "No previous practice result found for card $cardId")
+                            Timber.tag(TAG).d("No previous practice result found for card $cardId")
                         }
                     }
             } catch (e: Exception) {
-                Log.e(TAG, "Error loading latest practice result", e)
+                Timber.tag(TAG).e("Error loading latest practice result %s", e.message)
                 // 这里我们不设置错误状态，因为这只是额外的功能，不影响主要流程
             }
         }
@@ -584,10 +584,10 @@ class PracticeViewModel @Inject constructor(
             // Create the new file.  Throws IOException on failure, no need to check return value.
             tempFile.createNewFile()
 
-            Log.d(TAG, "Created temp file: ${tempFile.absolutePath}")
+            Timber.tag(TAG).d("Created temp file: ${tempFile.absolutePath}")
             tempFile
         } catch (e: IOException) {
-            Log.e(TAG, "Failed to create temp file", e)
+            Timber.tag(TAG).e(e, "Failed to create temp file")
             throw e // Re-throw the exception after logging.  More informative for the caller.
         }
     }
@@ -602,12 +602,12 @@ class PracticeViewModel @Inject constructor(
         fileToDelete?.let {
             if (it.exists()) {
                 if (it.delete()) {
-                    Log.d(TAG, "临时文件已删除: ${it.absolutePath}")
+                    Timber.tag(TAG).d("临时文件已删除: ${it.absolutePath}")
                 } else {
-                    Log.w(TAG, "删除临时文件失败: ${it.absolutePath}")
+                    Timber.tag(TAG).w("删除临时文件失败: ${it.absolutePath}")
                 }
             } else {
-                Log.d(TAG, "尝试删除临时文件，但文件不存在: ${it.absolutePath}")
+                Timber.tag(TAG).d("尝试删除临时文件，但文件不存在: ${it.absolutePath}")
             }
         }
         tempAudioFile = null
@@ -622,7 +622,7 @@ class PracticeViewModel @Inject constructor(
         super.onCleared()
 
         super.onCleared()
-        Log.d(TAG, "ViewModel onCleared")
+        Timber.tag(TAG).d("ViewModel onCleared")
         // 确保录音停止并释放资源
         resetRecording() // resetRecording 会调用 stopRecording 和清理文件
 
@@ -636,7 +636,7 @@ class PracticeViewModel @Inject constructor(
         // 停止当前TTS播放（如果正在播放）
         textToSpeechWrapper.stop()
 
-        Log.d(TAG, "ViewModel资源已清理")
+        Timber.tag(TAG).d("ViewModel资源已清理")
     }
 }
 

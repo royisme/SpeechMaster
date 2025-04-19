@@ -41,6 +41,8 @@ microsoft-cognitiveservices = "1.43.0"
 
 androidx-datastore= "1.1.4"
 work_version= "2.9.1"
+
+log-timber = "5.0.1"
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -121,6 +123,8 @@ androidx-datastore-preferences-core-android = { group = "androidx.datastore", na
 #---work---
 work-runtime= { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work_version" }
 work-multiprocess = { group = "androidx.work", name = "work-multiprocess", version.ref = "work_version" }
+#--log---
+log-timber = { module = "com.jakewharton.timber:timber", version.ref = "log-timber" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }

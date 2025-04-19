@@ -1,4 +1,4 @@
-package com.example.speechmaster.ui.screens.card_history
+package com.example.speechmaster.ui.screens.course
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,10 +10,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -23,8 +21,7 @@ import com.example.speechmaster.ui.components.common.EmptyView
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
 import com.example.speechmaster.ui.navigation.AppRouteList
-import com.example.speechmaster.ui.screens.course.CardHistoryData
-import com.example.speechmaster.ui.screens.course.CardHistoryViewModel
+
 import com.example.speechmaster.ui.state.BaseUiState
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
 import java.text.SimpleDateFormat
@@ -127,13 +124,15 @@ fun PracticeHistoryItem(
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    text = "时长: ${item.duration}",
+                    text = stringResource(
+                        id = R.string.duration_format).format(item.duration),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
             item.score?.let { score ->
                 Text(
-                    text = "得分: ${String.format("%.1f", score)}",
+                    text = stringResource(
+                        id = R.string.score_format).format(score),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary
                 )

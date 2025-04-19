@@ -1,6 +1,5 @@
 package com.example.speechmaster.ui.screens.course
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.speechmaster.R
@@ -19,11 +18,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -43,11 +44,13 @@ class CourseViewModel @Inject constructor(
     private val userSessionManager: UserSessionManager,
     private val courseRepository: ICourseRepository
 ) : ViewModel() {
-
+    companion object{
+        private const val TAG = "CourseViewModel"
+    }
     // UI状态
-    private val _uiState = MutableStateFlow<BaseUiState<CourseListData>>(BaseUiState.Loading)
-    val uiState: StateFlow<BaseUiState<CourseListData>> = _uiState.asStateFlow()
 
+    private val _uiState = MutableStateFlow<CourseListUiState>(BaseUiState.Loading)
+    val uiState: StateFlow<CourseListUiState> = _uiState.asStateFlow()
     // 搜索查询
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -74,27 +77,35 @@ class CourseViewModel @Inject constructor(
         } ?: flowOf(emptyList())
     }.catch { e ->
         emit(emptyList())
-        Log.e("CourseViewModel", "Error loading courses", e)
+        Timber.tag(TAG).e(e, "Error loading courses")
         _uiState.value = BaseUiState.Error(R.string.error_unknown)
     }
 
     // 初始化
     init {
-        Log.d("CourseViewModel","init data")
+        Timber.tag(TAG).d("init data")
         loadCourses()
     }
-    
+
     // 加载课程数据
     fun loadCourses() {
         viewModelScope.launch {
             _uiState.value = BaseUiState.Loading
-            searchAndFilterFlow.collect { courses ->
-                Log.d("CourseViewModel", "Loaded ${courses.size} courses")
-                _uiState.value = if (courses.isEmpty()) {
-                    BaseUiState.Success(CourseListData.Empty)
-                } else {
-                    BaseUiState.Success(CourseListData.Success(courses.map { it.toUiModel() }))
+            try {
+                // 使用collectLatest而不是collect，这样当有新值时会取消之前的处理
+                searchAndFilterFlow.collectLatest { courses ->
+                    Timber.d("Loaded ${courses.size} courses")
+                    _uiState.value = if (courses.isEmpty()) {
+                        BaseUiState.Success(CourseListData.Empty)
+                    } else {
+                        BaseUiState.Success(CourseListData.Success(courses.map { it.toUiModel() }))
+                    }
                 }
+            } catch (e: Exception) {
+                Timber.e(e, "加载课程失败")
+                _uiState.value = BaseUiState.Error(
+                    R.string.error_unknown,
+                )
             }
         }
     }

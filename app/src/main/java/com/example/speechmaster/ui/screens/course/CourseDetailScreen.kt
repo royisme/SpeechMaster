@@ -33,6 +33,7 @@ import com.example.speechmaster.ui.state.BaseUiState
 import com.example.speechmaster.ui.state.get
 import com.example.speechmaster.ui.theme.AppTheme
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
+import timber.log.Timber
 
 private const val TAG = "CourseDetailScreen"
 
@@ -51,11 +52,11 @@ fun CourseDetailScreen(
 
     val uiState by viewModel.uiState.collectAsState()
     val isAdded by viewModel.isAdded.collectAsState()
-    Log.d(TAG, "uiState: $uiState")
+    Timber.tag(TAG).d("uiState: $uiState")
 
     // 更新TopBar标题
     LaunchedEffect(uiState) {
-        Log.d(TAG, "uiState: $uiState")
+        Timber.tag(TAG).d("uiState: $uiState")
         if (uiState is BaseUiState.Success) {
             topBarViewModel.updateTitle((uiState.get()?.course?.title.toString()))
         }
@@ -119,8 +120,6 @@ fun CourseDetailScreen(
                     }
                 }
             }
-
-            is BaseUiState.Success<*> -> TODO()
         }
     }
 }

@@ -25,8 +25,8 @@ class CardHistoryViewModel @Inject constructor(
     private val cardId: Long = checkNotNull(savedStateHandle["cardId"])
     private val courseId: Long = checkNotNull(savedStateHandle["courseId"])
 
-    private val _uiState = MutableStateFlow<BaseUiState<CardHistoryData>>(BaseUiState.Loading)
-    val uiState: StateFlow<BaseUiState<CardHistoryData>> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<CardHistoryUiState>(BaseUiState.Loading)
+    val uiState: StateFlow<CardHistoryUiState> = _uiState.asStateFlow()
 
     init {
         loadPracticeHistory()
