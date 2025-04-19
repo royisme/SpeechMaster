@@ -1,6 +1,5 @@
 package com.example.speechmaster.ui.layouts
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.compose.foundation.layout.*
@@ -13,7 +12,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.speechmaster.R
-import com.example.speechmaster.ui.navigation.AppRouteList
+import com.example.speechmaster.ui.navigation.AppRoutes
 
 @Composable
 fun AppDrawer(
@@ -41,10 +40,10 @@ fun AppDrawer(
             NavigationDrawerItem(
                 icon = { Icon(Icons.Default.Home, contentDescription = null) },
                 label = { Text(stringResource(id = R.string.daily_practice)) },
-                selected = navController.currentDestination?.route == AppRouteList.HOME_ROUTE,
+                selected = navController.currentDestination?.route == AppRoutes.HOME_ROUTE,
                 onClick = {
-                    navController.navigate(AppRouteList.HOME_ROUTE) {
-                        popUpTo(AppRouteList.HOME_ROUTE) { inclusive = true }
+                    navController.navigate(AppRoutes.HOME_ROUTE) {
+                        popUpTo(AppRoutes.HOME_ROUTE) { inclusive = true }
                     }
                     closeDrawer()
                 },
@@ -55,10 +54,10 @@ fun AppDrawer(
             NavigationDrawerItem(
                 icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
                 label = { Text(stringResource(id = R.string.course_list)) },
-                selected = navController.currentDestination?.route == AppRouteList.COURSES_ROUTE,
+                selected = navController.currentDestination?.route == AppRoutes.COURSES_ROUTE,
                 onClick = {
-                    navController.navigate(AppRouteList.COURSES_ROUTE) {
-                        popUpTo(AppRouteList.HOME_ROUTE)
+                    navController.navigate(AppRoutes.COURSES_ROUTE) {
+                        popUpTo(AppRoutes.HOME_ROUTE)
                     }
                     closeDrawer()
                 },
@@ -69,7 +68,7 @@ fun AppDrawer(
             NavigationDrawerItem(
                 icon = { Icon(Icons.Default.History, contentDescription = null) },
                 label = { Text(stringResource(id = R.string.practice_history)) },
-                selected = navController.currentDestination?.route == AppRouteList.HISTORY_ROUTE,
+                selected = navController.currentDestination?.route == AppRoutes.HISTORY_ROUTE,
                 onClick = {
                     // 暂未实现
                     closeDrawer()
@@ -81,7 +80,7 @@ fun AppDrawer(
             NavigationDrawerItem(
                 icon = { Icon(Icons.Default.Settings, contentDescription = null) },
                 label = { Text(stringResource(id = R.string.settings)) },
-                selected = navController.currentDestination?.route == AppRouteList.SETTINGS_ROUTE,
+                selected = navController.currentDestination?.route == AppRoutes.SETTINGS_ROUTE,
                 onClick = {
                     // 暂未实现
                     closeDrawer()
@@ -93,7 +92,7 @@ fun AppDrawer(
             NavigationDrawerItem(
                 icon = { Icon(Icons.Default.Info, contentDescription = null) },
                 label = { Text(stringResource(id = R.string.about)) },
-                selected = navController.currentDestination?.route == AppRouteList.ABOUT_ROUTE,
+                selected = navController.currentDestination?.route == AppRoutes.ABOUT_ROUTE,
                 onClick = {
                     // 暂未实现
                     closeDrawer()

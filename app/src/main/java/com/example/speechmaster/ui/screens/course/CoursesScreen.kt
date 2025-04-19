@@ -6,13 +6,13 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.speechmaster.R
-import com.example.speechmaster.domain.model.CourseItem
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
 import com.example.speechmaster.ui.components.course.CourseList
@@ -21,6 +21,7 @@ import com.example.speechmaster.ui.components.course.EmptyCoursesView
 import com.example.speechmaster.ui.components.course.FilterBar
 import com.example.speechmaster.ui.navigation.navigateToCourseDetail
 import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.theme.AppTheme
 import com.example.speechmaster.ui.viewmodels.TopBarViewModel
 
 @Composable
@@ -109,5 +110,17 @@ fun CourseScreen(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun CourseScreenPreview() {
+    AppTheme {
+        CourseScreen(
+            navController = NavController(LocalContext.current),
+            topBarViewModel = TopBarViewModel(),
+            viewModel = hiltViewModel()
+        )
     }
 }
