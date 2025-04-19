@@ -54,6 +54,7 @@ import com.example.speechmaster.ui.state.TopBarState
 import com.example.speechmaster.ui.state.BaseUiState
 import com.example.speechmaster.ui.state.defaultTopBarState
 import com.example.speechmaster.ui.state.get
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +72,7 @@ fun PracticeScreen(
     val isAnalyzing by viewModel.isAnalyzing.collectAsState()
     var shouldShowPermissionRequest by remember { mutableStateOf(false) }
     val practiceTitle = stringResource(R.string.practice_cards) // Corrected title resource
-
+    val amplitude by viewModel.normalizedAmplitude.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
@@ -151,6 +152,7 @@ fun PracticeScreen(
                             shouldShowPermissionRequest = true
                         }
                     },
+                    normalizedAmplitude = amplitude,
                     onStopClick = { viewModel.stopRecording() },
                     onPlayClick = { viewModel.togglePlayback() },
                     onResetClick = { viewModel.resetRecording() },
@@ -171,6 +173,7 @@ fun PracticeContent(
     recordingDurationMillis: Long,
     isPlayingAudio: Boolean,
     isAnalyzing: Boolean,
+    normalizedAmplitude: Float,
     textToSpeechWrapper: TextToSpeechWrapper,
     onRecordClick: () -> Unit,
     onStopClick: () -> Unit,
@@ -205,10 +208,10 @@ fun PracticeContent(
             onPlayClick = onPlayClick,
             onResetClick = onResetClick,
             onSubmitClick = onSubmitClick,
+            normalizedAmplitude = normalizedAmplitude ,
             modifier = Modifier
                 .fillMaxWidth()
 //                .fillMaxHeight(0.35f) // Adjust fraction as needed (e.g., 0.33f, 0.35f)
-            // Note: Styling (corners, background) is applied inside PracticeRecordComponent
         )
     }
 }
@@ -218,12 +221,15 @@ fun PracticeContent(
 @Composable
 fun PracticeScreenPreview() {
     AppTheme {
+        val sampleAmplitude = 0.7f
+
         PracticeContent(
             textContent = "I believe my experience and skills make me well-suited for this position...",
             recordingState = RecordingState.PREPARED,
             recordingDurationMillis = 0L,
             isPlayingAudio = false,
             isAnalyzing = false,
+            normalizedAmplitude = sampleAmplitude,
             textToSpeechWrapper = PreviewTextToSpeechWrapper(),
             onRecordClick = {},
             onStopClick = {},

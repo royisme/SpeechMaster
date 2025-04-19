@@ -30,12 +30,14 @@ import androidx.compose.ui.unit.dp
 import com.example.speechmaster.R
 import com.example.speechmaster.common.enums.RecordingState
 import com.example.speechmaster.ui.theme.AppTheme
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun PracticeRecordComponent(
     modifier: Modifier = Modifier,
     recordingState: RecordingState,
     durationMillis: Long,
+    normalizedAmplitude: Float,
     isPlayingAudio: Boolean = false,
     isAnalyzing: Boolean = false,
     onRecordClick: () -> Unit,
@@ -61,21 +63,20 @@ fun PracticeRecordComponent(
             verticalArrangement = Arrangement.SpaceBetween // Space out elements vertically
         ) {
             // Optional Visualizer Placeholder (Visible only during recording)
-            // NOTE: Replace Box with actual visualizer implementation
             AnimatedVisibility(
                 visible = recordingState == RecordingState.RECORDING,
                 enter = fadeIn() + slideInVertically(),
                 exit = fadeOut() + slideOutVertically()
             ) {
-                Box(
+                AudioVisualizer(
+                    // Replace with actual state collection or parameter
+                    normalizedAmplitude = normalizedAmplitude,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(40.dp) // Example height
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Visualizer Placeholder", style = MaterialTheme.typography.labelSmall)
-                }
+                        .height(60.dp) // Adjust height as needed
+                        .padding(vertical = 8.dp),
+                    barColor = MaterialTheme.colorScheme.primary // Or desired color
+                )
             }
 
             // Timer Display
@@ -107,7 +108,7 @@ fun PracticeRecordComponent(
                     }
                     RecordingState.STOPPED -> {
                         RecordedStateControls(
-                            // isPlayingAudio = isPlayingAudio, // Pass isPlaying if needed for Play button state
+                            isPlayingAudio = isPlayingAudio, // Pass isPlaying if needed for Play button state
                             isAnalyzing = isAnalyzing,
                             onPlayClick = onPlayClick,
                             onResetClick = onResetClick,
@@ -209,7 +210,7 @@ private fun RecordingStateControls(onStopClick: () -> Unit) {
 // --- Recorded State Controls ---
 @Composable
 private fun RecordedStateControls(
-    // isPlayingAudio: Boolean, // Keep if visual feedback needed for play button
+    isPlayingAudio: Boolean, // Keep if visual feedback needed for play button
     isAnalyzing: Boolean,
     onPlayClick: () -> Unit,
     onResetClick: () -> Unit,
@@ -220,7 +221,6 @@ private fun RecordedStateControls(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center // Center controls vertically
     ) {
-        // Central Play Button (Mockup 2)
         FilledIconButton(
             onClick = onPlayClick,
             enabled = !isAnalyzing, // Disable while analyzing
@@ -234,27 +234,29 @@ private fun RecordedStateControls(
             )
         ) {
             Icon(
-                // Use Play icon, potentially change to Pause if isPlayingAudio state is passed
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = stringResource(R.string.practice_play_recording),
+                // Conditionally choose icon based on isPlayingAudio
+                imageVector = if (isPlayingAudio) Icons.Default.Pause else Icons.Default.PlayArrow,
+                contentDescription = stringResource(
+                    // Conditionally choose content description
+                    if (isPlayingAudio) R.string.practice_pause_playback else R.string.practice_play_recording
+                ),
                 modifier = Modifier.size(32.dp)
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp)) // Increased spacing
 
-        // Row for Re-record and Submit buttons (Mockup 2)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly, // Space buttons evenly
+            horizontalArrangement = Arrangement.spacedBy(16.dp), // Adjust spacing as needed
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Re-record Button (Outlined style)
             OutlinedButton(
                 onClick = onResetClick,
                 enabled = !isAnalyzing,
                 shape = MaterialTheme.shapes.medium, // Or small/large
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                modifier = Modifier.weight(1f) // <-- Added weight
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Refresh, // Use outlined icon
@@ -274,7 +276,9 @@ private fun RecordedStateControls(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                ),
+                modifier = Modifier.weight(1f) // <-- Added weight
+
             ) {
                 if (isAnalyzing) {
                     CircularProgressIndicator(
@@ -312,8 +316,10 @@ fun formatDuration(durationMillis: Long): String {
 @Composable
 fun PracticeRecordComponentIdlePreview() {
     AppTheme {
+        val sampleAmplitude = 0.7f
         PracticeRecordComponent( // Wrap in Surface for preview background
             recordingState = RecordingState.PREPARED,
+            normalizedAmplitude = sampleAmplitude,
             durationMillis = 0L, onRecordClick = {}, onStopClick = {}, onPlayClick = {}, onResetClick = {}, onSubmitClick = {}
         )
     }
@@ -323,8 +329,10 @@ fun PracticeRecordComponentIdlePreview() {
 @Composable
 fun PracticeRecordComponentRecordingPreview() {
     AppTheme {
+        val sampleAmplitude = 0.7f
         PracticeRecordComponent(
             recordingState = RecordingState.RECORDING,
+            normalizedAmplitude = sampleAmplitude,
             durationMillis = 37000L, onRecordClick = {}, onStopClick = {}, onPlayClick = {}, onResetClick = {}, onSubmitClick = {}
         )
     }
@@ -334,8 +342,10 @@ fun PracticeRecordComponentRecordingPreview() {
 @Composable
 fun PracticeRecordComponentRecordedPreview() {
     AppTheme {
+        val sampleAmplitude = 0.7f
         PracticeRecordComponent(
             recordingState = RecordingState.STOPPED,
+            normalizedAmplitude = sampleAmplitude,
             durationMillis = 67000L, onRecordClick = {}, onStopClick = {}, onPlayClick = {}, onResetClick = {}, onSubmitClick = {}
         )
     }
@@ -345,9 +355,12 @@ fun PracticeRecordComponentRecordedPreview() {
 @Composable
 fun PracticeRecordComponentAnalyzingPreview() {
     AppTheme {
+        val sampleAmplitude = 0.7f
+
         PracticeRecordComponent(
             recordingState = RecordingState.STOPPED,
             durationMillis = 45000L,
+            normalizedAmplitude = sampleAmplitude,
             isAnalyzing = true, // Show analyzing state
             onRecordClick = {}, onStopClick = {}, onPlayClick = {}, onResetClick = {}, onSubmitClick = {}
         )

@@ -78,6 +78,8 @@ class PracticeViewModel @Inject constructor(
         private const val TAG = "PracticeViewModel"
         private const val MIN_RECORDING_DURATION_MS = 1000L // 最小录音时长1秒
         private const val MIN_FILE_SIZE_BYTES = 1024L // 最小文件大小1KB
+        private const val MAX_AMPLITUDE = 32767f
+
     }
 
     // 从导航参数获取课程ID和卡片ID
@@ -127,6 +129,12 @@ class PracticeViewModel @Inject constructor(
     private var lastRecordedDurationMs: Long = 0L // 保存 onStop 返回的时长
     private var lastRecordedFile: File? = null    // 保存 onStop 对应的文件
 
+
+    // StateFlow to hold the *normalized* amplitude (0.0f to 1.0f)
+    private val _normalizedAmplitude = MutableStateFlow(0f)
+    val normalizedAmplitude: StateFlow<Float> = _normalizedAmplitude.asStateFlow()
+
+
     // 实现 RecorderEventListener
     private val recorderListener = object : IRecorderEventListener {
         override fun onPrepared() {
@@ -152,6 +160,7 @@ class PracticeViewModel @Inject constructor(
         }
 
         override fun onStop(durationMs: Long) {
+            _normalizedAmplitude.value = 0f
             Log.d(TAG, "RawAudioRecorder Stopped. Duration: $durationMs ms")
             lastRecordedDurationMs = durationMs
             // 注意：此时文件已经写入，并且头已更新 (库内部完成)
@@ -184,6 +193,8 @@ class PracticeViewModel @Inject constructor(
         }
 
         override fun onProgressUpdate(maxAmplitude: Int, duration: Long) {
+            _normalizedAmplitude.value = (maxAmplitude.toFloat() / MAX_AMPLITUDE).coerceIn(0f, 1f)
+
             // duration 是秒，转换为毫秒
             _recordingDurationMillis.value = duration * 1000
             // 可以选择更新振幅用于UI: _amplitude.value = maxAmplitude
@@ -428,6 +439,7 @@ class PracticeViewModel @Inject constructor(
      */
     fun resetRecording() {
         Log.d(TAG, "重置录音状态...")
+        _normalizedAmplitude.value = 0f // Reset amplitude
         try {
             // 停止可能的播放
             if (_isPlayingAudio.value) {
@@ -602,35 +614,6 @@ class PracticeViewModel @Inject constructor(
         lastRecordedFile = null // 清理两个引用
     }
 
-//    /**
-//     * 启动计时器
-//     *
-//     * 创建计时器协程，每100毫秒更新一次录音时长
-//     */
-//    private fun startTimer() {
-//        // 取消可能存在的计时器
-//        timerJob?.cancel()
-//
-//        // 重置计时器
-//        _recordingDurationMillis.value = 0L
-//
-//        // 启动新的计时器
-//        timerJob = viewModelScope.launch {
-//            val startTime = System.currentTimeMillis()
-//            while (isActive) {
-//                _recordingDurationMillis.value = System.currentTimeMillis() - startTime
-//                delay(100) // 更新频率，100毫秒更新一次
-//            }
-//        }
-//    }
-//
-//    /**
-//     * 停止计时器
-//     */
-//    private fun stopTimer() {
-//        timerJob?.cancel()
-//        timerJob = null
-//    }
 
     /**
      * ViewModel即将销毁时清理资源
