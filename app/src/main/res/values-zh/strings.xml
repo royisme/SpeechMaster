@@ -39,7 +39,9 @@
     <string name="navigate_back">返回</string>
     <string name="completed">已完成</string>
     <string name="submit">提交</string>
-
+    <string name="edit">修改</string>
+    <string name="delete">删除</string>
+    <string name="save">保存</string>
     <string name="permission_required">需要权限</string>
     <string name="grant_permission">授予权限</string>
     <string name="deny">拒绝</string>
@@ -80,6 +82,15 @@
     <string name="remove_from_learning">从学习列表移除</string>
     <string name="error_loading_course">加载课程失败</string>
 
+    <string name="new_course">新建课程</string>
+    <string name="manage_cards_button">管理卡片</string>
+    <string name="add_card_button">添加卡片</string>
+    <string name="confirm_delete_course_title">确认删除课程</string>
+    <string name="confirm_delete_course_message">你确定要删除这个课程吗？</string>
+    <string name="confirm_delete_card_title">确认删除卡片</string>
+    <string name="confirm_delete_card_message">你确定要删除这张卡片吗？</string>
+    <string name="no_courses_created">还没有创建课程</string>
+    <string name="create_first_course">创建你的第一个课程</string>
     <!--Error message -->
     <string name="error_user_not_found">用户不存在</string>
     <string name="error_course_not_found">课程不存在</string>

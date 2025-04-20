@@ -118,4 +118,6 @@ interface CourseDao {
     @Query("SELECT * FROM courses WHERE source = '$COURSE_FILED_SOURCE_BUILT_IN'" +
             " OR creator_id = :userId ORDER BY created_at DESC")
     fun getAccessibleCoursesWithCards(userId: String): Flow<List<CourseWithCards>>
+
+
 }

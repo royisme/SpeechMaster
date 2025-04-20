@@ -62,7 +62,18 @@ fun AppDrawer(
                 },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
             )
-
+            // 我的课程
+            NavigationDrawerItem(
+                icon = { Icon(Icons.Default.LocalLibrary, contentDescription = null) },
+                label = { Text(stringResource(id = R.string.my_courses)) },
+                selected = navController.currentDestination?.route == AppRoutes.MY_COURSES_ROUTE,
+                onClick = {
+                    navController.navigate(AppRoutes.MY_COURSES_ROUTE) {
+                        popUpTo(AppRoutes.HOME_ROUTE)
+                    }
+                    closeDrawer()
+                }
+            )
             // 练习历史
             NavigationDrawerItem(
                 icon = { Icon(Icons.Default.History, contentDescription = null) },

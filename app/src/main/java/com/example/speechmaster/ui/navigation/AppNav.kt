@@ -18,6 +18,11 @@ import com.example.speechmaster.ui.screens.practice.FeedbackScreen
 import com.example.speechmaster.ui.screens.practice.PracticeScreen
 
 import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
+import com.example.speechmaster.ui.screens.my.cards.EditCardScreen
+import com.example.speechmaster.ui.screens.my.courses.EditCourseScreen
+import com.example.speechmaster.ui.screens.my.cards.ImportCardsScreen
+import com.example.speechmaster.ui.screens.my.cards.ManageCardsScreen
+import com.example.speechmaster.ui.screens.my.courses.MyCoursesScreen
 
 // 定义应用中的路由
 
@@ -45,8 +50,8 @@ fun AppNav(
 //        // 我的学习路由
 //        addLearningRoutes(navController)
 //
-//        // 用户自定义课程管理路由
-//        addUgcRoutes(navController)
+        // 用户自定义课程管理路由
+        addUgcRoutes(navController)
 //
 //        // 设置和关于路由
 //        addSettingsRoutes(navController)
@@ -136,7 +141,7 @@ private fun NavGraphBuilder.addLearningRoutes(navController: NavController) {
         MyLearningScreen(navController = navController)
     }
 }
-
+ */
 // 用户自定义课程管理路由
 private fun NavGraphBuilder.addUgcRoutes(navController: NavController) {
     // 我的课程
@@ -146,18 +151,16 @@ private fun NavGraphBuilder.addUgcRoutes(navController: NavController) {
 
     // 创建新课程
     composable(AppRoutes.CREATE_COURSE_ROUTE) {
-        CreateCourseScreen(navController = navController)
+        EditCourseScreen(navController = navController)
     }
 
     // 编辑现有课程
     composable(
         route = AppRoutes.EDIT_COURSE_ROUTE,
         arguments = listOf(navArgument("courseId") { type = NavType.LongType })
-    ) { backStackEntry ->
-        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
+    ) {
         EditCourseScreen(
             navController = navController,
-            courseId = courseId
         )
     }
 
@@ -165,11 +168,9 @@ private fun NavGraphBuilder.addUgcRoutes(navController: NavController) {
     composable(
         route = AppRoutes.MANAGE_CARDS_ROUTE,
         arguments = listOf(navArgument("courseId") { type = NavType.LongType })
-    ) { backStackEntry ->
-        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
+    ) {
         ManageCardsScreen(
             navController = navController,
-            courseId = courseId
         )
     }
 
@@ -177,11 +178,9 @@ private fun NavGraphBuilder.addUgcRoutes(navController: NavController) {
     composable(
         route = AppRoutes.ADD_CARD_ROUTE,
         arguments = listOf(navArgument("courseId") { type = NavType.LongType })
-    ) { backStackEntry ->
-        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
-        AddCardScreen(
+    ) {
+        EditCardScreen(
             navController = navController,
-            courseId = courseId
         )
     }
 
@@ -192,13 +191,10 @@ private fun NavGraphBuilder.addUgcRoutes(navController: NavController) {
             navArgument("courseId") { type = NavType.LongType },
             navArgument("cardId") { type = NavType.LongType }
         )
-    ) { backStackEntry ->
-        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
-        val cardId = backStackEntry.arguments?.getLong("cardId") ?: -1L
+    ) {
         EditCardScreen(
             navController = navController,
-            courseId = courseId,
-            cardId = cardId
+
         )
     }
 
@@ -206,15 +202,13 @@ private fun NavGraphBuilder.addUgcRoutes(navController: NavController) {
     composable(
         route = AppRoutes.IMPORT_CARDS_ROUTE,
         arguments = listOf(navArgument("courseId") { type = NavType.LongType })
-    ) { backStackEntry ->
-        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
+    ) {
         ImportCardsScreen(
             navController = navController,
-            courseId = courseId
         )
     }
 }
-
+/*
 // 设置和关于路由
 private fun NavGraphBuilder.addSettingsRoutes(navController: NavController) {
     composable(AppRoutes.SETTINGS_ROUTE) {
