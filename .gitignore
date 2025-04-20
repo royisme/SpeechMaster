@@ -57,3 +57,4 @@ proguard-project.txt
 .cursor/*
 schemas/*
 /.cursor/
+.github/
