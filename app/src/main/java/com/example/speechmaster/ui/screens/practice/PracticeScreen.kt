@@ -1,25 +1,14 @@
 package com.example.speechmaster.ui.screens.practice
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.fillMaxHeight // Import fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import android.Manifest
-import androidx.compose.material3.Button
 import com.example.speechmaster.R
 import com.example.speechmaster.common.enums.RecordingState
 import com.example.speechmaster.ui.components.common.ErrorView
@@ -49,12 +37,9 @@ import com.example.speechmaster.ui.navigation.navigateToPracticeResult
 import com.example.speechmaster.ui.theme.AppTheme
 import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 import com.example.speechmaster.utils.permissions.PermissionRequest
-import com.example.speechmaster.ui.viewmodels.TopBarViewModel
-import com.example.speechmaster.ui.state.TopBarState
+import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
 import com.example.speechmaster.ui.state.BaseUiState
-import com.example.speechmaster.ui.state.defaultTopBarState
 import com.example.speechmaster.ui.state.get
-import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,24 +75,6 @@ fun PracticeScreen(
         }
     }
 
-    // Update TopBar title when state is Success
-    LaunchedEffect(uiState) {
-        if (uiState is BaseUiState.Success) {
-            topBarViewModel.updateTitle(practiceTitle)
-            // Ensure back button is shown for this screen
-            topBarViewModel.showBackButton(true)
-            topBarViewModel.showMenuButton(false) // Usually no menu on detail screens
-        }
-    }
-
-
-    DisposableEffect(Unit) {
-        onDispose {
-            topBarViewModel.updateState(defaultTopBarState) // Reset to default on leaving
-            viewModel.resetRecording() // Clean up recorder state
-            viewModel.textToSpeechWrapper.stop() // Stop any TTS
-        }
-    }
 
     if (shouldShowPermissionRequest) {
         PermissionRequest(

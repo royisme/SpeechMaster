@@ -18,7 +18,7 @@ import com.example.speechmaster.data.model.WordFeedback
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
 import com.example.speechmaster.ui.state.BaseUiState
-import com.example.speechmaster.ui.viewmodels.TopBarViewModel
+import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
 
 @Composable
 fun FeedbackScreen(
@@ -30,20 +30,6 @@ fun FeedbackScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val title = stringResource(id = R.string.analysis_result)
-    // Set up TopBar actions
-    LaunchedEffect(Unit) {
-        if (uiState is BaseUiState.Success) {
-            topBarViewModel.updateTitle(title)
-        }
-    }
-
-    // Clean up TopBar actions when leaving the screen
-    DisposableEffect(Unit) {
-        onDispose {
-            topBarViewModel.updateActions {}
-        }
-    }
 
     Scaffold { paddingValues ->
         Surface(

@@ -8,12 +8,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,7 +33,10 @@ import com.example.speechmaster.ui.navigation.navigateToPractice
 import com.example.speechmaster.ui.state.BaseUiState
 import com.example.speechmaster.ui.state.get
 import com.example.speechmaster.ui.theme.AppTheme
-import com.example.speechmaster.ui.viewmodels.TopBarViewModel
+import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
+import com.example.speechmaster.ui.state.TopBarAction
+import com.example.speechmaster.R
+
 import timber.log.Timber
 
 private const val TAG = "CourseDetailScreen"
@@ -49,22 +56,26 @@ fun CourseDetailScreen(
 
     val uiState by viewModel.uiState.collectAsState()
     val isAdded by viewModel.isAdded.collectAsState()
-    Timber.tag(TAG).d("uiState: $uiState")
-
-    // 更新TopBar标题
-    LaunchedEffect(uiState) {
-        (uiState as? BaseUiState.Success)?.let {
-            topBarViewModel.updateTitle(it.data.course.title)
-        }
+    var bookmarkActionName = if(isAdded){
+        stringResource(id= R.string.remove_from_learning)
+    }else{
+        stringResource(id= R.string.add_to_learning)
     }
 
-    // 清理TopBar标题
-    DisposableEffect(Unit) {
-        onDispose {
-            topBarViewModel.updateTitle("")
-        }
-    }
 
+    // Override Actions based on screen state (isAdded)
+    val bookmarkAction = remember(isAdded) { // Create action definition based on state
+        TopBarAction(
+            icon = if (isAdded) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
+            contentDescription = bookmarkActionName,
+            onClick = {
+                if (isAdded) viewModel.removeCourseFromLearning() else viewModel.addCourseToLearning()
+            }
+        )
+    }
+    LaunchedEffect(bookmarkAction) {
+        topBarViewModel.overrideActions(listOf(bookmarkAction))
+    }
     Box(
         modifier = modifier.fillMaxSize()
     ) {

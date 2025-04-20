@@ -1,4 +1,4 @@
-package com.example.speechmaster.ui.viewmodels
+package com.example.speechmaster.ui.components.viewmodels
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
@@ -37,18 +37,16 @@ class TopBarViewModel @Inject constructor() : ViewModel() {
         initialValue = initialTopBarState // Initial value before combine emits
     )
 
-    // --- Methods for Navigation Listener ---
 
     /**
      * Sets the base state, typically driven by navigation route defaults.
      * Also clears any existing override when the base changes.
      */
     fun setBaseState(newBaseState: TopBarState) {
-        _overrideState.value = null // Clear override when base state changes
+//        _overrideState.value = null // Clear override when base state changes
         _baseState.value = newBaseState
     }
 
-    // --- Methods for Screens ---
 
     /**
      * Allows a screen to temporarily override the entire TopBar state.
@@ -69,32 +67,23 @@ class TopBarViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    /**
-     * Convenience function for screens to easily override *only* the actions,
-     * keeping other elements from the current base state.
-     */
-    fun overrideActions(newActions: List<TopBarAction>) {
-        _overrideState.update { currentState ->
-            (currentState ?: _baseState.value).copy(actions = newActions)
-        }
-    }
 
     /**
      * Convenience function for screens to easily override *only* the actions
      * using a Composable lambda (though List is preferred).
      */
-    fun overrideActions(actionsComposable: @Composable () -> Unit){
-        // Note: This loses the structured benefit of TopBarAction, use List if possible.
-        // This implementation detail depends on how TopBar consumes actions.
-        // If TopBar iterates a list, this function might adapt the composable lambda into a list somehow,
-        // or you might need a different state structure.
-        // Let's assume for now the List approach is primary.
-        // If you absolutely need this, the TopBarState might need tweaking.
-        _overrideState.update { currentState ->
-            // Example: Create a placeholder action if needed, but this is awkward
-            (currentState ?: _baseState.value).copy(actions = emptyList(/* Adapt composable somehow? */))
+    fun overrideActions(newActions: List<TopBarAction>?) { // Make parameter nullable
+        if (newActions == null) {
+            // If null is passed, clear the override completely
+            _overrideState.value = null
+        } else {
+            // Otherwise, update the override state, creating one if necessary
+            _overrideState.update { currentState ->
+                (currentState ?: _baseState.value).copy(actions = newActions)
+            }
         }
     }
+
 
 
     // --- Optional: State for specific UI elements controlled by actions ---

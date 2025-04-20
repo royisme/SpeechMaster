@@ -22,7 +22,7 @@ import com.example.speechmaster.ui.components.course.FilterBar
 import com.example.speechmaster.ui.navigation.navigateToCourseDetail
 import com.example.speechmaster.ui.state.BaseUiState
 import com.example.speechmaster.ui.theme.AppTheme
-import com.example.speechmaster.ui.viewmodels.TopBarViewModel
+import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
 
 @Composable
 fun CoursesScreen(
@@ -36,32 +36,12 @@ fun CoursesScreen(
     val showSearch by viewModel.showSearch.collectAsState()
     val filterState by viewModel.filterState.collectAsState()
 
-    // 设置TopBar的操作按钮
-    LaunchedEffect(Unit) {
-        topBarViewModel.updateActions {
-            Row {
-                IconButton(onClick = { viewModel.toggleSearchVisibility() }) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(id = R.string.search)
-                    )
-                }
-                IconButton(onClick = { viewModel.navigateToCreateCourse() }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(id = R.string.create_course)
-                    )
-                }
-            }
+    DisposableEffect(Unit) {
+        onDispose {
+            topBarViewModel.overrideActions(null) // Remove the override
         }
     }
 
-    // 清理TopBar操作按钮
-    DisposableEffect(Unit) {
-        onDispose {
-            topBarViewModel.updateActions {}
-        }
-    }
 
     Box(modifier = modifier.fillMaxSize()) {
         when (val state = uiState) {

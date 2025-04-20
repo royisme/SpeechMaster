@@ -20,10 +20,9 @@ import com.example.speechmaster.domain.model.PracticeHistoryItem
 import com.example.speechmaster.ui.components.common.EmptyView
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
-import com.example.speechmaster.ui.navigation.navigateToCardHistory
 
 import com.example.speechmaster.ui.state.BaseUiState
-import com.example.speechmaster.ui.viewmodels.TopBarViewModel
+import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -37,19 +36,19 @@ fun CardHistoryScreen(
     val uiState by viewModel.uiState.collectAsState()
     val title = stringResource(id = R.string.practice_history)
     
-    // 更新TopBar标题
-    LaunchedEffect(uiState) {
-        if (uiState is BaseUiState.Success) {
-            topBarViewModel.updateTitle(title)
-        }
-    }
-    
-    // 清理TopBar标题
-    DisposableEffect(Unit) {
-        onDispose {
-            topBarViewModel.updateTitle("")
-        }
-    }
+//    // 更新TopBar标题
+//    LaunchedEffect(uiState) {
+//        if (uiState is BaseUiState.Success) {
+//            topBarViewModel.updateTitle(title)
+//        }
+//    }
+//
+//    // 清理TopBar标题
+//    DisposableEffect(Unit) {
+//        onDispose {
+//            topBarViewModel.updateTitle("")
+//        }
+//    }
     
     Surface(
         modifier = modifier.fillMaxSize(),

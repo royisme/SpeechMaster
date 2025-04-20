@@ -11,18 +11,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.speechmaster.ui.screens.about.AboutScreen
-import com.example.speechmaster.ui.screens.course.CardHistoryScreen
 import com.example.speechmaster.ui.screens.course.CourseDetailScreen
 import com.example.speechmaster.ui.screens.course.CoursesScreen
 import com.example.speechmaster.ui.screens.home.HomeScreen
-import com.example.speechmaster.ui.screens.my.courses.MyCoursesScreen
-import com.example.speechmaster.ui.screens.my.learning.MyLearningScreen
 import com.example.speechmaster.ui.screens.practice.FeedbackScreen
 import com.example.speechmaster.ui.screens.practice.PracticeScreen
-import com.example.speechmaster.ui.screens.settings.SettingsScreen
 
-import com.example.speechmaster.ui.viewmodels.TopBarViewModel
+import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
 
 // 定义应用中的路由
 
