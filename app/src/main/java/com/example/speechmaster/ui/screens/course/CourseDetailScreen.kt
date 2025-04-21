@@ -14,7 +14,6 @@ import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -30,14 +29,12 @@ import com.example.speechmaster.ui.components.course.CourseHeader
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
 import com.example.speechmaster.ui.navigation.navigateToPractice
-import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.state.BaseUIState
 import com.example.speechmaster.ui.state.get
 import com.example.speechmaster.ui.theme.AppTheme
 import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
 import com.example.speechmaster.ui.state.TopBarAction
 import com.example.speechmaster.R
-
-import timber.log.Timber
 
 private const val TAG = "CourseDetailScreen"
 
@@ -80,16 +77,16 @@ fun CourseDetailScreen(
         modifier = modifier.fillMaxSize()
     ) {
         when (val state = uiState) {
-            is BaseUiState.Loading -> {
+            is BaseUIState.Loading -> {
                 LoadingView()
             }
-            is BaseUiState.Error -> {
+            is BaseUIState.Error -> {
                 ErrorView(
                     message = stringResource(id = state.messageResId),
                     onRetry = { viewModel.loadCourseDetail(isAdded) }
                 )
             }
-            is BaseUiState.Success -> {
+            is BaseUIState.Success -> {
                 val success = uiState.get() as CourseDetailData  // 类型转换
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),

@@ -10,7 +10,7 @@ import com.example.speechmaster.domain.repository.ICourseRepository
 import com.example.speechmaster.domain.model.CourseItem
 import com.example.speechmaster.domain.model.FilterState
 import com.example.speechmaster.domain.session.UserSessionManager
-import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.state.BaseUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -49,7 +49,7 @@ class CoursesViewModel @Inject constructor(
     }
     // UI状态
 
-    private val _uiState = MutableStateFlow<CourseListUiState>(BaseUiState.Loading)
+    private val _uiState = MutableStateFlow<CourseListUiState>(BaseUIState.Loading)
     val uiState: StateFlow<CourseListUiState> = _uiState.asStateFlow()
     // 搜索查询
     private val _searchQuery = MutableStateFlow("")
@@ -78,7 +78,7 @@ class CoursesViewModel @Inject constructor(
     }.catch { e ->
         emit(emptyList())
         Timber.tag(TAG).e(e, "Error loading courses")
-        _uiState.value = BaseUiState.Error(R.string.error_unknown)
+        _uiState.value = BaseUIState.Error(R.string.error_unknown)
     }
 
     // 初始化
@@ -90,20 +90,20 @@ class CoursesViewModel @Inject constructor(
     // 加载课程数据
     fun loadCourses() {
         viewModelScope.launch {
-            _uiState.value = BaseUiState.Loading
+            _uiState.value = BaseUIState.Loading
             try {
                 // 使用collectLatest而不是collect，这样当有新值时会取消之前的处理
                 searchAndFilterFlow.collectLatest { courses ->
                     Timber.d("Loaded ${courses.size} courses")
                     _uiState.value = if (courses.isEmpty()) {
-                        BaseUiState.Success(CourseListData.Empty)
+                        BaseUIState.Success(CourseListData.Empty)
                     } else {
-                        BaseUiState.Success(CourseListData.Success(courses.map { it.toUiModel() }))
+                        BaseUIState.Success(CourseListData.Success(courses.map { it.toUiModel() }))
                     }
                 }
             } catch (e: Exception) {
                 Timber.e(e, "加载课程失败")
-                _uiState.value = BaseUiState.Error(
+                _uiState.value = BaseUIState.Error(
                     R.string.error_unknown,
                 )
             }

@@ -6,8 +6,6 @@ import androidx.compose.foundation.lazy.items
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -21,7 +19,7 @@ import com.example.speechmaster.ui.components.common.EmptyView
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
 
-import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.state.BaseUIState
 import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,7 +36,7 @@ fun CardHistoryScreen(
     
 //    // 更新TopBar标题
 //    LaunchedEffect(uiState) {
-//        if (uiState is BaseUiState.Success) {
+//        if (uiState is BaseUIState.Success) {
 //            topBarViewModel.updateTitle(title)
 //        }
 //    }
@@ -55,17 +53,17 @@ fun CardHistoryScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         when (val state = uiState) {
-            is BaseUiState.Loading -> {
+            is BaseUIState.Loading -> {
                 LoadingView()
             }
-            is BaseUiState.Error -> {
+            is BaseUIState.Error -> {
                 ErrorView(
                     message = stringResource(id = state.messageResId),
                     onRetry = { viewModel.loadPracticeHistory() }
                 )
             }
 
-            is BaseUiState.Success -> {
+            is BaseUIState.Success -> {
                 val data = state.data
                 when (data) {
                     is CardHistoryData.Empty -> {

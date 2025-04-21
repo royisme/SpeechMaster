@@ -1,12 +1,12 @@
 package com.example.speechmaster.ui.screens.practice
 
-import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.state.BaseUIState
 import com.example.speechmaster.data.model.PracticeFeedback
 
 /**
  * 练习界面UI状态
  */
-typealias PracticeUiState = BaseUiState<PracticeUiData>
+typealias PracticeUiState = BaseUIState<PracticeUiData>
 data class PracticeUiData(
     val courseId: Long,
     val cardId: Long,
@@ -39,4 +39,4 @@ sealed class AnalysisState {
     data class Success(val feedback: PracticeFeedback) : AnalysisState()
     data class Error(val message: String) : AnalysisState()
 }
-typealias PracticeResultUiState = BaseUiState<PracticeFeedback>
+typealias PracticeResultUiState = BaseUIState<PracticeFeedback>

@@ -17,7 +17,7 @@ import com.example.speechmaster.data.model.PracticeFeedback
 import com.example.speechmaster.data.model.WordFeedback
 import com.example.speechmaster.ui.components.common.ErrorView
 import com.example.speechmaster.ui.components.common.LoadingView
-import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.state.BaseUIState
 import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
 
 @Composable
@@ -39,7 +39,7 @@ fun FeedbackScreen(
             color = MaterialTheme.colorScheme.background
         ) {
             when (val state = uiState) {
-                is BaseUiState.Loading -> {
+                is BaseUIState.Loading -> {
                     LoadingView(
                         modifier = Modifier
                             .fillMaxSize()
@@ -47,7 +47,7 @@ fun FeedbackScreen(
                     )
                 }
 
-                is BaseUiState.Success -> {
+                is BaseUIState.Success -> {
                     PracticeResultContent(
                             feedback = state.data,
                             modifier = Modifier
@@ -57,7 +57,7 @@ fun FeedbackScreen(
 
                 }
 
-                is BaseUiState.Error -> {
+                is BaseUIState.Error -> {
                     ErrorView(
                         message = stringResource(
                             id = state.messageResId,

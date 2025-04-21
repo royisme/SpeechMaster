@@ -1,14 +1,12 @@
 package com.example.speechmaster.ui.screens.course
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.speechmaster.R
-import com.example.speechmaster.domain.model.PracticeHistoryItem
 import com.example.speechmaster.domain.repository.IPracticeRepository
 import com.example.speechmaster.domain.session.UserSessionManager
-import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.state.BaseUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +23,7 @@ class CardHistoryViewModel @Inject constructor(
     private val cardId: Long = checkNotNull(savedStateHandle["cardId"])
     private val courseId: Long = checkNotNull(savedStateHandle["courseId"])
 
-    private val _uiState = MutableStateFlow<CardHistoryUiState>(BaseUiState.Loading)
+    private val _uiState = MutableStateFlow<CardHistoryUiState>(BaseUIState.Loading)
     val uiState: StateFlow<CardHistoryUiState> = _uiState.asStateFlow()
 
     init {
@@ -34,10 +32,10 @@ class CardHistoryViewModel @Inject constructor(
 
     fun loadPracticeHistory() {
         viewModelScope.launch {
-            _uiState.value = BaseUiState.Loading
+            _uiState.value = BaseUIState.Loading
             try {
                 val user = userSessionManager.currentUserFlow.value ?: run {
-                    _uiState.value = BaseUiState.Error(
+                    _uiState.value = BaseUIState.Error(
                         R.string.error_unknown
                     )
                     return@launch
@@ -46,15 +44,15 @@ class CardHistoryViewModel @Inject constructor(
                 practiceRepository.getPracticesWithFeedbackByCard(user.id, cardId)
                     .collect { practicesWithFeedback ->
                         if (practicesWithFeedback.isEmpty()) {
-                            _uiState.value = BaseUiState.Success(CardHistoryData.Empty)
+                            _uiState.value = BaseUIState.Success(CardHistoryData.Empty)
                         } else {
-                            _uiState.value = BaseUiState.Success(
+                            _uiState.value = BaseUIState.Success(
                                 CardHistoryData.Success(practicesWithFeedback)
                             )
                         }
                     }
             } catch (e: Exception) {
-                _uiState.value = BaseUiState.Error(
+                _uiState.value = BaseUIState.Error(
                     R.string.error_unknown,
                     listOf(e.message ?: "")
                 )

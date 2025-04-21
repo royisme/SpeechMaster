@@ -51,7 +51,7 @@ fun AppNav(
 //        addLearningRoutes(navController)
 //
         // 用户自定义课程管理路由
-        addUgcRoutes(navController)
+        addUgcRoutes(navController,topBarViewModel)
 //
 //        // 设置和关于路由
 //        addSettingsRoutes(navController)
@@ -143,7 +143,10 @@ private fun NavGraphBuilder.addLearningRoutes(navController: NavController) {
 }
  */
 // 用户自定义课程管理路由
-private fun NavGraphBuilder.addUgcRoutes(navController: NavController) {
+private fun NavGraphBuilder.addUgcRoutes(
+    navController: NavController,
+    topBarViewModel: TopBarViewModel
+) {
     // 我的课程
     composable(AppRoutes.MY_COURSES_ROUTE) {
         MyCoursesScreen(navController = navController)
@@ -181,6 +184,7 @@ private fun NavGraphBuilder.addUgcRoutes(navController: NavController) {
     ) {
         EditCardScreen(
             navController = navController,
+            topBarViewModel = topBarViewModel
         )
     }
 
@@ -222,60 +226,3 @@ private fun NavGraphBuilder.addSettingsRoutes(navController: NavController) {
 
  */
 // 导航扩展函数
-fun NavController.navigateToHome() {
-    this.navigate(AppRoutes.HOME_ROUTE) {
-        popUpTo(AppRoutes.HOME_ROUTE) { inclusive = true }
-    }
-}
-
-fun NavController.navigateToCourses() {
-    this.navigate(AppRoutes.COURSES_ROUTE)
-}
-
-fun NavController.navigateToMyLearning() {
-    this.navigate(AppRoutes.MY_LEARNING_ROUTE)
-}
-
-fun NavController.navigateToMyCourses() {
-    this.navigate(AppRoutes.MY_COURSES_ROUTE)
-}
-
-fun NavController.navigateToCourseDetail(courseId: Long) {
-    this.navigate(AppRoutes.getCourseDetailRoute(courseId))
-}
-
-fun NavController.navigateToCreateCourse() {
-    this.navigate(AppRoutes.CREATE_COURSE_ROUTE)
-}
-
-fun NavController.navigateToEditCourse(courseId: Long) {
-    this.navigate(AppRoutes.getEditCourseRoute(courseId))
-}
-
-fun NavController.navigateToManageCards(courseId: Long) {
-    this.navigate(AppRoutes.getManageCardsRoute(courseId))
-}
-
-fun NavController.navigateToAddCard(courseId: Long) {
-    this.navigate(AppRoutes.getAddCardRoute(courseId))
-}
-
-fun NavController.navigateToEditCard(courseId: Long, cardId: Long) {
-    this.navigate(AppRoutes.getEditCardRoute(courseId, cardId))
-}
-
-fun NavController.navigateToImportCards(courseId: Long) {
-    this.navigate(AppRoutes.getImportCardsRoute(courseId))
-}
-
-fun NavController.navigateToPractice(courseId: Long, cardId: Long) {
-    this.navigate(AppRoutes.getPracticeRoute(courseId, cardId))
-}
-
-fun NavController.navigateToPracticeResult(practiceId: Long) {
-    this.navigate(AppRoutes.getFeedbackRoute(practiceId))
-}
-
-fun NavController.navigateToCardHistory(courseId: Long, cardId: Long) {
-    this.navigate(AppRoutes.getCardHistoryRoute(courseId, cardId))
-}

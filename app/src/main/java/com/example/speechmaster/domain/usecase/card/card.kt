@@ -1,4 +1,4 @@
-package com.example.speechmaster.domain.usecase
+package com.example.speechmaster.domain.usecase.card
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

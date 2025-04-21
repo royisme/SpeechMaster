@@ -72,7 +72,9 @@ fun AppDrawer(
                         popUpTo(AppRoutes.HOME_ROUTE)
                     }
                     closeDrawer()
-                }
+                },
+                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+
             )
             // 练习历史
             NavigationDrawerItem(

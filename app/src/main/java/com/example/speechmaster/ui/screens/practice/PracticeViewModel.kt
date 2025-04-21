@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +14,6 @@ import com.example.speechmaster.domain.repository.ICourseRepository
 
 import com.example.speechmaster.domain.session.UserSessionManager
 import com.example.speechmaster.utils.audio.AudioPlayerWrapper
-import com.example.speechmaster.utils.audio.SpeechAnalyzerWrapper
 import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 import com.example.speechmaster.utils.audio.wavaudiorecoder.IRecorderEventListener
 import com.example.speechmaster.utils.audio.wavaudiorecoder.WavAudioRecorder
@@ -54,7 +52,7 @@ import com.example.speechmaster.domain.repository.IPracticeRepository
 import com.example.speechmaster.worker.SpeechAnalysisWorker
 import java.util.concurrent.TimeUnit
 import com.example.speechmaster.domain.repository.IUserCourseRelationshipRepository
-import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.state.BaseUIState
 import com.example.speechmaster.ui.state.get
 import timber.log.Timber
 
@@ -87,7 +85,7 @@ class PracticeViewModel @Inject constructor(
     private val cardId: Long = checkNotNull(savedStateHandle.get<Long>("cardId"))
     private var recordingStartTime: Long = 0
     // UI状态
-    private val _Base_uiState = MutableStateFlow<PracticeUiState>(BaseUiState.Loading)
+    private val _Base_uiState = MutableStateFlow<PracticeUiState>(BaseUIState.Loading)
     val uiState: StateFlow<PracticeUiState> = _Base_uiState.asStateFlow()
 
     // 录音状态(这个阶段只定义，不实现功能)
@@ -218,7 +216,7 @@ class PracticeViewModel @Inject constructor(
      */
     private fun loadCardData() {
         viewModelScope.launch {
-            _Base_uiState.value = BaseUiState.Loading
+            _Base_uiState.value = BaseUIState.Loading
             try {
                 // 获取卡片数据
                 val card = cardRepository.getCardById(cardId).first()
@@ -226,7 +224,7 @@ class PracticeViewModel @Inject constructor(
                 val course = courseRepository.getCourseById(courseId).first()
 
                 if (card != null && course != null) {
-                    _Base_uiState.value = BaseUiState.Success(
+                    _Base_uiState.value = BaseUIState.Success(
                         PracticeUiData(
                         courseId = courseId,
                         cardId = cardId,
@@ -236,10 +234,10 @@ class PracticeViewModel @Inject constructor(
                         )
                     )
                 } else {
-                    _Base_uiState.value = BaseUiState.Error(R.string.error_loading_practice_card_failed)
+                    _Base_uiState.value = BaseUIState.Error(R.string.error_loading_practice_card_failed)
                 }
             } catch (e: Exception) {
-                _Base_uiState.value = BaseUiState.Error(R.string.error_loading_default)
+                _Base_uiState.value = BaseUIState.Error(R.string.error_loading_default)
             }
         }
     }
@@ -561,7 +559,7 @@ class PracticeViewModel @Inject constructor(
                 )
 
             } catch (e: Exception) {
-                _Base_uiState.value = BaseUiState.Error(R.string.error_unknown)
+                _Base_uiState.value = BaseUIState.Error(R.string.error_unknown)
             }
         }
     }

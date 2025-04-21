@@ -12,7 +12,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,7 +37,7 @@ import com.example.speechmaster.ui.theme.AppTheme
 import com.example.speechmaster.utils.audio.TextToSpeechWrapper
 import com.example.speechmaster.utils.permissions.PermissionRequest
 import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
-import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.state.BaseUIState
 import com.example.speechmaster.ui.state.get
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,17 +93,17 @@ fun PracticeScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         when (val state = uiState) {
-            is BaseUiState.Loading -> {
+            is BaseUIState.Loading -> {
                 LoadingView(Modifier.fillMaxSize())
             }
-            is BaseUiState.Error -> {
+            is BaseUIState.Error -> {
                 ErrorView(
                     message = stringResource(id = state.messageResId),
                     onRetry = { viewModel.retryLoading() },
                     modifier = Modifier.fillMaxSize()
                 )
             }
-            is BaseUiState.Success -> {
+            is BaseUIState.Success -> {
                 // Use the modified PracticeContent layout
                 PracticeContent(
                     textContent = (state.get<PracticeUiData>()?.textContent ?: ""),

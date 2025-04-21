@@ -11,7 +11,14 @@ object AppRoutes {
     const val ABOUT_ROUTE = "about"
     const val HISTORY_ROUTE = "history"
 
-    val MAIN_ROUTE_GROUP = listOf(HOME_ROUTE, COURSES_ROUTE, MY_LEARNING_ROUTE, MY_COURSES_ROUTE)
+    val MAIN_ROUTE_GROUP = listOf(
+        HOME_ROUTE,
+        COURSES_ROUTE,
+        MY_LEARNING_ROUTE,
+        MY_COURSES_ROUTE,
+        SETTINGS_ROUTE,
+        ABOUT_ROUTE,
+        HISTORY_ROUTE)
 
     //TODO: 暂未实现的路由
     const val LOGIN_ROUTE = "login"

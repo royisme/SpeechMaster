@@ -1,5 +1,4 @@
 package com.example.speechmaster.ui.screens.course
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +10,7 @@ import com.example.speechmaster.domain.repository.IUserCardCompletionRepository
 import com.example.speechmaster.domain.repository.IUserCourseRelationshipRepository
 import com.example.speechmaster.domain.session.UserSessionManager
 import com.example.speechmaster.domain.model.CourseDetail
-import com.example.speechmaster.ui.state.BaseUiState
+import com.example.speechmaster.ui.state.BaseUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,7 +48,7 @@ class CourseDetailViewModel @Inject constructor(
     private val userId: String? get() = userSessionManager.currentUserFlow.value?.id
 
     // UI状态
-    private val _uiState = MutableStateFlow<CourseDetailUiState>(BaseUiState.Loading)
+    private val _uiState = MutableStateFlow<CourseDetailUiState>(BaseUIState.Loading)
     val uiState: StateFlow<CourseDetailUiState> = _uiState.asStateFlow()
 
     // 课程是否已添加(内部状态)
@@ -88,7 +87,7 @@ class CourseDetailViewModel @Inject constructor(
                     }
             }
         } else {
-            _uiState.value = BaseUiState.Error(R.string.error_invalid_course_or_not_logged_in)
+            _uiState.value = BaseUIState.Error(R.string.error_invalid_course_or_not_logged_in)
         }
     }
 
@@ -96,7 +95,7 @@ class CourseDetailViewModel @Inject constructor(
      * 加载课程详情和卡片列表
      */
     fun loadCourseDetail(isAdded: Boolean) {
-        _uiState.value = BaseUiState.Loading
+        _uiState.value = BaseUIState.Loading
         viewModelScope.launch {
             try {
                 // 加载课程详情
@@ -104,7 +103,7 @@ class CourseDetailViewModel @Inject constructor(
                     .first() // 获取 Flow 发出的第一个值
                 if (course == null) {
                     // 如果课程为 null (不存在)
-                    _uiState.value = BaseUiState.Error(R.string.error_course_list_not_exist)
+                    _uiState.value = BaseUIState.Error(R.string.error_course_list_not_exist)
                     return@launch // 停止后续执行
                 }
 
@@ -139,7 +138,7 @@ class CourseDetailViewModel @Inject constructor(
 
                 // 更新UI状态
                 if (cards.isEmpty()) {
-                    _uiState.value =BaseUiState.Success(
+                    _uiState.value =BaseUIState.Success(
                         CourseDetailData(
                             course = courseDetail,
                             cards = emptyList(),
@@ -147,7 +146,7 @@ class CourseDetailViewModel @Inject constructor(
                         )
                     )
                 } else {
-                    _uiState.value = BaseUiState.Success(
+                    _uiState.value = BaseUIState.Success(
                         CourseDetailData(
                             course = courseDetail,
                             cards = cardItems,
@@ -158,7 +157,7 @@ class CourseDetailViewModel @Inject constructor(
             } catch (e: Exception) {
                 Timber.tag("CourseDetailViewModel")
                     .e(e, "Error loading course detail for ID: $courseId")
-                _uiState.value = BaseUiState.Error(
+                _uiState.value = BaseUIState.Error(
                     messageResId = R.string.error_loading_course_detail_failed,
                     formatArgs = listOf(e.message ?: "")
                 )

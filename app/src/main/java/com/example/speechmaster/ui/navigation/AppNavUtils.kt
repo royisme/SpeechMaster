@@ -6,12 +6,14 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import com.example.speechmaster.R
 import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
 import com.example.speechmaster.ui.state.TopBarAction
 import com.example.speechmaster.ui.state.TopBarState
+import timber.log.Timber
 import kotlin.collections.contains
 
 
@@ -46,12 +48,10 @@ fun UpdateTopBarState(
     val showBackButton = currentDestination?.route !in AppRoutes.MAIN_ROUTE_GROUP
     val showMenuButton = !showBackButton
     val topBarState = TopBarState(appName, showBackButton, showMenuButton, emptyList())
-
     LaunchedEffect(currentDestination?.route) {
-        var currentRoute = currentDestination?.route?.substringBefore('/')
-
+        var currentRoute = currentDestination?.route
+            //?.substringBefore('/')
         val defaultState = when (currentRoute) {
-
             AppRoutes.HOME_ROUTE -> topBarState.changeTitle(homeTitle)
             AppRoutes.COURSES_ROUTE -> topBarState.changeTitle(courseTitle)
                 .changeAction(listOf(
@@ -80,13 +80,7 @@ fun UpdateTopBarState(
             AppRoutes.CREATE_COURSE_ROUTE -> topBarState.changeTitle(actionNameOfCreateCourse)
             AppRoutes.EDIT_COURSE_ROUTE ->  topBarState.changeTitle(editCourseTitle)
             AppRoutes.MANAGE_CARDS_ROUTE -> topBarState.changeTitle(manageCardsTitle)
-                .changeAction(
-                    listOf(
-                        TopBarAction(Icons.Default.Add,actionNameOfCreateCourse) {
-                            navController.navigate(AppRoutes.ADD_CARD_ROUTE)
-                        }
-                    )
-                )
+
             AppRoutes.ADD_CARD_ROUTE -> topBarState.changeTitle(addCardTitle)
             AppRoutes.EDIT_CARD_ROUTE -> topBarState.changeTitle(editCardTitle)
             AppRoutes.IMPORT_CARDS_ROUTE -> topBarState.changeTitle(importCardsTitle)
@@ -95,6 +89,65 @@ fun UpdateTopBarState(
 
             else -> topBarState
         }
+        Timber.d("defaultState: $defaultState")
         viewModel.setBaseState(defaultState)
     }
+}
+
+fun NavController.navigateToHome() {
+    this.navigate(AppRoutes.HOME_ROUTE) {
+        popUpTo(AppRoutes.HOME_ROUTE) { inclusive = true }
+    }
+}
+
+fun NavController.navigateToCourses() {
+    this.navigate(AppRoutes.COURSES_ROUTE)
+}
+
+fun NavController.navigateToMyLearning() {
+    this.navigate(AppRoutes.MY_LEARNING_ROUTE)
+}
+
+fun NavController.navigateToMyCourses() {
+    this.navigate(AppRoutes.MY_COURSES_ROUTE)
+}
+
+fun NavController.navigateToCourseDetail(courseId: Long) {
+    this.navigate(AppRoutes.getCourseDetailRoute(courseId))
+}
+
+fun NavController.navigateToCreateCourse() {
+    this.navigate(AppRoutes.CREATE_COURSE_ROUTE)
+}
+
+fun NavController.navigateToEditCourse(courseId: Long) {
+    this.navigate(AppRoutes.getEditCourseRoute(courseId))
+}
+
+fun NavController.navigateToManageCards(courseId: Long) {
+    this.navigate(AppRoutes.getManageCardsRoute(courseId))
+}
+
+fun NavController.navigateToAddCard(courseId: Long) {
+    this.navigate(AppRoutes.getAddCardRoute(courseId))
+}
+
+fun NavController.navigateToEditCard(courseId: Long, cardId: Long) {
+    this.navigate(AppRoutes.getEditCardRoute(courseId, cardId))
+}
+
+fun NavController.navigateToImportCards(courseId: Long) {
+    this.navigate(AppRoutes.getImportCardsRoute(courseId))
+}
+
+fun NavController.navigateToPractice(courseId: Long, cardId: Long) {
+    this.navigate(AppRoutes.getPracticeRoute(courseId, cardId))
+}
+
+fun NavController.navigateToPracticeResult(practiceId: Long) {
+    this.navigate(AppRoutes.getFeedbackRoute(practiceId))
+}
+
+fun NavController.navigateToCardHistory(courseId: Long, cardId: Long) {
+    this.navigate(AppRoutes.getCardHistoryRoute(courseId, cardId))
 }

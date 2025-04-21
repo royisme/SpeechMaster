@@ -20,6 +20,7 @@
     <string name="go_to_settings">Go to Settings</string>
     <string name="cancel">Cancel</string>
     <string name="submit">Submit</string>
+    <string name="confirm">Confirm</string>
     <string name="practice_result">Practice Result</string>
     <string name="my_learning">My Learning</string>
     <string name="new_course">New Course</string>
@@ -61,8 +62,20 @@
     <string name="error_stopping_audiorecord">Failed to stop AudioRecord</string>
     <string name="error_failed_to_clean_resources">Failed to clean resources</string>
     <string name="error_recording_too_short">Recording too short</string>
+    <string name="error_saving_course">Failed to save course</string>
+    <string name="error_saving_card">Failed to save card</string>
+    <string name="error_card_content_too_long">Card content cannot exceed %1$d characters</string>
+    <string name="error_card_content_too_short">Card content must be at least %1$d characters</string>
+    <string name="error_import_card_empty">The content of card %1$d in the preview list cannot be empty</string>
+    <string name="error_import_card_too_long">The content of card %1$d in the preview list cannot exceed %2$d characters</string>
+    <string name="error_course_category_required">Course category is required</string>
+    <string name="error_card_content_required">Card content is required</string>
+    <string name="error_course_difficulty_required">Course difficulty is required</string>
+    <string name="error_course_title_required">Course title is required</string>
+    <string name="error_loading_cards">Failed to load cards</string>
+    <string name="error_not_course_creator_cards">You are not the creator of this course</string>
     <!-- Home Screen -->
-    <string name="daily_practice">Daily Practice</string>
+    <string name="daily_practice">Daily Practice </string>
     <string name="your_progress">Your Progress</string>
     <string name="current_streak">Current Streak</string>
     <string name="days">days</string>
@@ -118,7 +131,9 @@
     <string name="no_courses_created">No courses created</string>
     <string name="create_first_course">Create your first course</string>
 
-
+    <string name="no_cards_in_course">No cards in this course</string>
+    <string name="add_first_card">Add your first card</string>
+    <string name="import_cards_title">Import Cards</string>
 
     <!-- 练习界面 -->
     <string name="practice_start_recording">start recording</string>
@@ -153,15 +168,37 @@
     <string name="analysis_result_pronunciation">Pronunciation</string>
     <string name="analysis_result_completeness">Completeness</string>
     <string name="analysis_result_fluency">Fluency</string>
-    <string name="proszody">Proszody</string>
     <string name="recognized_text">Recognized Text</string>
     <string name="analysis_word_details">Word Details</string>
     <string name="error_type">Error Type: %s</string>
     <string name="phonemes">Phonemes</string>
-
     <!-- Practice Scores -->
     <string name="best_score_format">Best: %s</string>
     <string name="latest_score_format">Latest: %s</string>
     <string name="score_format">score: %s</string>
     <string name="duration_format">duration: %s</string>
+    <string name="course_title_label">course title</string>
+    <string name="course_description_label">course description</string>
+    <string name="course_tags">course tags</string>
+    <string name="prosody">Prosody</string>
+
+    <string name="card_content_label">Card Content</string>
+    <string name="card_content_placeholder">Enter the content of the card here</string>
+    <!--Import cards -->
+    <string name="error_import_split_failed">Failed to split the imported text</string>
+    <string name="error_import_text_empty">Imported text is empty</string>
+    <string name="error_import_no_cards_to_save">No cards to save</string>
+    <string name="error_saving_cards">Failed to save cards</string>
+    <string name="error_card_not_found">Card not found</string>
+    <string name="import_paste_text_label">Paste Text Here</string>
+    <string name="import_paste_text_placeholder">Paste your text content here</string>
+    <string name="import_process_button">Generate Cards</string>
+    <string name="import_preview_title">Card Preview</string>
+    <string name="import_no_cards_generated">No cards were generated from the provided text.</string>
+    <string name="import_awaiting_processing">Awaiting text processing…</string>
+    <string name="add_card_mode_single">Add Single</string>
+    <string name="add_card_mode_bulk">Add in Bulk</string>
+    <string name="add_card_hint">Enter your card content and tap "Save"</string>
+    <string name="add_card_view_example">e.g., How are you?</string>
+
 </resources>

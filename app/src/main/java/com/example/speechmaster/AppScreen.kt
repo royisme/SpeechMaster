@@ -43,7 +43,8 @@ fun AppScreen() {
 
 
     // 添加滚动行为
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        //enterAlwaysScrollBehavior()
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
