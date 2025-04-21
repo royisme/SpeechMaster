@@ -10,7 +10,7 @@ object AppRoutes {
     const val SETTINGS_ROUTE = "settings"
     const val ABOUT_ROUTE = "about"
     const val HISTORY_ROUTE = "history"
-
+    const val PRIVACY_POLICY_ROUTE = "privacy_policy"
     val MAIN_ROUTE_GROUP = listOf(
         HOME_ROUTE,
         COURSES_ROUTE,
@@ -18,6 +18,7 @@ object AppRoutes {
         MY_COURSES_ROUTE,
         SETTINGS_ROUTE,
         ABOUT_ROUTE,
+        PRIVACY_POLICY_ROUTE,
         HISTORY_ROUTE)
 
     //TODO: 暂未实现的路由

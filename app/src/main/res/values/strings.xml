@@ -6,7 +6,23 @@
     <string name="course_list">Course List</string>
     <string name="practice_history">Practice History</string>
     <string name="settings">Settings</string>
+    <!-- about -->
     <string name="about">About App</string>
+    <string name="version_format">Version %s</string>
+    <string name="app_description_about">An open-source app to help you improve your speaking skills with daily practice and feedback.</string> <string name="contact_us">Contact Us</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="data_storage_notice_about">Your practice data and recordings are stored only on this device and will be lost if the app is uninstalled.</string>
+    <string name="app_logo">App Logo</string>
+    <string name="source_code">Source Code</string>
+    <string name="repository_url">https://github.com/your_username/speechmaster</string>
+    <string name="license_name">Apache License 2.0</string>
+    <string name="license_url">https://www.apache.org/licenses/LICENSE-2.0</string>
+    <string name="view_license_format">View %s</string>
+    <string name="report_issue_or_feedback">Report Issue / Feedback</string>
+    <string name="contact_email">imroybox@gmail.com</string>
+    <string name="privacy_policy_content_placeholder">
+                Privacy Policy\n\nLast updated: [Date]\n\nSpeechMaster (\"us\", \"we\", or \"our\") operates the SpeechMaster mobile application (the \"Service\"). This is an open-source application designed for learning and practice.\n\nThis page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.\n\nData Storage:\nAll data you generate within the application, including course progress, user-created content, and audio recordings, is stored solely on your local device. We do not collect or transmit this data to any external servers.\n\nAudio Recordings:\nAudio recordings are created when you use the practice feature. These recordings are temporarily stored on your device for the sole purpose of analysis by a third-party speech assessment service (Microsoft Azure Speech Services is configured by default, requiring you to provide your own API keys in the build configuration if you compile the app yourself). Recordings are sent securely to the configured service for analysis and are typically deleted from your device after analysis or when you manually reset a recording. We do not store your recordings long-term.\n\nThird-Party Services:\nWe use third-party services like Microsoft Azure Speech Services for pronunciation assessment. These services have their own privacy policies governing their use of data. We only send the necessary audio data and reference text for analysis using the API keys you may provide during compilation.\n\nPermissions:\nThe application requires the RECORD_AUDIO permission to capture audio for practice sessions. This permission is only used when you actively initiate a recording.\n\nData Deletion:\nUninstalling the application will permanently delete all associated data from your device.\n\nChanges to This Privacy Policy:\nWe may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.\n\nContact Us / Issues:\nPlease report any issues or provide feedback via the project\'s repository issue tracker linked on the About screen.\n
+    </string>
     <!-- General -->
     <string name="search">Search</string>
     <string name="close">Close</string>
@@ -74,6 +90,11 @@
     <string name="error_course_title_required">Course title is required</string>
     <string name="error_loading_cards">Failed to load cards</string>
     <string name="error_not_course_creator_cards">You are not the creator of this course</string>
+    <string name="error_loading_settings">Loading settings failed</string>
+    <string name="error_resetting_settings">Resetting settings failed</string>
+    <string name="error_updating_profile">Updating profile failed</string>
+
+
     <!-- Home Screen -->
     <string name="daily_practice">Daily Practice </string>
     <string name="your_progress">Your Progress</string>
@@ -200,5 +221,34 @@
     <string name="add_card_mode_bulk">Add in Bulk</string>
     <string name="add_card_hint">Enter your card content and tap "Save"</string>
     <string name="add_card_view_example">e.g., How are you?</string>
-
+    <!-- Settings -->
+    <string name="profile">Profile</string>
+    <string name="user_avatar">User Avatar</string>
+    <string name="generate_new_avatar">Generate New Avatar</string>
+    <string name="username">Username</string>
+    <string name="error_username_cannot_be_empty">Username cannot be empty</string>
+    <string name="appearance">Appearance</string>
+    <string name="theme">Theme</string>
+    <string name="theme_mode_system">Follow System</string>
+    <string name="theme_mode_light">Light Mode</string>
+    <string name="theme_mode_dark">Dark Mode</string>
+    <string name="notifications">Notifications</string>
+    <string name="daily_reminder">Daily Practice Reminder</string>
+    <string name="daily_reminder_description">Remind you to practice at the specified time</string>
+    <string name="reminder_time">Reminder Time</string>
+    <string name="time_not_set">Not Set</string>
+    <string name="set_time">Set Time</string>
+    <string name="dialog_select_time">Select Reminder Time</string>
+    <string name="api_keys_optional">API Keys (Optional Override)</string>
+    <string name="api_keys_description">If you are compiling this app from the source code, or wish to use your personal Azure Speech Service subscription, provide your keys and region here. Otherwise, the app will attempt to use built-in configurations. Keys are stored on this device only.</string>
+    <string name="azure_speech_key">Azure Speech Key</string>
+    <string name="azure_speech_region">Azure Speech Region</string>
+    <string name="paste_your_key_here">Paste your key here</string>
+    <string name="enter_region_here">Enter region here (e.g., west us)</string>
+    <string name="data_management">Data Management</string>
+    <string name="reset_settings">Reset All Settings</string>
+    <string name="reset_settings_description">Restore all settings to their default values</string>
+    <string name="dialog_reset_settings_title">Confirm Reset Settings?</string>
+    <string name="dialog_reset_settings_message">This action will restore all app settings, including theme, notifications, and API keys (if set), to their initial default state. This operation cannot be undone.</string>
+    <string name="reset">Reset</string>
 </resources>

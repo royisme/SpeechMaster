@@ -150,10 +150,24 @@ class UserSessionManager @Inject constructor(
         }
     }
 
-    // 更新用户信息
-    suspend fun updateProfile(username: String, avatarUrl: String?): Result<User> {
+    /**
+     * 更新用户信息，允许单独更新用户名或头像URL。
+     *
+     * @param newUsername 可选的新用户名。如果为null，则不更新用户名。
+     * @param newAvatarUrl 可选的新头像URL。如果为null，则不更新头像URL。
+     * @return 更新操作的结果，成功时返回包含更新后用户信息的Result.success，失败时返回包含异常信息的Result.failure。
+     */
+    suspend fun updateProfile(newUsername: String? = null, newAvatarUrl: String? = null): Result<User> {
         return try {
-            val result = userRepository.updateUserInfo(username, avatarUrl)
+            // 获取当前用户信息
+            val currentUser = when (val state = _sessionState.value) {
+                is SessionState.LoggedIn -> state.user
+                is SessionState.UsingLocalUser -> state.user
+                else -> null
+            } ?: return Result.failure(Exception("No current user"))
+
+            // 根据传入的参数决定是否更新用户名和头像URL
+            val result = userRepository.updateUserInfo(newUsername ?: currentUser.username, newAvatarUrl ?: currentUser.avatarUrl)
 
             if (result.isSuccess) {
                 val updatedUser = result.getOrThrow()

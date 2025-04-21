@@ -18,11 +18,13 @@ import com.example.speechmaster.ui.screens.practice.FeedbackScreen
 import com.example.speechmaster.ui.screens.practice.PracticeScreen
 
 import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
+import com.example.speechmaster.ui.screens.about.AboutScreen
 import com.example.speechmaster.ui.screens.my.cards.EditCardScreen
 import com.example.speechmaster.ui.screens.my.courses.EditCourseScreen
 import com.example.speechmaster.ui.screens.my.cards.ImportCardsScreen
 import com.example.speechmaster.ui.screens.my.cards.ManageCardsScreen
 import com.example.speechmaster.ui.screens.my.courses.MyCoursesScreen
+import com.example.speechmaster.ui.screens.settings.SettingsScreen
 
 // 定义应用中的路由
 
@@ -54,7 +56,7 @@ fun AppNav(
         addUgcRoutes(navController,topBarViewModel)
 //
 //        // 设置和关于路由
-//        addSettingsRoutes(navController)
+        addSettingsRoutes(navController)
     }
 }
 
@@ -212,7 +214,7 @@ private fun NavGraphBuilder.addUgcRoutes(
         )
     }
 }
-/*
+
 // 设置和关于路由
 private fun NavGraphBuilder.addSettingsRoutes(navController: NavController) {
     composable(AppRoutes.SETTINGS_ROUTE) {
@@ -224,5 +226,5 @@ private fun NavGraphBuilder.addSettingsRoutes(navController: NavController) {
     }
 }
 
- */
+
 // 导航扩展函数

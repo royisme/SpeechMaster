@@ -95,6 +95,9 @@ fun AppDrawer(
                 selected = navController.currentDestination?.route == AppRoutes.SETTINGS_ROUTE,
                 onClick = {
                     // 暂未实现
+                    navController.navigate(AppRoutes.SETTINGS_ROUTE) {
+                        popUpTo(AppRoutes.HOME_ROUTE)
+                    }
                     closeDrawer()
                 },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -106,6 +109,9 @@ fun AppDrawer(
                 label = { Text(stringResource(id = R.string.about)) },
                 selected = navController.currentDestination?.route == AppRoutes.ABOUT_ROUTE,
                 onClick = {
+                    navController.navigate(AppRoutes.ABOUT_ROUTE) {
+                        popUpTo(AppRoutes.HOME_ROUTE)
+                    }
                     // 暂未实现
                     closeDrawer()
                 },

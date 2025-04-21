@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.AutoStories
 
 import androidx.compose.material3.Icon
@@ -67,11 +68,11 @@ fun EmptyCoursesView(
 
             Button(
                 onClick = onCreateCourse,
-                shape = MaterialTheme.shapes.small
+                shape = MaterialTheme.shapes.large
             ) {
-                Icon(Icons.Default.Add, contentDescription = null)
+                Icon(Icons.Default.ArrowBackIosNew, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.create_course))
+                Text(stringResource(R.string.back))
             }
         }
     }

@@ -18,6 +18,7 @@ import com.example.speechmaster.ui.navigation.navigateToCourseDetail
 import com.example.speechmaster.ui.state.BaseUIState
 import com.example.speechmaster.ui.theme.AppTheme
 import com.example.speechmaster.ui.components.viewmodels.TopBarViewModel
+import com.example.speechmaster.ui.navigation.navigateToCourses
 
 @Composable
 fun CoursesScreen(
@@ -28,8 +29,9 @@ fun CoursesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-    val showSearch by viewModel.showSearch.collectAsState()
+//    val showSearch by viewModel.showSearch.collectAsState()
     val filterState by viewModel.filterState.collectAsState()
+    val isSearchBarVisible by topBarViewModel.isSearchBarVisible.collectAsState()
 
     DisposableEffect(Unit) {
         onDispose {
@@ -55,7 +57,7 @@ fun CoursesScreen(
                 when (courseListData) {
                     is CourseListData.Success -> {
                         Column {
-                            if (showSearch) {
+                            androidx.compose.animation.AnimatedVisibility(visible = isSearchBarVisible) {
                                 CourseSearchBar(
                                     query = searchQuery,
                                     onQueryChange = { viewModel.updateSearchQuery(it) },
@@ -79,7 +81,9 @@ fun CoursesScreen(
                     }
                     is CourseListData.Empty -> {
                         EmptyCoursesView(
-                            onCreateCourse = { viewModel.navigateToCreateCourse() }
+                            onCreateCourse = {
+                                navController.navigateToCourses()
+                            }
                         )
                     }
                 }

@@ -95,7 +95,8 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
-
+    implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.kotlinx.coroutines.core)
     //use room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
@@ -134,6 +135,8 @@ dependencies {
     implementation(libs.work.multiprocess)
     implementation(libs.hilt.work)
     implementation(libs.log.timber)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     testImplementation(libs.junit) // 添加这行
     testImplementation(libs.kotlinx.coroutines.test) // 添加这行

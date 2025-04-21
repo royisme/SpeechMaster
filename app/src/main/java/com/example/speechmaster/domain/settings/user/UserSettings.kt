@@ -34,6 +34,29 @@ interface UserSettings : AppSettings {
      */
     suspend fun setDailyReminderTime(time: String?)
 
+
+    // --- 新增方法 (用于 API Key 覆盖) ---
+    /**
+     * 获取用户设置的 Azure Speech API Key (如果未设置则返回 null)。
+     */
+    fun getAzureKey(): Flow<String?> // 返回可空 String
+
+    /**
+     * 设置用户 Azure Speech API Key (传入 null 表示清除设置)。
+     */
+    suspend fun setAzureKey(key: String?)
+
+    /**
+     * 获取用户设置的 Azure Speech Region (如果未设置则返回 null)。
+     */
+    fun getAzureRegion(): Flow<String?> // 返回可空 String
+
+    /**
+     * 设置用户 Azure Speech Region (传入 null 表示清除设置)。
+     */
+    suspend fun setAzureRegion(region: String?)
+
+
     companion object {
         const val DEFAULT_NOTIFICATION_ENABLED = true
     }

@@ -19,6 +19,23 @@
     <string name="card_history">卡片历史</string>
     <string name="settings">设置</string>
     <string name="about">关于</string>
+    <string name="version_format">版本 %s</string>
+    <string name="app_description_about">一个开源应用程序，通过日常练习和反馈帮助您提高口语技能。</string>
+    <string name="contact_us">联系我们</string>
+    <string name="privacy_policy">隐私政策</string>
+    <string name="data_storage_notice_about">您的练习数据和录音仅存储在此设备上，如果卸载应用程序，这些数据将会丢失。</string>
+    <string name="privacy_policy_content_placeholder">
+        隐私政策\n\n最后更新日期：[日期]\n\n“口语大师”（以下简称“我们”、“我们的”）运营口语大师移动应用程序（以下简称“本服务”）。这是一个为学习和练习而设计的开源应用程序。\n\n本页面旨在告知您，当您使用本服务时，我们对个人数据的收集、使用和披露的政策，以及您与这些数据相关的选择。\n\n数据存储：\n您在应用程序内产生的所有数据，包括课程进度、用户创建的内容和录音，都仅存储在您的本地设备上。我们不会收集或将这些数据传输到任何外部服务器。\n\n录音：\n当您使用练习功能时会创建录音。这些录音会临时存储在您的设备上，仅用于第三方语音评估服务进行分析（默认配置为 Microsoft Azure 语音服务，如果您自行编译应用程序，则需要在构建配置中提供您自己的 API 密钥）。录音将安全地发送到已配置的服务进行分析，并且通常会在分析后或您手动重置录音时从您的设备中删除。我们不会长期存储您的录音。\n\n第三方服务：\n我们使用 Microsoft Azure 语音服务等第三方服务进行发音评估。这些服务有自己的隐私政策来管理他们对数据的使用。我们只会发送必要的音频数据和参考文本，以便使用您在编译过程中可能提供的 API 密钥进行分析。\n\n权限：\n应用程序需要 RECORD_AUDIO 权限才能在练习期间捕获音频。此权限仅在您主动启动录音时使用。\n\n数据删除：\n卸载应用程序将永久删除设备上的所有相关数据。\n\n本隐私政策的变更：\n我们可能会不时更新我们的隐私政策。我们将通过在本页面发布新的隐私政策来通知您任何更改。\n\n联系我们 / 问题反馈：\n请通过“关于”页面上链接的项目仓库问题跟踪器报告任何问题或提供反馈。\n
+    </string>
+    <string name="app_logo">应用图标</string>
+    <string name="source_code">源代码</string>
+    <string name="repository_url">https://github.com/your_username/speechmaster</string>
+    <string name="license_name">Apache 2.0 许可证</string>
+    <string name="license_url">https://www.apache.org/licenses/LICENSE-2.0</string>
+    <string name="view_license_format">查看 %s</string>
+    <string name="report_issue_or_feedback">问题报告 / 反馈</string>
+    <string name="contact_email">rzhu84.ca@gmail.com</string>
+
     <!-- Home Screen -->
     <string name="error_recording_too_short">你的录音太短了</string>
     <string name="your_progress">你的进度</string>
@@ -127,7 +144,39 @@
     <string name="error_course_difficulty_required">请选择课程难度</string>
     <string name="error_course_title_required">请输入课程标题</string>
     <string name="error_saving_card">保存卡片失败</string>
-
+    <string name="error_loading_settings">加载设定失败</string>
+    <string name="error_resetting_settings">重设配置失败</string>
+    <string name="error_updating_profile">更新个人资料失败</string>
+    <!-- settings -->
+    <string name="profile">用户资料</string>
+    <string name="user_avatar">用户头像</string>
+    <string name="generate_new_avatar">随机生成头像</string>
+    <string name="username">用户名</string>
+    <string name="error_username_cannot_be_empty">用户名不能为空</string>
+    <string name="appearance">外观</string>
+    <string name="theme">主题</string>
+    <string name="theme_mode_system">跟随系统</string>
+    <string name="theme_mode_light">亮色模式</string>
+    <string name="theme_mode_dark">暗色模式</string>
+    <string name="notifications">通知</string>
+    <string name="daily_reminder">每日练习提醒</string>
+    <string name="daily_reminder_description">在指定时间提醒你进行练习</string>
+    <string name="reminder_time">提醒时间</string>
+    <string name="time_not_set">未设置</string>
+    <string name="set_time">设置时间</string>
+    <string name="dialog_select_time">选择提醒时间</string>
+    <string name="api_keys_optional">API 密钥 (可选覆盖)</string>
+    <string name="api_keys_description">如果你从源代码编译本应用，或希望使用个人的 Azure 语音服务订阅，请在此处提供你的密钥和区域。否则将尝试使用应用内置配置。密钥仅存储在此设备上。</string>
+    <string name="azure_speech_key">Azure Speech Key</string>
+    <string name="azure_speech_region">Azure Speech Region</string>
+    <string name="paste_your_key_here">在此粘贴你的密钥</string>
+    <string name="enter_region_here">在此输入区域 (例如 westus)</string>
+    <string name="data_management">数据管理</string>
+    <string name="reset_settings">重置所有设置</string>
+    <string name="reset_settings_description">将所有设置恢复为默认值</string>
+    <string name="dialog_reset_settings_title">确认重置设置？</string>
+    <string name="dialog_reset_settings_message">此操作会将主题、通知、API密钥（如果已设置）等所有应用设置恢复为初始默认状态。此操作无法撤销。</string>
+    <string name="reset">重置</string>
     <!-- Practice Screen -->
     <string name="practice_start_recording">开始录音</string>
     <string name="practice_stop_recording">停止录音</string>

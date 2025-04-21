@@ -131,6 +131,9 @@ sealed class DataStoreSettingsImpl {
             val THEME_MODE = stringPreferencesKey("theme_mode")
             val NOTIFICATION_ENABLED = booleanPreferencesKey("notification_enabled")
             val DAILY_REMINDER_TIME = stringPreferencesKey("daily_reminder_time")
+            // --- 新增 DataStore Keys ---
+            val AZURE_API_KEY = stringPreferencesKey("user_azure_api_key")
+            val AZURE_API_REGION = stringPreferencesKey("user_azure_api_region")
         }
 
         override fun getThemeMode(): Flow<ThemeMode> = dataStore.data.map { preferences ->
@@ -166,7 +169,34 @@ sealed class DataStoreSettingsImpl {
                 }
             }
         }
+        // --- 新增 API Key 实现 ---
+        override fun getAzureKey(): Flow<String?> = dataStore.data.map { preferences ->
+            preferences[Keys.AZURE_API_KEY] // 如果不存在，DataStore 会返回 null
+        }
 
+        override suspend fun setAzureKey(key: String?) {
+            dataStore.edit { preferences ->
+                if (key.isNullOrBlank()) { // 如果传入 null 或空字符串，则移除
+                    preferences.remove(Keys.AZURE_API_KEY)
+                } else {
+                    preferences[Keys.AZURE_API_KEY] = key
+                }
+            }
+        }
+
+        override fun getAzureRegion(): Flow<String?> = dataStore.data.map { preferences ->
+            preferences[Keys.AZURE_API_REGION] // 如果不存在，DataStore 会返回 null
+        }
+
+        override suspend fun setAzureRegion(region: String?) {
+            dataStore.edit { preferences ->
+                if (region.isNullOrBlank()) { // 如果传入 null 或空字符串，则移除
+                    preferences.remove(Keys.AZURE_API_REGION)
+                } else {
+                    preferences[Keys.AZURE_API_REGION] = region
+                }
+            }
+        }
         override suspend fun resetToDefaults() {
             dataStore.edit { preferences ->
                 preferences[Keys.THEME_MODE] = ThemeMode.SYSTEM.name
