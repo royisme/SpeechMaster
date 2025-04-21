@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.speechmaster.R
+import com.example.speechmaster.domain.model.CourseCardRules.MAX_CARD_CONTENT_LENGTH
+import com.example.speechmaster.domain.model.CourseCardRules.MIN_CARD_CONTENT_LENGTH
 import com.example.speechmaster.domain.repository.ICardRepository
 import com.example.speechmaster.domain.session.UserSessionManager
 import com.example.speechmaster.domain.usecase.card.SplitTextIntoCardsUseCase
@@ -22,10 +24,7 @@ class EditCardViewModel @Inject constructor(
     private val splitTextUseCase: SplitTextIntoCardsUseCase // 注入 UseCase
 
 ) : ViewModel() {
-    companion object {
-        private const val MAX_CARD_CONTENT_LENGTH = 500 // 示例：限制最大长度为 500 字符
-        private const val MIN_CARD_CONTENT_LENGTH = 3 // 示例：可选的最小长度
-    }
+
     private val courseId: Long = checkNotNull(savedStateHandle["courseId"])
     // cardId 为 null 表示创建模式，非 null 表示编辑模式 (仅对单卡有效)
     private val initialCardId: Long? = savedStateHandle.get<Long>("cardId")?.takeIf { it != -1L }

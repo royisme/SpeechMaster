@@ -177,7 +177,7 @@ class CoursesViewModel @Inject constructor(
                     // 3. 分类筛选
                     val categoryMatches = filter.category?.let {
                         course.category.equals(it, ignoreCase = true)
-                    } ?: true
+                    } != false
 
                     // 4. 搜索查询
                     val queryMatches = query.isEmpty() ||
