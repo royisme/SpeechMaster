@@ -87,7 +87,7 @@ The project adheres to specific development practices to ensure code quality and
 * **Version Control:** Follows a standard Git flow (e.g., Gitflow or GitHub Flow). Commit messages should adhere to Conventional Commits format.
 * **Task Management:** Features are broken down into smaller tasks tracked using tools like Jira or Trello.
 * **Code Reviews:** Mandatory for all code merged into the main branch.
-* **Coding Standards:** Strictly follows the official Kotlin coding conventions and Clean Code principles (SOLID, Separation of Concerns). Refer to the `开发工作流程规范.pdf` document for detailed guidelines.
+* **Coding Standards:** Strictly follows the official Kotlin coding conventions and Clean Code principles (SOLID, Separation of Concerns). 
 * **Architecture:** Adheres to the Clean Architecture pattern described above.
 * **Testing:** Includes Unit Tests (ViewModels, Repositories, UseCases), Integration Tests (Room DAO, Migrations), and recommended UI Tests (Compose Testing API) for critical user flows.
 * **Database Migrations:** Follows a defined workflow involving schema design updates, Room entity/DAO changes, implementing `Migration` objects, and writing migration tests.
