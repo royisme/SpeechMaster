@@ -58,4 +58,13 @@ interface ICardRepository {
      * 获取下一个卡片序号
      */
     suspend fun getNextSequenceOrder(courseId: Long): Int
+
+    // --- 新增方法 ---
+    /**
+     * 获取指定课程中，用户尚未完成的、序号最小的卡片 ID。
+     * @param userId 用户ID
+     * @param courseId 课程ID
+     * @return 下一个卡片的 ID，如果所有卡片都已完成或课程为空则返回 null。
+     */
+    suspend fun getFirstUncompletedCardId(userId: String, courseId: Long): Long?
 }

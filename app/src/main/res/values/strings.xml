@@ -106,7 +106,19 @@
     <string name="job_interview">Job Interview</string>
     <string name="recent_practice">Recent Practice</string>
     <string name="recent">Recent</string>
-
+    <string name="home_greeting">Welcome Back!</string>
+    <string name="home_subtitle">Keep practicing to improve your speaking skills!</string>
+    <string name="home_last_practiced">Last Practiced:</string>
+    <string name="continue_practice">Continue Practice</string>
+    <string name="home_continue_learning">Continue Learning</string>
+    <string name="view_all">View All</string>
+    <string name="home_featured_courses">Featured Courses</string>
+    <string name="home_empty_learning_title">You haven\'t started learning any courses yet.</string>
+    <string name="home_empty_learning_subtitle">Go and choose your favorite courses to start practicing!</string>
+    <string name="home_browse_courses_button">Browse Courses</string>
+    <string name="error_loading_home_data">Failed to load home data</string>
+    <string name="home_empty_learning_examples">Examples</string>
+    <string name="home_no_featured_courses">No featured courses available.</string>
     <!-- feedback default message -->
     <string name="feedback_excellent">Excellent! Keep up the good work.</string>
     <string name="feedback_good">Good job! Some minor areas to improve.</string>
@@ -193,6 +205,8 @@
     <string name="analysis_word_details">Word Details</string>
     <string name="error_type">Error Type: %s</string>
     <string name="phonemes">Phonemes</string>
+    <string name="retry_practice">Retry Practice</string>
+    <string name="complete_and_return">complete and return</string>
     <!-- Practice Scores -->
     <string name="best_score_format">Best: %s</string>
     <string name="latest_score_format">Latest: %s</string>

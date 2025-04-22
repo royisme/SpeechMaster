@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.speechmaster.data.local.DatabaseConstants.CARDS_TABLE_NAME
 import com.example.speechmaster.data.local.DatabaseConstants.USER_CARD_COMPLETIONS_TABLE_NAME
 import com.example.speechmaster.data.local.entity.UserCardCompletionEntity
 import kotlinx.coroutines.flow.Flow
@@ -64,4 +65,18 @@ interface UserCardCompletionDao {
      */
     @Query("SELECT COUNT(*) FROM cards WHERE course_id = :courseId")
     fun getTotalCardCount(courseId: Long): Flow<Int>
+    // --- 新增方法 ---
+    /**
+     * 获取指定课程中，用户尚未完成的、序号最小的卡片 ID。
+     * 如果所有卡片都已完成，则返回 null。
+     */
+    @Query("""
+        SELECT c.id
+        FROM $CARDS_TABLE_NAME c
+        LEFT JOIN $USER_CARD_COMPLETIONS_TABLE_NAME ucc ON c.id = ucc.card_id AND ucc.user_id = :userId
+        WHERE c.course_id = :courseId AND ucc.id IS NULL
+        ORDER BY c.sequence_order ASC
+        LIMIT 1
+    """)
+    suspend fun getFirstUncompletedCardId(userId: String, courseId: Long): Long? // 返回可为空的 Long
 }

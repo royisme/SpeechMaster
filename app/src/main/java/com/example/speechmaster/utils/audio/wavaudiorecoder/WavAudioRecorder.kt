@@ -234,12 +234,14 @@ constructor(
 
     private fun calculateAmplitudeMax(data: ByteArray): Int {
         val shortData = ShortArray(data.size / 2)
-        ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer()
-            .get(shortData)
-
+        for (i in shortData.indices) {
+            // Convert two bytes to a short (little-endian)
+            val low = data[i * 2].toInt() and 0xFF
+            val high = data[i * 2 + 1].toInt() and 0xFF
+            shortData[i] = ((high shl 8) or low).toShort()
+        }
         return shortData.maxOrNull()?.toInt() ?: 0
     }
-
     /**
      * Stops audio recorder and release resources then writes recorded file headers.
      */

@@ -47,4 +47,8 @@ data class CourseCardItem(
     val bestScore: Float? = null,
     val latestScore: Float? = null
 )
-
+enum class CourseStatus {
+    NOT_STARTED,
+    IN_PROGRESS,
+    COMPLETED
+}

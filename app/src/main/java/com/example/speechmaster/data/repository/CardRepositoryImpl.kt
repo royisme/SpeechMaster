@@ -8,6 +8,7 @@ import com.example.speechmaster.domain.repository.ICardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,6 +20,7 @@ class CardRepositoryImpl @Inject constructor(
 
     private val cardDao = database.cardDao()
     private val courseDao = database.courseDao()
+    private val userCardCompletionDao = database.userCardCompletionDao() // <<<--- 获取 DAO 实例
 
     override fun getCardsByCourse(courseId: Long): Flow<List<Card>> {
         return cardDao.getCardsByCourse(courseId).map { cards ->
@@ -53,8 +55,8 @@ class CardRepositoryImpl @Inject constructor(
                 sequenceOrder = sequenceOrder
             )
 
-            cardDao.insertCard(card.toEntity())
-            Result.success(card)
+            val insertId = cardDao.insertCard(card.toEntity())
+            Result.success(card.copy(id = insertId))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -162,5 +164,15 @@ class CardRepositoryImpl @Inject constructor(
 
     override suspend fun getNextSequenceOrder(courseId: Long): Int {
         return cardDao.getNextSequenceOrder(courseId)
+    }
+
+    // --- 新增方法实现 ---
+    override suspend fun getFirstUncompletedCardId(userId: String, courseId: Long): Long? {
+        return try {
+            userCardCompletionDao.getFirstUncompletedCardId(userId, courseId)
+        } catch (e: Exception) {
+            Timber.e(e, "Error getting first uncompleted card ID for user $userId, course $courseId")
+            null // 或者重新抛出异常
+        }
     }
 }

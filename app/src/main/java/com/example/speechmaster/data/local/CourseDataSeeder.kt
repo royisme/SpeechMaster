@@ -1,7 +1,6 @@
 package com.example.speechmaster.data.local
 
 import android.content.Context
-import android.util.Log
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.speechmaster.data.local.entity.CardEntity
@@ -14,6 +13,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 import java.io.IOException
 import javax.inject.Provider
 
@@ -28,7 +28,7 @@ class CourseDataSeeder (
 ) : RoomDatabase.Callback() {
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
-        Log.i("CourseDataSeeder","onCreate")
+        Timber.tag("CourseDataSeeder").i("onCreate")
         // 使用IO协程在后台执行预填充
         CoroutineScope(Dispatchers.IO).launch {
             populateDatabase(appDatabaseProvider.get())
@@ -40,12 +40,12 @@ class CourseDataSeeder (
             // 从assets目录读取内置课程和卡片数据
             val assetsList = context.assets.list("data")?.toList().orEmpty()
             if ("built_in_courses.json" !in assetsList) {
-                Log.e("CourseDataSeeder", "JSON file not found in assets/data/")
+                Timber.tag("CourseDataSeeder").i("JSON file not found in assets/data/")
                 return
             }
             val coursesJsonString = context.assets.open(COURSES_JSON_PATH).bufferedReader().use { it.readText() }
             val coursesData = Json.decodeFromString<List<CourseData>>(coursesJsonString)
-            Log.e("CourseDataSeeder", "is empty: ${coursesData.isEmpty()}")
+            Timber.tag("CourseDataSeeder").i("is empty: ${coursesData.isEmpty()}")
 
             // 插入课程和卡片数据
             for (courseData in coursesData) {
@@ -76,15 +76,12 @@ class CourseDataSeeder (
                 }
                 database.cardDao().insertCards(cardEntities)
             }
-            Log.i("CourseDataSeeder","Database pre-population completed successfully")
-            println("Database pre-population completed successfully")
+            Timber.tag("CourseDataSeeder").i("Database pre-population completed successfully")
         } catch (e: IOException) {
-            println("Error pre-populating database: ${e.message}")
-            Log.e("CourseDataSeeder","Error pre-populating database: ${e.message}")
+            Timber.tag("CourseDataSeeder").i("Error pre-populating database: ${e.message}")
             e.printStackTrace()
         } catch (e: Exception) {
-            println("Error pre-populating database: ${e.message}")
-            Log.e("CourseDataSeeder","Error pre-populating database: ${e.message}")
+            Timber.tag("CourseDataSeeder").i("Error pre-populating database: ${e.message}")
             e.printStackTrace()
         }
     }

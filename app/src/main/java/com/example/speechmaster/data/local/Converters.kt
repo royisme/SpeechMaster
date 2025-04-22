@@ -1,6 +1,7 @@
 package com.example.speechmaster.data.local
 
 import androidx.room.TypeConverter
+import com.example.speechmaster.domain.model.CourseStatus
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -41,5 +42,22 @@ class Converters {
     @TypeConverter
     fun toMap(value: String?): Map<String, Any>? {
         return value?.let { json.decodeFromString<Map<String, Any>>(it) }
+    }
+
+    // --- 新增 CourseStatus 转换器 ---
+    @TypeConverter
+    fun fromCourseStatus(status: CourseStatus?): String? {
+        return status?.name // 直接存储枚举的名称字符串
+    }
+
+    @TypeConverter
+    fun toCourseStatus(statusString: String?): CourseStatus? {
+        return statusString?.let {
+            try {
+                CourseStatus.valueOf(it) // 从字符串转换回枚举
+            } catch (e: IllegalArgumentException) {
+                null // 如果字符串无效，返回 null 或默认值
+            }
+        }
     }
 }

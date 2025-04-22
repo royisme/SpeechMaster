@@ -30,7 +30,21 @@ fun FeedbackScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    // --- 新增: 监听导航事件 ---
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is FeedbackNavigationEvent.NavigateBack -> {
+                    // 执行返回操作，例如:
+                    navController.popBackStack()
+                    // 或者导航到特定页面: navController.navigate(AppRoutes.COURSE_DETAIL_ROUTE + "/${courseId}") { popUpTo(...) }
+                }
 
+                is FeedbackNavigationEvent.NavigateToCardDetail -> TODO()
+                is FeedbackNavigationEvent.NavigateToNextCard -> TODO()
+            }
+        }
+    }
     Scaffold { paddingValues ->
         Surface(
             modifier = modifier
@@ -48,13 +62,25 @@ fun FeedbackScreen(
                 }
 
                 is BaseUIState.Success -> {
-                    PracticeResultContent(
-                            feedback = state.data,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues)
-                    )
+                    val feedback = (uiState as BaseUIState.Success<PracticeFeedback>).data
+                    Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
+                        // ... (显示反馈内容的 Composable) ...
+                        PracticeResultContent(feedback = feedback, modifier = Modifier.weight(1f))
 
+                        // --- 添加按钮 ---
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            Button(onClick = { /* TODO: 实现重试逻辑，可能导航回 PracticeScreen */ }) {
+                                Text(stringResource(R.string.retry_practice))
+                            }
+                            Button(onClick = { viewModel.markCardAsCompleteAndReturn() }) { // <<<--- 连接 ViewModel
+                                Text(stringResource(R.string.complete_and_return)) // 或 R.string.complete_and_next
+                            }
+                        }
+                        // ---------------
+                    }
                 }
 
                 is BaseUIState.Error -> {
